@@ -16,7 +16,7 @@ public class GameFrame {
         this.g = g;
     }
 
-    public
+
 
 }
 
