@@ -25,5 +25,7 @@ void main() {
         }
     };
 
+    gf.start();
+
     frame.setVisible(true);
 }

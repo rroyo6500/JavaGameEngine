@@ -16,7 +16,7 @@ public abstract class GameFrame {
 
     public GameFrame(JPanel frame, int fps) {
         this.panel = frame;
-        this.g = (Graphics2D) panel.getGraphics();
+        this.g = (Graphics2D) panel.getGraphics().create();
         this.fps = fps;
     }
 
