@@ -1,17 +1,12 @@
-package rroyo.jgameengine.Gameutils;
-
-import lombok.Getter;
-import lombok.Setter;
+package rroyo.jgameengine.objects.gameutils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-@Getter
 public class Sprite {
 
     private final Dimension dimension;
 
-    @Setter
     private BufferedImage spriteImage;
     private Color spriteColor;
 
@@ -29,4 +24,15 @@ public class Sprite {
         return spriteImage != null;
     }
 
+    public Dimension getDimension() {
+        return dimension;
+    }
+
+    public BufferedImage getSpriteImage() {
+        return spriteImage;
+    }
+
+    public Color getSpriteColor() {
+        return spriteColor;
+    }
 }

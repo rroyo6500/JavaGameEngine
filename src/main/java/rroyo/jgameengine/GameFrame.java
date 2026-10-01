@@ -1,6 +1,6 @@
 package rroyo.jgameengine;
 
-import rroyo.jgameengine.GameObjects.GameObject;
+import rroyo.jgameengine.objects.gameobjects.GameObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,16 +9,14 @@ import java.util.TimerTask;
 
 public abstract class GameFrame {
 
+    private final JPanel panel;
     protected final Graphics2D g;
     protected Timer timer = new Timer();
     protected final int fps;
 
     public GameFrame(JPanel frame, int fps) {
-        this((Graphics2D) frame.getGraphics(), fps);
-    }
-
-    public GameFrame(Graphics2D g, int fps) {
-        this.g = g;
+        this.panel = frame;
+        this.g = (Graphics2D) panel.getGraphics();
         this.fps = fps;
     }
 
@@ -26,22 +24,25 @@ public abstract class GameFrame {
 
     protected void draw(GameObject... gameObject) {
         for (GameObject go : gameObject) {
+            Point p = new Point(
+                    (int) go.getPoint().getX(),
+                    (int) go.getPoint().getX());
+            Dimension d = new Dimension(
+                    go.getSprite().getDimension().width,
+                    go.getSprite().getDimension().height);
+
             if (go.getSprite().hasSpiteImage())
                 g.drawImage(
                         go.getSprite().getSpriteImage(),
-                        go.getPoint().x,
-                        go.getPoint().y,
-                        go.getSprite().getDimension().width,
-                        go.getSprite().getDimension().height,
+                        p.x - (d.width / 2), p.y - (d.height / 2),
+                        d.width, d.height,
                         null
                 );
             else {
                 g.setColor(go.getSprite().getSpriteColor());
                 g.fillRect(
-                        go.getPoint().x,
-                        go.getPoint().y,
-                        go.getSprite().getDimension().width,
-                        go.getSprite().getDimension().height
+                        p.x - (d.width / 2), p.y - (d.height / 2),
+                        d.width, d.height
                 );
             }
         }
@@ -52,7 +53,8 @@ public abstract class GameFrame {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-
+                code();
+                panel.repaint();
             }
         }, 0, (1000 / fps));
     }
