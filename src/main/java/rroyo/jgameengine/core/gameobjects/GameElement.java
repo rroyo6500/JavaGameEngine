@@ -13,7 +13,7 @@ public class GameElement extends GameObject {
 
     protected final Point point;
     protected final Dimension dimension;
-    protected final Sprite sprite;
+    protected Sprite sprite;
 
     public GameElement(double x, double y, double width, double height, Sprite sprite) {
         this(new Point(x, y), new Dimension(width, height), sprite);
@@ -118,5 +118,9 @@ public class GameElement extends GameObject {
 
     public Dimension getDimension() {
         return dimension;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 }

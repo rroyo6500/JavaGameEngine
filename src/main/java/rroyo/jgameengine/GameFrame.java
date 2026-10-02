@@ -35,12 +35,20 @@ public abstract class GameFrame {
             g.fillRect(0, 0, getWidth(), getHeight());
 
             for (GameElement go : gameElements) {
+                go.getSprite().next();
                 if (go.getSprite().hasSpriteImage())
                     g.drawImage(
-                            go.getSprite().getSpriteImage(),
-                            (int) (go.getPoint().getX() - go.getDimension().getHalfWidth()),
+                            go.getSprite().getSpriteImages(),
+                            (int) switch (go.getSprite().getHorizontalDirection()) {
+                                case RIGHT -> (go.getPoint().getX() - go.getDimension().getHalfWidth());
+                                case LEFT -> (go.getPoint().getX() - go.getDimension().getHalfWidth()) + go.getDimension().getWidth();
+                            },
                             (int) (go.getPoint().getY() - go.getDimension().getHalfHeight()),
-                            (int) go.getDimension().getWidth(), (int) go.getDimension().getHeight(),
+                            (int) switch (go.getSprite().getHorizontalDirection()) {
+                                case RIGHT -> go.getDimension().getWidth();
+                                case LEFT -> -go.getDimension().getWidth();
+                            },
+                            (int) go.getDimension().getHeight(),
                             null
                     );
                 else {
