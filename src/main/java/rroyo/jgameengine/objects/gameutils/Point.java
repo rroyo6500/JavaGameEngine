@@ -2,8 +2,7 @@ package rroyo.jgameengine.objects.gameutils;
 
 public class Point {
 
-    private double x = 0;
-    private double y = 0;
+    private double x = 0, y = 0;
 
     public Point() {}
 

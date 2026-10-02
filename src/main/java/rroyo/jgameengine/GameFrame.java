@@ -1,10 +1,15 @@
 package rroyo.jgameengine;
 
+import rroyo.jgameengine.objects.gameobjects.GameElement;
 import rroyo.jgameengine.objects.gameobjects.GameObject;
+import rroyo.jgameengine.objects.gameobjects.Group;
 import rroyo.jgameengine.objects.gameutils.Dimension;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.lang.instrument.IllegalClassFormatException;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
@@ -15,7 +20,10 @@ public abstract class GameFrame {
     protected final int fps;
     protected Color backgroundColor = Color.BLACK;
 
-    protected final List<GameObject> gameObjects = new ArrayList<>();
+    protected final List<String> keyCodes = new ArrayList<>();
+    protected final List<String> keyCharacters = new ArrayList<>();
+
+    protected final List<GameElement> gameElements = new ArrayList<>();
     protected final Dimension dimension;
 
     protected final JPanel panel = new JPanel() {
@@ -26,21 +34,21 @@ public abstract class GameFrame {
             g.setColor(backgroundColor);
             g.fillRect(0, 0, getWidth(), getHeight());
 
-            for (GameObject go : gameObjects) {
+            for (GameElement go : gameElements) {
                 if (go.getSprite().hasSpriteImage())
                     g.drawImage(
                             go.getSprite().getSpriteImage(),
-                            (int) (go.getPoint().getX() - go.getSprite().getDimension().getHalfWidth()),
-                            (int) (go.getPoint().getY() - go.getSprite().getDimension().getHalfHeight()),
-                            (int) go.getSprite().getDimension().getWidth(), (int) go.getSprite().getDimension().getHeight(),
+                            (int) (go.getPoint().getX() - go.getDimension().getHalfWidth()),
+                            (int) (go.getPoint().getY() - go.getDimension().getHalfHeight()),
+                            (int) go.getDimension().getWidth(), (int) go.getDimension().getHeight(),
                             null
                     );
                 else {
                     g.setColor(go.getSprite().getSpriteColor());
                     g.fillRect(
-                            (int) (go.getPoint().getX() - go.getSprite().getDimension().getHalfWidth()),
-                            (int) (go.getPoint().getY() - go.getSprite().getDimension().getHalfHeight()),
-                            (int) go.getSprite().getDimension().getWidth(), (int) go.getSprite().getDimension().getHeight()
+                            (int) (go.getPoint().getX() - go.getDimension().getHalfWidth()),
+                            (int) (go.getPoint().getY() - go.getDimension().getHalfHeight()),
+                            (int) go.getDimension().getWidth(), (int) go.getDimension().getHeight()
                     );
                 }
             }
@@ -62,27 +70,90 @@ public abstract class GameFrame {
         frame.setContentPane(panel);
         frame.pack();
 
+        frame.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (!keyCodes.contains(String.valueOf(e.getKeyCode()))) {
+                    keyCodes.add(String.valueOf(e.getKeyCode()));
+                    keyCharacters.add(String.valueOf(e.getKeyChar()));
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                keyCodes.remove(String.valueOf(e.getKeyCode()));
+                keyCharacters.remove(String.valueOf(e.getKeyChar()));
+            }
+        });
+
         frame.setVisible(true);
     }
 
-    protected abstract void code(GameFrame self);
+    protected abstract void code() throws IllegalClassFormatException;
     protected void canvas(Graphics g) {
     }
 
-    protected final void draw(GameObject... gameObject) {
-        for (GameObject go : gameObject)
-            if (!gameObjects.contains(go))
-                gameObjects.add(go);
+    protected final void draw(GameObject... gameElement) {
+        for (GameObject go : gameElement) {
+            if (go instanceof GameElement ge) {
+                if (!gameElements.contains(ge)) {
+                    gameElements.add(ge);
+                }
+            } else if (go instanceof Group group) {
+                for (GameElement ge : group.getMembers()) {
+                    if (!gameElements.contains(ge)) {
+                        gameElements.add(ge);
+                    }
+                }
+            }
+        }
+
     }
 
     public void start() {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                code(GameFrame.this);
-                panel.repaint();
+                try {
+                    code();
+                    panel.repaint();
+                } catch (IllegalClassFormatException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }, 0, (1000 / fps));
+    }
+
+    public void stop() {
+        timer.cancel();
+    }
+
+    public boolean key(String key) {
+        return keyCharacters.contains(key);
+    }
+
+    public boolean key(int keyCode) {
+        return keyCodes.contains(String.valueOf(keyCode));
+    }
+
+    public boolean key(KeyEvent key) {
+        return keyCodes.contains(String.valueOf(key.getKeyCode()));
+    }
+
+    public boolean keyUp() {
+        return keyCodes.contains(String.valueOf(KeyEvent.VK_UP));
+    }
+
+    public boolean keyDown() {
+        return keyCodes.contains(String.valueOf(KeyEvent.VK_DOWN));
+    }
+
+    public boolean keyLeft() {
+        return keyCodes.contains(String.valueOf(KeyEvent.VK_LEFT));
+    }
+
+    public boolean keyRight() {
+        return keyCodes.contains(String.valueOf(KeyEvent.VK_RIGHT));
     }
 
     public Color getBackgroundColor() {

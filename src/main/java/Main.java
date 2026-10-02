@@ -1,22 +1,60 @@
 import rroyo.jgameengine.GameFrame;
-import rroyo.jgameengine.objects.gameobjects.GameObject;
+import rroyo.jgameengine.interfaces.Colision;
+import rroyo.jgameengine.interfaces.Portble;
+import rroyo.jgameengine.objects.gameobjects.GameElement;
+import rroyo.jgameengine.objects.gameobjects.Group;
 import rroyo.jgameengine.objects.gameutils.Dimension;
+import rroyo.jgameengine.objects.gameutils.FrameWaiter;
+import rroyo.jgameengine.objects.gameutils.Point;
 import rroyo.jgameengine.objects.gameutils.Sprite;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.lang.instrument.IllegalClassFormatException;
 
 void main() {
 
-    GameObject rojo = new GameObject(250, 0, new Sprite(new Dimension(100, 100), Color.RED));
-    GameObject azul = new GameObject(250, 250, new Sprite(new Dimension(500, 50), Color.CYAN));
+    Entity entity = new Entity(250, 0, 50, 50, new Sprite(Color.RED));
+    Group plataformas = new Group(
+            new GameElement(60, 400, 100, 10, new Sprite(Color.CYAN)),
+            new GameElement(440, 400, 100, 10, new Sprite(Color.CYAN))
+    );
 
-    GameFrame gf = new GameFrame(30, new Dimension(500, 500)) {
+
+    GameFrame gf = new GameFrame(60, new Dimension(500, 500)) {
+
+        boolean salto = false;
+
         @Override
-        protected void code(GameFrame self) {
+        protected void code() throws IllegalClassFormatException {
 
+            if (((entity.getPoint().getY() + entity.getDimension().getHalfHeight()) < getDimension().getHeight())) {
+                entity.setVelocityY(
+                        entity.getVelocityY() + 0.1
+                );
+            } else {
+                entity.getPoint().setY(getDimension().getHeight() - entity.getDimension().getHalfHeight());
+                salto = true;
+            }
 
+            if (keyLeft()) entity.setVelocityX(-2);
+            else if (keyRight()) entity.setVelocityX(2);
+            else entity.setVelocityX(0);
 
-            draw(rojo, azul);
+            if (salto && keyUp()) {
+                entity.setVelocityY(-4);
+                salto = false;
+            }
+
+            if (entity.collide(plataformas)) {
+                salto = true;
+            } else {
+                if (FrameWaiter.wait("salto", 30)) {
+                    salto = false;
+                }
+            }
+
+            draw(entity, plataformas);
         }
 
         @Override
@@ -29,5 +67,17 @@ void main() {
     };
 
     gf.start();
+
+}
+
+private class Entity extends GameElement implements Colision, Portble {
+
+    public Entity(double x, double y, double width, double height, Sprite sprite) {
+        super(x, y, width, height, sprite);
+    }
+
+    public Entity(Point point, Dimension dimension, Sprite sprite) {
+        super(point, dimension, sprite);
+    }
 
 }

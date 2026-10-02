@@ -1,34 +1,48 @@
 package rroyo.jgameengine.interfaces;
 
-import rroyo.jgameengine.objects.gameobjects.GameObject;
+import rroyo.jgameengine.objects.gameobjects.GameElement;
+import rroyo.jgameengine.objects.gameobjects.Group;
 import rroyo.jgameengine.objects.gameutils.Overlap;
+
+import java.lang.instrument.IllegalClassFormatException;
 
 public interface Colision {
 
-    default boolean collide(GameObject gameObject) {
-        if (this instanceof GameObject self) {
-            if (self.overlap(gameObject)) {
-                Overlap overlap = self.getOverlap(gameObject);
+    default boolean collide(GameElement gameElement) throws IllegalClassFormatException {
+        if (this instanceof GameElement self) {
+            if (self.overlap(gameElement)) {
+                Overlap overlap = self.getOverlap(gameElement);
 
                 if (overlap.overlapX() < overlap.overlapY()) {
-                    if (self.getPoint().getX() < gameObject.getPoint().getX()) {
+                    if (self.getPoint().getX() < gameElement.getPoint().getX()) {
                         self.move(-overlap.overlapX(), 0);
                     } else {
                         self.move(overlap.overlapX(), 0);
                     }
-                    self.setVelocityX(0);
+                    if (self instanceof Portble selfP)
+                        selfP.setVelocityX(0);
                 } else {
-                    if (self.getPoint().getY() < gameObject.getPoint().getY()) {
+                    if (self.getPoint().getY() < gameElement.getPoint().getY()) {
                         self.move(0, -overlap.overlapY());
                     } else {
                         self.move(0, overlap.overlapY());
                     }
-                    self.setVelocityY(0);
+                    if (self instanceof Portble selfP)
+                        selfP.setVelocityY(0);
                 }
                 return true;
             }
         } else
-            throw new RuntimeException("Required an instance of 'GameObject'");
+            throw new IllegalClassFormatException("Required an instance of 'GameObject'");
+        return false;
+    }
+
+    default boolean collide(Group group) throws IllegalClassFormatException {
+        for (GameElement go : group.getMembers()) {
+            if (this.collide(go)) {
+                return true;
+            }
+        }
         return false;
     }
 

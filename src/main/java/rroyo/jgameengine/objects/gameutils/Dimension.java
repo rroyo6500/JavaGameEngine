@@ -2,8 +2,7 @@ package rroyo.jgameengine.objects.gameutils;
 
 public class Dimension {
 
-    private double halfWidth = 0;
-    private double halfHeight = 0;
+    private double halfWidth = 0, halfHeight = 0;
 
     public Dimension(double width, double height) {
         this.halfWidth = width / 2;
