@@ -1,6 +1,7 @@
 package rroyo.jgameengine;
 
 import rroyo.jgameengine.objects.gameobjects.GameObject;
+import rroyo.jgameengine.objects.gameutils.Dimension;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,20 +26,20 @@ public abstract class GameFrame {
             g.fillRect(0, 0, getWidth(), getHeight());
 
             for (GameObject go : gameObjects) {
-                if (go.getSprite().hasSpiteImage())
+                if (go.getSprite().hasSpriteImage())
                     g.drawImage(
                             go.getSprite().getSpriteImage(),
-                            (int) go.getPoint().getX() - (go.getSprite().getDimension().width / 2),
-                            (int) go.getPoint().getY() - (go.getSprite().getDimension().height / 2),
-                            go.getSprite().getDimension().width, go.getSprite().getDimension().height,
+                            (int) (go.getPoint().getX() - go.getSprite().getDimension().getHalfWidth()),
+                            (int) (go.getPoint().getY() - go.getSprite().getDimension().getHalfHeight()),
+                            (int) go.getSprite().getDimension().getWidth(), (int) go.getSprite().getDimension().getHeight(),
                             null
                     );
                 else {
                     g.setColor(go.getSprite().getSpriteColor());
                     g.fillRect(
-                            (int) go.getPoint().getX() - (go.getSprite().getDimension().width / 2),
-                            (int) go.getPoint().getY() - (go.getSprite().getDimension().height / 2),
-                            go.getSprite().getDimension().width, go.getSprite().getDimension().height
+                            (int) (go.getPoint().getX() - go.getSprite().getDimension().getHalfWidth()),
+                            (int) (go.getPoint().getY() - go.getSprite().getDimension().getHalfHeight()),
+                            (int) go.getSprite().getDimension().getWidth(), (int) go.getSprite().getDimension().getHeight()
                     );
                 }
             }
@@ -50,7 +51,7 @@ public abstract class GameFrame {
         this.fps = fps;
 
         JFrame frame = new JFrame();
-        frame.setSize(dimensions);
+        frame.setSize(new java.awt.Dimension((int) dimensions.getWidth(), (int) dimensions.getHeight()));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);

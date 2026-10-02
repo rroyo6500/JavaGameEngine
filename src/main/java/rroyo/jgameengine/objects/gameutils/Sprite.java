@@ -1,5 +1,7 @@
 package rroyo.jgameengine.objects.gameutils;
 
+import rroyo.jgameengine.objects.gameobjects.GameObject;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -20,7 +22,7 @@ public class Sprite {
         this.dimension = dimension;
     }
 
-    public boolean hasSpiteImage() {
+    public boolean hasSpriteImage() {
         return spriteImage != null;
     }
 

@@ -1,50 +1,51 @@
 package rroyo.jgameengine.objects.gameutils;
 
-import rroyo.jgameengine.enums.Direction;
-
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-
 public class Hitbox {
 
-    private final Map<Direction, Collider> hitbox = new HashMap<>();
-    private final Rectangle hitboxBounds;
+    public double x, y;
+    public double halfWidth, halfHeight;
 
-    public Hitbox(Point point, Dimension dimension) {
-        this.hitboxBounds = new Rectangle(
-                (int) point.getX() - (dimension.width / 2),
-                (int) point.getY() - (dimension.height / 2),
-                dimension.width, dimension.height);
-        for (Direction d : Direction.values()) {
-            hitbox.put(d, new Collider(point, dimension, d));
-        }
+    public Hitbox(double x, double y, double width, double height) {
+        this.x = x;
+        this.y = y;
+        this.halfWidth = width / 2;
+        this.halfHeight = height / 2;
     }
 
-    public boolean intersects(Hitbox hitbox) {
-        return this.getHitboxBounds().intersects(hitbox.getHitboxBounds());
+    public void move(double dx, double dy) {
+        this.x += dx;
+        this.y += dy;
     }
 
-    public void move(int deltaX, int deltaY) {
-        for (Collider collider : hitbox.values()) {
-            collider.move(
-                    deltaX,
-                    deltaY);
-        }
-        hitboxBounds.setLocation(
-                hitboxBounds.x + deltaX,
-                hitboxBounds.y + deltaY);
+    public double getX() {
+        return x;
     }
 
-    public Collider getCollider(Direction direction) {
-        return hitbox.get(direction);
+    public void setX(double x) {
+        this.x = x;
     }
 
-    public Map<Direction, Collider> getHitbox() {
-        return hitbox;
+    public double getY() {
+        return y;
     }
 
-    public Rectangle getHitboxBounds() {
-        return hitboxBounds;
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getHalfWidth() {
+        return halfWidth;
+    }
+
+    public void setHalfWidth(double halfWidth) {
+        this.halfWidth = halfWidth;
+    }
+
+    public double getHalfHeight() {
+        return halfHeight;
+    }
+
+    public void setHalfHeight(double halfHeight) {
+        this.halfHeight = halfHeight;
     }
 }

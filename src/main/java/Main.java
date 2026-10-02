@@ -1,27 +1,26 @@
 import rroyo.jgameengine.GameFrame;
-import rroyo.jgameengine.enums.Direction;
 import rroyo.jgameengine.objects.gameobjects.GameObject;
-import rroyo.jgameengine.objects.gameutils.Collider;
-import rroyo.jgameengine.objects.gameutils.Point;
+import rroyo.jgameengine.objects.gameutils.Dimension;
 import rroyo.jgameengine.objects.gameutils.Sprite;
 
 import java.awt.*;
 
 void main() {
 
-    GameObject go = new GameObject(new Point(0, 50), new Sprite(new Dimension(100, 100), Color.RED));
-    GameObject go2 = new GameObject(new Point(300, 300), new Sprite(new Dimension(100, 100), Color.RED));
+    GameObject rojo = new GameObject(50, 0, new Sprite(new Dimension(100, 100), Color.RED));
+    GameObject azul = new GameObject(250, 400, new Sprite(new Dimension(500, 25), Color.CYAN));
 
-    GameFrame gf = new GameFrame(30, new Dimension(400, 400)) {
+    GameFrame gf = new GameFrame(30, new Dimension(500, 500)) {
         @Override
         protected void code(GameFrame self) {
 
-            go.setVelocity(1, 1);
+            if (!rojo.collide(azul)) {
+                rojo.setVelocityY(1);
+            } else {
+                rojo.setVelocityX(1);
+            }
 
-            go.collide(go2);
-
-            draw(go, go2);
-
+            draw(rojo, azul);
         }
 
         @Override
