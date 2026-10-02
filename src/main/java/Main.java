@@ -1,6 +1,7 @@
 import rroyo.jgameengine.GameFrame;
 import rroyo.jgameengine.enums.Direction;
 import rroyo.jgameengine.objects.gameobjects.GameObject;
+import rroyo.jgameengine.objects.gameutils.Collider;
 import rroyo.jgameengine.objects.gameutils.Point;
 import rroyo.jgameengine.objects.gameutils.Sprite;
 
@@ -27,10 +28,7 @@ void main() {
         protected void canvas(Graphics g) {
             super.canvas(g);
 
-            Rectangle r = go2.getHitbox().getCollider(Direction.UP).getPolygon().getBounds();
 
-            g.setColor(Color.CYAN);
-            g.fillRect((int) r.getX(), (int) r.getY(), (int) r.getWidth(), (int) r.getHeight());
 
         }
     };

@@ -24,13 +24,7 @@ public class GameObject implements Portble, Colision {
     }
 
     public boolean overlap(GameObject go) {
-        Rectangle rThis = new Rectangle(
-                (int) point.getX(), (int) point.getY(),
-                sprite.getDimension().width, sprite.getDimension().height);
-        Rectangle rOther = new Rectangle(
-                (int) go.getPoint().getX(), (int) go.getPoint().getY(),
-                go.getSprite().getDimension().width, go.getSprite().getDimension().height);
-        return rThis.intersects(rOther);
+        return this.getHitbox().intersects(go.getHitbox());
     }
 
     public Direction getDirection(GameObject go) {
@@ -45,11 +39,9 @@ public class GameObject implements Portble, Colision {
                 point.getX() + velocity.getVelocityX(),
                 point.getY() + velocity.getVelocityY()
         );
-        for (Collider collider : hitbox.getHitbox().values()) {
-            collider.move(
-                    (int) velocity.getVelocityX(),
-                    (int) velocity.getVelocityY());
-        }
+        this.getHitbox().move(
+                (int) velocity.getVelocityX(),
+                (int) velocity.getVelocityY());
     }
 
     public Point getPoint() {

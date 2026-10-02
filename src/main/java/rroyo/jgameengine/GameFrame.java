@@ -65,7 +65,9 @@ public abstract class GameFrame {
     }
 
     protected final void draw(GameObject... gameObject) {
-        gameObjects.addAll(Arrays.asList(gameObject));
+        for (GameObject go : gameObject)
+            if (!gameObjects.contains(go))
+                gameObjects.add(go);
     }
 
     public void start() {
