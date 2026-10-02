@@ -7,18 +7,14 @@ import java.awt.*;
 
 void main() {
 
-    GameObject rojo = new GameObject(50, 0, new Sprite(new Dimension(100, 100), Color.RED));
-    GameObject azul = new GameObject(250, 400, new Sprite(new Dimension(500, 25), Color.CYAN));
+    GameObject rojo = new GameObject(250, 0, new Sprite(new Dimension(100, 100), Color.RED));
+    GameObject azul = new GameObject(250, 250, new Sprite(new Dimension(500, 50), Color.CYAN));
 
     GameFrame gf = new GameFrame(30, new Dimension(500, 500)) {
         @Override
         protected void code(GameFrame self) {
 
-            if (!rojo.collide(azul)) {
-                rojo.setVelocityY(1);
-            } else {
-                rojo.setVelocityX(1);
-            }
+
 
             draw(rojo, azul);
         }

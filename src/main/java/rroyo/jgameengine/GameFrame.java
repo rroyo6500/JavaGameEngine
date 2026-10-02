@@ -16,6 +16,7 @@ public abstract class GameFrame {
     protected Color backgroundColor = Color.BLACK;
 
     protected final List<GameObject> gameObjects = new ArrayList<>();
+    protected final Dimension dimension;
 
     protected final JPanel panel = new JPanel() {
         @Override
@@ -49,6 +50,7 @@ public abstract class GameFrame {
 
     public GameFrame(int fps, Dimension dimensions) {
         this.fps = fps;
+        this.dimension = dimensions;
 
         JFrame frame = new JFrame();
         frame.setSize(new java.awt.Dimension((int) dimensions.getWidth(), (int) dimensions.getHeight()));
@@ -56,7 +58,9 @@ public abstract class GameFrame {
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
 
-        frame.add(panel);
+        panel.setPreferredSize(new java.awt.Dimension((int) dimensions.getWidth(), (int) dimensions.getHeight()));
+        frame.setContentPane(panel);
+        frame.pack();
 
         frame.setVisible(true);
     }
@@ -89,7 +93,8 @@ public abstract class GameFrame {
         this.backgroundColor = backgroundColor;
     }
 
-
-
+    public Dimension getDimension() {
+        return dimension;
+    }
 }
 
