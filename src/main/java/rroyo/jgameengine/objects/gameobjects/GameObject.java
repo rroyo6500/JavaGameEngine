@@ -1,21 +1,18 @@
 package rroyo.jgameengine.objects.gameobjects;
 
 import rroyo.jgameengine.enums.Direction;
+import rroyo.jgameengine.interfaces.Colision;
 import rroyo.jgameengine.interfaces.Portble;
-import rroyo.jgameengine.objects.gameutils.Collider;
+import rroyo.jgameengine.objects.gameutils.*;
 import rroyo.jgameengine.objects.gameutils.Point;
-import rroyo.jgameengine.objects.gameutils.Sprite;
-import rroyo.jgameengine.objects.gameutils.Velocity;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
-public class GameObject implements Portble {
+public class GameObject implements Portble, Colision {
 
     protected final Velocity velocity = new Velocity();
-    protected final List<Collider> colliders = new ArrayList<>();
+    protected final Hitbox hitbox;
 
     protected final Point point;
     protected final Sprite sprite;
@@ -23,9 +20,7 @@ public class GameObject implements Portble {
     public GameObject(Point point, Sprite sprite) {
         this.point = point;
         this.sprite = sprite;
-        for (Direction d : Direction.values()) {
-            colliders.add(new Collider(point, sprite.getDimension(), d));
-        }
+        hitbox = new Hitbox(point, sprite.getDimension());
     }
 
     public boolean overlap(GameObject go) {
@@ -50,8 +45,8 @@ public class GameObject implements Portble {
                 point.getX() + velocity.getVelocityX(),
                 point.getY() + velocity.getVelocityY()
         );
-        for (Collider collider : colliders) {
-            collider.getPolygon().translate(
+        for (Collider collider : hitbox.getHitbox().values()) {
+            collider.move(
                     (int) velocity.getVelocityX(),
                     (int) velocity.getVelocityY());
         }
@@ -77,7 +72,7 @@ public class GameObject implements Portble {
         );
     }
 
-    public List<Collider> getColliders() {
-        return colliders;
+    public Hitbox getHitbox() {
+        return hitbox;
     }
 }

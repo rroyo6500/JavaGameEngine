@@ -15,10 +15,24 @@ public class Collider {
 
     public Collider(Point point, Dimension dimension, Direction direction) {
         this.direction = direction;
-        this.polygon = getPolygon(point, dimension, direction);
+        this.polygon = createPolygon(point, dimension, direction);
     }
 
-    public static Polygon getPolygon(Point point, Dimension dimension, Direction direction) {
+    public boolean intersects(Collider collider) {
+
+
+
+        return false;
+    }
+
+    public void move(int deltaX, int deltaY) {
+        polygon.translate(deltaX, deltaY);
+
+
+
+    }
+
+    public static Polygon createPolygon(Point point, Dimension dimension, Direction direction) {
         Polygon polygon = new Polygon();
         switch (direction) {
             case UP -> {
