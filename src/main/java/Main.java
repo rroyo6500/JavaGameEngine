@@ -1,20 +1,21 @@
 import rroyo.jgameengine.GameFrame;
+import rroyo.jgameengine.core.gameutils.*;
+import rroyo.jgameengine.core.gameutils.Dimension;
+import rroyo.jgameengine.core.gameutils.Point;
 import rroyo.jgameengine.enums.SpriteHorizontalDirection;
 import rroyo.jgameengine.interfaces.Colision;
 import rroyo.jgameengine.interfaces.Portble;
 import rroyo.jgameengine.core.gameobjects.GameElement;
 import rroyo.jgameengine.core.gameobjects.Group;
-import rroyo.jgameengine.core.gameutils.Dimension;
-import rroyo.jgameengine.core.gameutils.FrameWaiter;
-import rroyo.jgameengine.core.gameutils.Point;
-import rroyo.jgameengine.core.gameutils.Sprite;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.instrument.IllegalClassFormatException;
 
-void main() throws IOException {
+void main(String[] args) throws IOException {
 
     Sprite stand = new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario.gif")));
     Sprite jump = new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario - Jump.gif")));
@@ -26,10 +27,27 @@ void main() throws IOException {
     );
 
     Entity entity = new Entity(250, 0, 32, 64, stand);
-    Group plataformas = new Group(
-            new GameElement(60, 400, 100, 10, new Sprite(Color.CYAN)),
-            new GameElement(440, 400, 100, 10, new Sprite(Color.CYAN))
+    GameElement play = new GameElement(50, 300, 50, 50, new Sprite(Color.GREEN));
+    GameElement pause = new GameElement(375, 300, 50, 50, new Sprite(Color.ORANGE));
+    GameElement resume = new GameElement(125, 300, 50, 50, new Sprite(Color.YELLOW));
+    GameElement stop = new GameElement(450, 300, 50, 50, new Sprite(Color.RED));
+    GameElement loop = new GameElement(200, 300, 50, 50, new Sprite(Color.MAGENTA));
+
+    Group group = new Group(
+            play,
+            pause,
+            resume,
+            stop,
+            loop,
+            new GameElement(250, 490, 500, 100, new Sprite(Color.gray))
     );
+
+    Audio audio;
+    try {
+        audio = new Audio(new File("src/main/resources/audio/Queen - Under Pressure.wav"));
+    } catch (LineUnavailableException | UnsupportedAudioFileException e) {
+        throw new RuntimeException(e);
+    }
 
     GameFrame gf = new GameFrame(60, new Dimension(500, 500)) {
 
@@ -73,15 +91,17 @@ void main() throws IOException {
                 salto = false;
             }
 
-            if (entity.collide(plataformas)) {
+            if (entity.collide(play)) audio.play();
+            else if (entity.collide(pause)) audio.pause();
+            else if (entity.collide(resume)) audio.resume();
+            else if (entity.collide(stop)) audio.stop();
+            else if (entity.collide(loop)) audio.loop();
+
+            if (entity.collide(group)) {
                 salto = true;
-            } else {
-                if (FrameWaiter.wait("salto", 30)) {
-                    salto = false;
-                }
             }
 
-            draw(entity, plataformas);
+            draw(entity, group);
         }
 
         @Override
