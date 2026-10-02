@@ -1,4 +1,4 @@
-package rroyo.jgameengine.objects.gameutils;
+package rroyo.jgameengine.core.gameutils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,8 +1,8 @@
 package rroyo.jgameengine.interfaces;
 
-import rroyo.jgameengine.objects.gameobjects.GameElement;
-import rroyo.jgameengine.objects.gameobjects.Group;
-import rroyo.jgameengine.objects.gameutils.Overlap;
+import rroyo.jgameengine.core.gameobjects.GameElement;
+import rroyo.jgameengine.core.gameobjects.Group;
+import rroyo.jgameengine.core.gameutils.Overlap;
 
 import java.lang.instrument.IllegalClassFormatException;
 

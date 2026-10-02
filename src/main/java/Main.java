@@ -1,15 +1,14 @@
 import rroyo.jgameengine.GameFrame;
 import rroyo.jgameengine.interfaces.Colision;
 import rroyo.jgameengine.interfaces.Portble;
-import rroyo.jgameengine.objects.gameobjects.GameElement;
-import rroyo.jgameengine.objects.gameobjects.Group;
-import rroyo.jgameengine.objects.gameutils.Dimension;
-import rroyo.jgameengine.objects.gameutils.FrameWaiter;
-import rroyo.jgameengine.objects.gameutils.Point;
-import rroyo.jgameengine.objects.gameutils.Sprite;
+import rroyo.jgameengine.core.gameobjects.GameElement;
+import rroyo.jgameengine.core.gameobjects.Group;
+import rroyo.jgameengine.core.gameutils.Dimension;
+import rroyo.jgameengine.core.gameutils.FrameWaiter;
+import rroyo.jgameengine.core.gameutils.Point;
+import rroyo.jgameengine.core.gameutils.Sprite;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.lang.instrument.IllegalClassFormatException;
 
 void main() {

@@ -1,6 +1,6 @@
 package rroyo.jgameengine.interfaces;
 
-import rroyo.jgameengine.objects.gameobjects.GameElement;
+import rroyo.jgameengine.core.gameobjects.GameElement;
 
 import java.lang.instrument.IllegalClassFormatException;
 

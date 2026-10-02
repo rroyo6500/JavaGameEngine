@@ -1,4 +1,4 @@
-package rroyo.jgameengine.objects.gameobjects;
+package rroyo.jgameengine.core.gameobjects;
 
 import java.util.ArrayList;
 import java.util.List;

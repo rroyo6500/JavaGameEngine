@@ -1,9 +1,9 @@
 package rroyo.jgameengine;
 
-import rroyo.jgameengine.objects.gameobjects.GameElement;
-import rroyo.jgameengine.objects.gameobjects.GameObject;
-import rroyo.jgameengine.objects.gameobjects.Group;
-import rroyo.jgameengine.objects.gameutils.Dimension;
+import rroyo.jgameengine.core.gameobjects.GameElement;
+import rroyo.jgameengine.core.gameobjects.GameObject;
+import rroyo.jgameengine.core.gameobjects.Group;
+import rroyo.jgameengine.core.gameutils.Dimension;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package rroyo.jgameengine.objects.gameutils;
+package rroyo.jgameengine.core.gameutils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

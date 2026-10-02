@@ -1,10 +1,8 @@
-package rroyo.jgameengine.objects.gameobjects;
+package rroyo.jgameengine.core.gameobjects;
 
-import rroyo.jgameengine.interfaces.Colision;
-import rroyo.jgameengine.interfaces.Portble;
-import rroyo.jgameengine.objects.gameutils.*;
-import rroyo.jgameengine.objects.gameutils.Dimension;
-import rroyo.jgameengine.objects.gameutils.Point;
+import rroyo.jgameengine.core.gameutils.*;
+import rroyo.jgameengine.core.gameutils.Dimension;
+import rroyo.jgameengine.core.gameutils.Point;
 
 import java.awt.*;
 

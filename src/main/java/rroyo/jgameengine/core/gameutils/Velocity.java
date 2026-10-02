@@ -1,6 +1,4 @@
-package rroyo.jgameengine.objects.gameutils;
-
-import rroyo.jgameengine.interfaces.Portble;
+package rroyo.jgameengine.core.gameutils;
 
 public class Velocity {
 
