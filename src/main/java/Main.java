@@ -17,16 +17,19 @@ import java.lang.instrument.IllegalClassFormatException;
 
 void main(String[] args) throws IOException {
 
-    Sprite stand = new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario.gif")));
-    Sprite jump = new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario - Jump.gif")));
-    Sprite walk = new Sprite(
-            8,
-            ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk1.gif")),
-            ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk2.gif")),
-            ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk3.gif"))
-    );
+    SpriteGroup sprites = new SpriteGroup()
+            .add("stand",
+                    new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario.gif"))))
+            .add("jump",
+                    new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario - Jump.gif"))))
+            .add("walk", new Sprite(
+                    8,
+                    ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk1.gif")),
+                    ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk2.gif")),
+                    ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk3.gif"))
+            ));
 
-    Entity entity = new Entity(250, 0, 32, 64, stand);
+    Entity entity = new Entity(250, 0, 32, 64, sprites.get("stand"));
     GameElement play = new GameElement(50, 300, 50, 50, new Sprite(
             ImageIO.read(new File("src/main/resources/sprites/play.png"))
     ));
@@ -86,23 +89,19 @@ void main(String[] args) throws IOException {
 
             if (keyLeft()) {
                 entity.setVelocityX(-2);
-                entity.setSprite(walk);
-                walk.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
-                stand.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
-                jump.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
+                entity.setSprite(sprites.get("walk"));
+                sprites.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
             } else if (keyRight()) {
                 entity.setVelocityX(2);
-                entity.setSprite(walk);
-                walk.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
-                stand.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
-                jump.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
+                entity.setSprite(sprites.get("walk"));
+                sprites.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
             } else {
                 entity.setVelocityX(0);
-                entity.setSprite(stand);
+                entity.setSprite(sprites.get("stand"));
             }
 
             if (!salto) {
-                entity.setSprite(jump);
+                entity.setSprite(sprites.get("jump"));
             }
 
             if (salto && keyUp()) {
