@@ -27,11 +27,21 @@ void main(String[] args) throws IOException {
     );
 
     Entity entity = new Entity(250, 0, 32, 64, stand);
-    GameElement play = new GameElement(50, 300, 50, 50, new Sprite(Color.GREEN));
-    GameElement pause = new GameElement(375, 300, 50, 50, new Sprite(Color.ORANGE));
-    GameElement resume = new GameElement(125, 300, 50, 50, new Sprite(Color.YELLOW));
-    GameElement stop = new GameElement(450, 300, 50, 50, new Sprite(Color.RED));
-    GameElement loop = new GameElement(200, 300, 50, 50, new Sprite(Color.MAGENTA));
+    GameElement play = new GameElement(50, 300, 50, 50, new Sprite(
+            ImageIO.read(new File("src/main/resources/sprites/play.png"))
+    ));
+    GameElement pause = new GameElement(375, 300, 50, 50, new Sprite(
+            ImageIO.read(new File("src/main/resources/sprites/pause.png"))
+    ));
+    GameElement resume = new GameElement(125, 300, 50, 50, new Sprite(
+            ImageIO.read(new File("src/main/resources/sprites/resume.png"))
+    ));
+    GameElement stop = new GameElement(450, 300, 50, 50, new Sprite(
+            ImageIO.read(new File("src/main/resources/sprites/stop.png"))
+    ));
+    GameElement loop = new GameElement(200, 300, 50, 50, new Sprite(
+            ImageIO.read(new File("src/main/resources/sprites/loop.png"))
+    ));
 
     Group group = new Group(
             play,
@@ -41,6 +51,8 @@ void main(String[] args) throws IOException {
             loop,
             new GameElement(250, 490, 500, 100, new Sprite(Color.gray))
     );
+
+    Text songName = new Text("Queen - Under Pressure", 0, 0).setForeground(Color.white);
 
     Audio audio;
     try {
@@ -102,6 +114,7 @@ void main(String[] args) throws IOException {
             }
 
             draw(entity, group);
+            drawText(songName);
         }
 
         @Override

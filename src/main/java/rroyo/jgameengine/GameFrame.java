@@ -4,6 +4,7 @@ import rroyo.jgameengine.core.gameobjects.GameElement;
 import rroyo.jgameengine.core.gameobjects.GameObject;
 import rroyo.jgameengine.core.gameobjects.Group;
 import rroyo.jgameengine.core.gameutils.Dimension;
+import rroyo.jgameengine.core.gameutils.Text;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,6 +25,7 @@ public abstract class GameFrame {
     protected final List<String> keyCharacters = new ArrayList<>();
 
     protected final List<GameElement> gameElements = new ArrayList<>();
+    protected final List<Text> texts = new ArrayList<>();
     protected final Dimension dimension;
 
     protected final JPanel panel = new JPanel() {
@@ -59,6 +61,10 @@ public abstract class GameFrame {
                             (int) go.getDimension().getWidth(), (int) go.getDimension().getHeight()
                     );
                 }
+            }
+            for (Text text : texts) {
+                if (text.getText() != null) g.setColor(text.getForeground());
+                g.drawString(text.getText(), (int) text.getPoint().getX()+5, (int) text.getPoint().getY()+15);
             }
             canvas(g);
         }
@@ -116,6 +122,14 @@ public abstract class GameFrame {
             }
         }
 
+    }
+
+    protected final void drawText(Text... text) {
+        for (Text t : text) {
+            if (!texts.contains(t)) {
+                texts.add(t);
+            }
+        }
     }
 
     public void start() {
