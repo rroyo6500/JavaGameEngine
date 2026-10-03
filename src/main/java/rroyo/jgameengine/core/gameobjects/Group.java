@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Group extends GameObject {
 
-    private final List<GameElement> members = new ArrayList<>();
+    private List<GameElement> members = new ArrayList<>();
 
     public Group(GameElement... member) {
         for (GameElement m : member) {
@@ -16,6 +16,7 @@ public class Group extends GameObject {
     }
 
     public boolean overlap(GameElement go) {
+        if (isDeleted() || go.isDeleted()) return false;
         for (GameElement m : members) {
             if (m.overlap(go)) {
                 return true;
@@ -25,6 +26,7 @@ public class Group extends GameObject {
     }
 
     public boolean overlap(Group group) {
+        if (isDeleted() || group.isDeleted()) return false;
         for (GameElement m : members) {
             if (m.overlap(group)) {
                 return true;
@@ -34,6 +36,7 @@ public class Group extends GameObject {
     }
 
     public boolean inRange(GameElement go) {
+        if (isDeleted() || go.isDeleted()) return false;
         for (GameElement m : members) {
             if (m.inRange(go)) {
                 return true;
@@ -43,6 +46,7 @@ public class Group extends GameObject {
     }
 
     public boolean inRange(Group group) {
+        if (isDeleted() || group.isDeleted()) return false;
         for (GameElement m : members) {
             if (m.inRange(group)) {
                 return true;
@@ -52,7 +56,14 @@ public class Group extends GameObject {
     }
 
     public List<GameElement> getMembers() {
+        if (isDeleted()) return null;
         return List.copyOf(members);
     }
 
+    @Override
+    public void delete() {
+        super.delete();
+        members.clear();
+        members = null;
+    }
 }

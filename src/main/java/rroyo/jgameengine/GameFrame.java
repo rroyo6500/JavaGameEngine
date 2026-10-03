@@ -37,6 +37,7 @@ public abstract class GameFrame {
             g.fillRect(0, 0, getWidth(), getHeight());
 
             for (GameElement go : gameElements) {
+                if (go.isDeleted()) continue;
                 go.getSprite().next();
                 if (go.getSprite().hasSpriteImage())
                     g.drawImage(

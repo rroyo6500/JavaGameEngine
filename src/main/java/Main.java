@@ -20,7 +20,7 @@ void main(String[] args) throws IOException {
     Sprite stand = new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario.gif")));
     Sprite jump = new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario - Jump.gif")));
     Sprite walk = new Sprite(
-            10,
+            8,
             ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk1.gif")),
             ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk2.gif")),
             ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk3.gif"))
@@ -50,6 +50,13 @@ void main(String[] args) throws IOException {
             stop,
             loop,
             new GameElement(250, 490, 500, 100, new Sprite(Color.gray))
+    );
+
+    Group collectables = new Group(
+            new GameElement(50, 400, 10, 10, new Sprite(Color.YELLOW)),
+            new GameElement(100, 400, 10, 10, new Sprite(Color.YELLOW)),
+            new GameElement(150, 400, 10, 10, new Sprite(Color.YELLOW)),
+            new GameElement(200, 300, 10, 10, new Sprite(Color.YELLOW))
     );
 
     Text songName = new Text("Queen - Under Pressure", 0, 0).setForeground(Color.white);
@@ -107,13 +114,21 @@ void main(String[] args) throws IOException {
             else if (entity.collide(pause)) audio.pause();
             else if (entity.collide(resume)) audio.resume();
             else if (entity.collide(stop)) audio.stop();
-            else if (entity.collide(loop)) audio.loop();
+            else if (entity.collide(loop)) {
+                audio.loop();
+                loop.delete();
+            }
 
             if (entity.collide(group)) {
                 salto = true;
             }
 
-            draw(entity, group);
+            if (entity.overlap(collectables)) {
+                GameElement collectable = entity.getOverlapElement(collectables);
+                if (collectable != null) collectable.delete();
+            }
+
+            draw(entity, collectables, group);
             drawText(songName);
         }
 
