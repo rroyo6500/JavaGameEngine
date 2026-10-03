@@ -5,6 +5,7 @@ import rroyo.jgameengine.core.gameobjects.GameObject;
 import rroyo.jgameengine.core.gameobjects.Group;
 import rroyo.jgameengine.core.gameutils.Dimension;
 import rroyo.jgameengine.core.gameutils.Text;
+import rroyo.jgameengine.core.gameutils.Time;
 
 import javax.swing.*;
 import java.awt.*;
@@ -135,9 +136,22 @@ public abstract class GameFrame {
 
     public void start() {
         timer.schedule(new TimerTask() {
+
+            long lastTime = System.nanoTime();
+
             @Override
             public void run() {
+
+                long currentTime = System.nanoTime();
+
+                float deltaTime = (currentTime - lastTime) / 1_000_000_000f;
+
+                lastTime = currentTime;
+
+                if (deltaTime > 0.1f) deltaTime = 0.1f;
+
                 try {
+                    Time.setDeltaTime(deltaTime);
                     code();
                     panel.repaint();
                 } catch (IllegalClassFormatException e) {
@@ -177,6 +191,14 @@ public abstract class GameFrame {
 
     public boolean keyRight() {
         return keyCodes.contains(String.valueOf(KeyEvent.VK_RIGHT));
+    }
+
+    public List<String> getKeyCodes() {
+        return keyCodes;
+    }
+
+    public List<String> getKeyCharacters() {
+        return keyCharacters;
     }
 
     public Color getBackgroundColor() {

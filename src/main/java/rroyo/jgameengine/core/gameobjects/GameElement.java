@@ -1,5 +1,6 @@
 package rroyo.jgameengine.core.gameobjects;
 
+import rroyo.jgameengine.core.assets.Sprite;
 import rroyo.jgameengine.core.gameutils.*;
 import rroyo.jgameengine.core.gameutils.Dimension;
 import rroyo.jgameengine.core.gameutils.Point;
@@ -110,8 +111,8 @@ public class GameElement extends GameObject {
     public void move() {
         if (isDeleted()) return ;
         point.setPoint(
-                point.getX() + velocity.getVelocityX(),
-                point.getY() + velocity.getVelocityY()
+                point.getX() + (velocity.getVelocityX() * Time.deltaTime()),
+                point.getY() + (velocity.getVelocityY() * Time.deltaTime())
         );
     }
 
@@ -155,7 +156,6 @@ public class GameElement extends GameObject {
 
     @Override
     public void delete() {
-        if (isDeleted()) return ;
         super.delete();
         velocity = null;
         point = null;

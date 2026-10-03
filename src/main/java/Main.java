@@ -1,4 +1,7 @@
 import rroyo.jgameengine.GameFrame;
+import rroyo.jgameengine.core.assets.Audio;
+import rroyo.jgameengine.core.assets.Sprite;
+import rroyo.jgameengine.core.assets.AssetGroup;
 import rroyo.jgameengine.core.gameutils.*;
 import rroyo.jgameengine.core.gameutils.Dimension;
 import rroyo.jgameengine.core.gameutils.Point;
@@ -12,24 +15,24 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.lang.instrument.IllegalClassFormatException;
 
-void main(String[] args) throws IOException {
+void main(String[] args) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
-    SpriteGroup sprites = new SpriteGroup()
+    AssetGroup assets = new AssetGroup()
             .add("stand",
                     new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario.gif"))))
             .add("jump",
                     new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario - Jump.gif"))))
             .add("walk", new Sprite(
-                    8,
+                    0.1f,
                     ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk1.gif")),
                     ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk2.gif")),
                     ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk3.gif"))
-            ));
+            ))
+            .add("queen-underPresure", new Audio(new File("src/main/resources/audio/Queen - Under Pressure.wav")));
 
-    Entity entity = new Entity(250, 0, 32, 64, sprites.get("stand"));
+    Entity entity = new Entity(250, 0, 32, 64, (Sprite) assets.get("stand"));
     GameElement play = new GameElement(50, 300, 50, 50, new Sprite(
             ImageIO.read(new File("src/main/resources/sprites/play.png"))
     ));
@@ -64,13 +67,6 @@ void main(String[] args) throws IOException {
 
     Text songName = new Text("Queen - Under Pressure", 0, 0).setForeground(Color.white);
 
-    Audio audio;
-    try {
-        audio = new Audio(new File("src/main/resources/audio/Queen - Under Pressure.wav"));
-    } catch (LineUnavailableException | UnsupportedAudioFileException e) {
-        throw new RuntimeException(e);
-    }
-
     GameFrame gf = new GameFrame(60, new Dimension(500, 500)) {
 
         boolean salto = false;
@@ -80,41 +76,44 @@ void main(String[] args) throws IOException {
 
             if (((entity.getPoint().getY() + entity.getDimension().getHalfHeight()) < getDimension().getHeight())) {
                 entity.setVelocityY(
-                        entity.getVelocityY() + 0.1
+                        entity.getVelocityY() + (800 * Time.deltaTime())
                 );
             } else {
                 entity.getPoint().setY(getDimension().getHeight() - entity.getDimension().getHalfHeight());
                 salto = true;
             }
 
-            if (keyLeft()) {
-                entity.setVelocityX(-2);
-                entity.setSprite(sprites.get("walk"));
-                sprites.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
-            } else if (keyRight()) {
-                entity.setVelocityX(2);
-                entity.setSprite(sprites.get("walk"));
-                sprites.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
+            if ((keyLeft() || key("a")) || (keyRight() || key("d"))) {
+                if (keyLeft() || key("a")) {
+                    entity.setVelocityX(-125);
+                    entity.setSprite((Sprite) assets.get("walk"));
+                    assets.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
+                }
+                if (keyRight() || key("d")) {
+                    entity.setVelocityX(125);
+                    entity.setSprite((Sprite) assets.get("walk"));
+                    assets.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
+                }
             } else {
                 entity.setVelocityX(0);
-                entity.setSprite(sprites.get("stand"));
+                entity.setSprite((Sprite) assets.get("stand"));
             }
 
             if (!salto) {
-                entity.setSprite(sprites.get("jump"));
+                entity.setSprite((Sprite) assets.get("jump"));
             }
 
-            if (salto && keyUp()) {
-                entity.setVelocityY(-4);
+            if (salto && (keyUp() || key("w"))) {
+                entity.setVelocityY(-300);
                 salto = false;
             }
 
-            if (entity.collide(play)) audio.play();
-            else if (entity.collide(pause)) audio.pause();
-            else if (entity.collide(resume)) audio.resume();
-            else if (entity.collide(stop)) audio.stop();
+            if (entity.collide(play)) ((Audio) assets.get("queen-underPresure")).play();
+            else if (entity.collide(pause)) ((Audio) assets.get("queen-underPresure")).pause();
+            else if (entity.collide(resume)) ((Audio) assets.get("queen-underPresure")).resume();
+            else if (entity.collide(stop)) assets.get("queen-underPresure").close();
             else if (entity.collide(loop)) {
-                audio.loop();
+                ((Audio) assets.get("queen-underPresure")).loop();
                 loop.delete();
             }
 

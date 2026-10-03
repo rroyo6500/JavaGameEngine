@@ -1,28 +1,29 @@
-package rroyo.jgameengine.core.gameutils;
+package rroyo.jgameengine.core.assets;
 
 import rroyo.jgameengine.enums.SpriteHorizontalDirection;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpriteGroup {
+public class AssetGroup {
 
-    private final Map<String, Sprite> sprites = new HashMap<>();
+    private final Map<String, Asset> sprites = new HashMap<>();
 
-    public SpriteGroup() {}
+    public AssetGroup() {}
 
     public void setHorizontalDirection(SpriteHorizontalDirection direction) {
-        for (Sprite sprite : sprites.values()) {
-            sprite.setHorizontalDirection(direction);
+        for (Asset asset : sprites.values()) {
+            if (asset instanceof Sprite sprite)
+                sprite.setHorizontalDirection(direction);
         }
     }
 
-    public SpriteGroup add(String id, Sprite sprite) {
+    public AssetGroup add(String id, Asset sprite) {
         sprites.put(id, sprite);
         return this;
     }
 
-    public Sprite get(String id) {
+    public Asset get(String id) {
         if (!sprites.containsKey(id))
             throw new NullPointerException("Sprite ID '" + id + "' does not exist in the SpriteGroup");
         return sprites.get(id);

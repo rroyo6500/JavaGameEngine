@@ -63,7 +63,6 @@ public class Group extends GameObject {
     @Override
     public void delete() {
         super.delete();
-        members.clear();
         members = null;
     }
 }
