@@ -5,6 +5,7 @@ import rroyo.jgameengine.core.gameessentials.GameWindow;
 import rroyo.jgameengine.core.gameessentials.Scene;
 import rroyo.jgameengine.core.gameobjects.Dimension;
 import rroyo.jgameengine.core.gameobjects.GameElement;
+import rroyo.jgameengine.core.gameobjects.Group;
 import rroyo.jgameengine.core.gameobjects.Point;
 import rroyo.jgameengine.core.gameutils.Camera;
 import rroyo.jgameengine.core.gameutils.Keyboard;
@@ -14,6 +15,7 @@ import rroyo.jgameengine.enums.SpriteHorizontalDirection;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.awt.*;
 
 void main(String[] args) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
@@ -31,6 +33,13 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
             .add("Queen-UnderPresure",
                     new Audio(new File("src/main/resources/audio/Queen - Under Pressure.wav")));
 
+
+    GameElement floor = new GameElement(0, 255, 500, 10, new Sprite(Color.DARK_GRAY));
+    Group platforms = new Group(
+            new GameElement(-255, 0, 10, 500, new Sprite(Color.DARK_GRAY)),
+            new GameElement(255, 0, 10, 500, new Sprite(Color.DARK_GRAY)),
+            floor
+    );
 
     Entity entity = new Entity(0, 150, 32, 64, (Sprite) assetGroup.get("spriteStatic"));
 
@@ -51,11 +60,6 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
             entity.setVelocityY(
                     entity.getVelocityY() + (800 * Time.deltaTime())
             );
-            if ((entity.getPoint().getY() + entity.getDimension().getHalfHeight()) >= 250) {
-                entity.setVelocityY(0);
-                entity.getPoint().setY(250 - entity.getDimension().getHalfHeight());
-                jump = true;
-            }
 
             entity.setSprite((Sprite) assetGroup.get("spriteStatic"));
             entity.setVelocityX(0);
@@ -80,7 +84,14 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
             else if (Keyboard.key('1')) ((Audio) assetGroup.get("Queen-UnderPresure")).resume();
             else if (Keyboard.key('2')) ((Audio) assetGroup.get("Queen-UnderPresure")).pause();
 
-            add(entity);
+            if (entity.collide(floor)) {
+                entity.setVelocityY(0);
+                jump = true;
+            }
+
+            entity.collide(platforms);
+
+            add(entity, platforms);
         }
     };
 

@@ -116,23 +116,21 @@ public class GameElement extends GameObject {
         return null;
     }
 
-    public boolean collide(GameElement gameElement) throws IllegalClassFormatException {
+    public boolean collide(GameElement gameElement) {
         if (this.overlap(gameElement)) {
             Overlap overlap = this.getOverlap(gameElement);
             if (overlap == null) return false;
             if (overlap.getOverlapX() < overlap.getOverlapY()) {
-                if (this.getPoint().getX() < gameElement.getPoint().getX()) {
+                if (this.getPoint().getX() < gameElement.getPoint().getX())
                     this.move(-overlap.getOverlapX(), 0);
-                } else {
+                else
                     this.move(overlap.getOverlapX(), 0);
-                }
                 this.setVelocityX(0);
             } else {
-                if (this.getPoint().getY() < gameElement.getPoint().getY()) {
+                if (this.getPoint().getY() < gameElement.getPoint().getY())
                     this.move(0, -overlap.getOverlapY());
-                } else {
+                else
                     this.move(0, overlap.getOverlapY());
-                }
                 this.setVelocityY(0);
             }
             return true;
@@ -140,7 +138,7 @@ public class GameElement extends GameObject {
         return false;
     }
 
-    public boolean collide(Group group) throws IllegalClassFormatException {
+    public boolean collide(Group group) {
         for (GameElement go : group.getMembers()) {
             if (this.collide(go)) {
                 return true;
@@ -223,6 +221,7 @@ public class GameElement extends GameObject {
     }
 
     public final void setSprite(Sprite sprite) {
+        if (sprite == null || sprite.isClosed()) return;
         if (isDeleted()) return ;
         this.sprite = sprite;
     }

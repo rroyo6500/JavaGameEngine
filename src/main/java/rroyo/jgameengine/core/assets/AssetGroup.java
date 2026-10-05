@@ -1,9 +1,11 @@
 package rroyo.jgameengine.core.assets;
 
 import rroyo.jgameengine.enums.SpriteHorizontalDirection;
+import rroyo.jgameengine.utils.Log;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class AssetGroup {
 
@@ -25,12 +27,12 @@ public class AssetGroup {
 
     public Asset get(String id) {
         if (!sprites.containsKey(id))
-            throw new NullPointerException("Sprite ID '" + id + "' does not exist in the SpriteGroup");
+            Log.warning("Sprite ID '" + id + "' does not exist in the SpriteGroup");
         return sprites.get(id);
     }
 
     public void remove(String id) {
-        if (!sprites.containsKey(id)) throw new NullPointerException("Sprite ID '" + id + "' does not exist in the SpriteGroup");
+        if (!sprites.containsKey(id)) Log.warning("Sprite ID '" + id + "' does not exist in the SpriteGroup");
         sprites.remove(id);
     }
 
