@@ -134,7 +134,8 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
         protected void canvas(Graphics g) {
             super.canvas(g);
 
-
+            g.setColor(Color.MAGENTA);
+            g.fillOval(100, 100, 100, 100);
 
         }
     };

@@ -5,31 +5,35 @@ import java.util.Map;
 
 public final class Time {
 
-    private static final Map<String, Float> waiters = new HashMap<>();
-
+    private static float timeScale = 1.0f;
     private static float deltaTime;
+    private static float time;
 
-    public static boolean wait(String id, float seconds) {
-        if (!waiters.containsKey(id)) {
-            waiters.put(id, seconds);
-        }
-
-        float remaining = waiters.get(id) - deltaTime();
-
-        if (remaining <= 0) {
-            waiters.remove(id);
-            return true;
-        } else {
-            waiters.put(id, remaining);
-            return false;
-        }
+    private Time() {
     }
 
     public static float deltaTime() {
+        return deltaTime * timeScale;
+    }
+
+    public static float unscaledDeltaTime() {
         return deltaTime;
     }
 
     public static void setDeltaTime(float dt) {
         deltaTime = dt;
+        time += dt;
+    }
+
+    public static float getTimeScale() {
+        return timeScale;
+    }
+
+    public static void setTimeScale(float timeScale) {
+        Time.timeScale = timeScale;
+    }
+
+    public static float getTime() {
+        return time;
     }
 }

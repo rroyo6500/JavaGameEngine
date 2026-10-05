@@ -152,6 +152,8 @@ public abstract class GameFrame {
 
                 try {
                     Time.setDeltaTime(deltaTime);
+                    rroyo.jgameengine.core.gameutils.
+                            Timer.update();
                     code();
                     panel.repaint();
                 } catch (IllegalClassFormatException e) {
