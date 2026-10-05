@@ -4,9 +4,13 @@ import rroyo.jgameengine.core.assets.Sprite;
 import rroyo.jgameengine.core.gameutils.*;
 
 import java.awt.*;
+import java.lang.instrument.IllegalClassFormatException;
 
 
 public class GameElement extends GameObject {
+
+    private final Rectangle bounds = new Rectangle();
+    private final Overlap overlap = new Overlap(0, 0);
 
     protected Velocity velocity = new Velocity();
 
@@ -24,7 +28,7 @@ public class GameElement extends GameObject {
         this.sprite = sprite;
     }
 
-    public final Overlap getOverlap(GameElement go) {
+    protected final Overlap calculateOverlap(GameElement go) {
         if (isDeleted() || go.isDeleted()) return null;
         if (!this.inRange(go)) {
             return null;
@@ -40,14 +44,16 @@ public class GameElement extends GameObject {
         double limitY = this.getDimension().getHalfHeight() + go.getDimension().getHalfHeight();
         double overlapY = limitY - deltaY;
 
-        return new Overlap(overlapX, overlapY);
+        overlap.setOverlap(overlapX, overlapY);
+
+        return overlap;
     }
 
     public final boolean overlap(GameElement go) {
         if (isDeleted() || go.isDeleted()) return false;
-        Overlap overlap = getOverlap(go);
+        Overlap overlap = calculateOverlap(go);
         if (overlap == null) return false;
-        return overlap.overlapX() > 0 && overlap.overlapY() > 0;
+        return overlap.getOverlapX() > 0 && overlap.getOverlapY() > 0;
     }
 
     public final boolean overlap(Group group) {
@@ -58,6 +64,10 @@ public class GameElement extends GameObject {
             }
         }
         return false;
+    }
+
+    public final Overlap getOverlap(GameElement go) {
+        return overlap;
     }
 
     public final GameElement getOverlapElement(Group group) {
@@ -106,6 +116,39 @@ public class GameElement extends GameObject {
         return null;
     }
 
+    public boolean collide(GameElement gameElement) throws IllegalClassFormatException {
+        if (this.overlap(gameElement)) {
+            Overlap overlap = this.getOverlap(gameElement);
+            if (overlap == null) return false;
+            if (overlap.getOverlapX() < overlap.getOverlapY()) {
+                if (this.getPoint().getX() < gameElement.getPoint().getX()) {
+                    this.move(-overlap.getOverlapX(), 0);
+                } else {
+                    this.move(overlap.getOverlapX(), 0);
+                }
+                this.setVelocityX(0);
+            } else {
+                if (this.getPoint().getY() < gameElement.getPoint().getY()) {
+                    this.move(0, -overlap.getOverlapY());
+                } else {
+                    this.move(0, overlap.getOverlapY());
+                }
+                this.setVelocityY(0);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean collide(Group group) throws IllegalClassFormatException {
+        for (GameElement go : group.getMembers()) {
+            if (this.collide(go)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected double transformVelocity(double velocity) {
         return velocity;
     }
@@ -125,6 +168,39 @@ public class GameElement extends GameObject {
         );
     }
 
+    public final void setVelocity(double velocityX, double velocityY) {
+        try {
+            this.getVelocity().setVelocityX(velocityX);
+            this.getVelocity().setVelocityY(velocityY);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public final void setVelocityX (double velocityX) {
+        try {
+            this.getVelocity().setVelocityX(velocityX);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public final void setVelocityY (double velocityY) {
+        try {
+            this.getVelocity().setVelocityY(velocityY);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public final double getVelocityX() {
+        return this.getVelocity().getVelocityX();
+    }
+
+    public final double getVelocityY() {
+        return this.getVelocity().getVelocityY();
+    }
+
     public final Point getPoint() {
         return point;
     }
@@ -134,12 +210,12 @@ public class GameElement extends GameObject {
     }
 
     public final Rectangle getBounds() {
-        if (isDeleted()) return null;
-        return new Rectangle(
+        bounds.setBounds(
                 (int) (point.getX() - this.getDimension().getHalfWidth()),
                 (int) (point.getY() - this.getDimension().getHalfHeight()),
                 (int) this.getDimension().getWidth(), (int) this.getDimension().getHeight()
         );
+        return bounds;
     }
 
     public final Dimension getDimension() {
@@ -155,12 +231,4 @@ public class GameElement extends GameObject {
         return velocity;
     }
 
-    @Override
-    public void delete() {
-        super.delete();
-        velocity = null;
-        point = null;
-        dimension = null;
-        sprite = null;
-    }
 }

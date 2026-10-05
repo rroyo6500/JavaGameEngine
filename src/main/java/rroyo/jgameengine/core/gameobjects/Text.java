@@ -2,7 +2,7 @@ package rroyo.jgameengine.core.gameobjects;
 
 import java.awt.*;
 
-public class Text {
+public class Text extends GameObject {
 
     private final Point point;
     private String text;

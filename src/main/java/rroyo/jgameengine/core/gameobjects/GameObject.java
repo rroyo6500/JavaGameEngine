@@ -8,6 +8,10 @@ public class GameObject {
         this.deleted = true;
     }
 
+    public final void revive() {
+        this.deleted = false;
+    }
+
     public final boolean isDeleted() {
         return deleted;
     }

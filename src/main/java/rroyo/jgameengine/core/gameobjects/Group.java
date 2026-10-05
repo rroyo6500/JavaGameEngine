@@ -56,13 +56,12 @@ public class Group extends GameObject {
     }
 
     public final List<GameElement> getMembers() {
-        if (isDeleted()) return null;
         return List.copyOf(members);
     }
 
     @Override
     public void delete() {
         super.delete();
-        members = null;
+        members.clear();
     }
 }

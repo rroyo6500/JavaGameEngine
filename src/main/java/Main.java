@@ -1,166 +1,94 @@
-import rroyo.jgameengine.GameFrame;
+import rroyo.jgameengine.core.assets.AssetGroup;
 import rroyo.jgameengine.core.assets.Audio;
 import rroyo.jgameengine.core.assets.Sprite;
-import rroyo.jgameengine.core.assets.AssetGroup;
-import rroyo.jgameengine.core.gameobjects.*;
+import rroyo.jgameengine.core.gameessentials.GameWindow;
+import rroyo.jgameengine.core.gameessentials.Scene;
 import rroyo.jgameengine.core.gameobjects.Dimension;
+import rroyo.jgameengine.core.gameobjects.GameElement;
 import rroyo.jgameengine.core.gameobjects.Point;
-import rroyo.jgameengine.core.gameutils.*;
+import rroyo.jgameengine.core.gameutils.Camera;
+import rroyo.jgameengine.core.gameutils.Keyboard;
+import rroyo.jgameengine.core.gameutils.Time;
 import rroyo.jgameengine.enums.SpriteHorizontalDirection;
-import rroyo.jgameengine.interfaces.Colision;
-import rroyo.jgameengine.interfaces.Portble;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.awt.*;
-import java.lang.instrument.IllegalClassFormatException;
 
 void main(String[] args) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
-    AssetGroup assets = new AssetGroup()
-            .add("stand",
+    AssetGroup assetGroup = new AssetGroup()
+            .add("spriteStatic",
                     new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario.gif"))))
-            .add("jump",
+            .add("spriteWalk",
+                    new Sprite(0.1f,
+                            ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk1.gif")),
+                            ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk2.gif")),
+                            ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk3.gif"))
+                    ))
+            .add("spriteJump",
                     new Sprite(ImageIO.read(new File("src/main/resources/sprites/Super Mario - Jump.gif"))))
-            .add("walk", new Sprite(
-                    0.1f,
-                    ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk1.gif")),
-                    ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk2.gif")),
-                    ImageIO.read(new File("src/main/resources/sprites/Super Mario - Walk3.gif"))
-            ))
-            .add("queen-underPresure", new Audio(new File("src/main/resources/audio/Queen - Under Pressure.wav")));
+            .add("Queen-UnderPresure",
+                    new Audio(new File("src/main/resources/audio/Queen - Under Pressure.wav")));
 
-    Entity entity = new Entity(0, -250, 32, 64, (Sprite) assets.get("stand"));
-    GameElement play = new GameElement(-200, 50, 50, 50, new Sprite(
-            ImageIO.read(new File("src/main/resources/sprites/play.png"))
-    ));
-    GameElement pause = new GameElement(75, 50, 50, 50, new Sprite(
-            ImageIO.read(new File("src/main/resources/sprites/pause.png"))
-    ));
-    GameElement resume = new GameElement(-125, 50, 50, 50, new Sprite(
-            ImageIO.read(new File("src/main/resources/sprites/resume.png"))
-    ));
-    GameElement stop = new GameElement(150, 50, 50, 50, new Sprite(
-            ImageIO.read(new File("src/main/resources/sprites/stop.png"))
-    ));
-    GameElement loop = new GameElement(-50, 50, 50, 50, new Sprite(
-            ImageIO.read(new File("src/main/resources/sprites/loop.png"))
-    ));
 
-    Group group = new Group(
-            play,
-            pause,
-            resume,
-            stop,
-            loop,
-            new GameElement(0, 240, 500, 100, new Sprite(Color.gray))
-    );
+    Entity entity = new Entity(0, 150, 32, 64, (Sprite) assetGroup.get("spriteStatic"));
 
-    Group collectables = new Group(
-            new GameElement(-50, 50, 10, 10, new Sprite(Color.YELLOW)),
-            new GameElement(100, 150, 10, 10, new Sprite(Color.YELLOW)),
-            new GameElement(150, 150, 10, 10, new Sprite(Color.YELLOW)),
-            new GameElement(200, 150, 10, 10, new Sprite(Color.YELLOW))
-    );
+    Scene scene = new Scene() {
 
-    Text songName = new Text("Queen - Under Pressure", 0, 0).setForeground(Color.white);
-
-    double jumpVelocity = 300; //300
-    double horizontalVelocity = 125; //125
-    double verticalVelocity = 800; //800
-
-    //Camera.setZoom(0.01);
-    //Camera.setZoom(1.5);
-
-    //Time.setTimeScale(0.1);
-
-    GameFrame gf = new GameFrame(60, new Dimension(500, 500)) {
-
-        boolean salto = false;
+        private boolean jump = false;
 
         @Override
-        protected void code() throws IllegalClassFormatException {
+        public void update() {
 
-            if (keyUp()) Camera.moveY(5);
-            if (keyDown()) Camera.moveY(-5);
-            if (keyLeft()) Camera.moveX(5);
-            if (keyRight()) Camera.moveX(-5);
-            if (key("+")) Camera.setZoom(Camera.getZoom() + 0.1);
-            if (key("-")) Camera.setZoom(Camera.getZoom() - 0.1);
+            if (Keyboard.keyUp()) Camera.moveY(5);
+            if (Keyboard.keyDown()) Camera.moveY(-5);
+            if (Keyboard.keyLeft()) Camera.moveX(5);
+            if (Keyboard.keyRight()) Camera.moveX(-5);
+            if (Keyboard.key('0')) Camera.setZoom(Camera.getZoom() + 0.01);
+            else if (Keyboard.key('9')) Camera.setZoom(Camera.getZoom() - 0.01);
 
-            if (((entity.getPoint().getY() + entity.getDimension().getHalfHeight()) < getDimension().getHeight())) {
-                entity.setVelocityY(
-                        entity.getVelocityY() + (verticalVelocity * Time.deltaTime())
-                );
-            } else {
-                entity.getPoint().setY(getDimension().getHeight() - entity.getDimension().getHalfHeight());
-                salto = true;
+            entity.setVelocityY(
+                    entity.getVelocityY() + (800 * Time.deltaTime())
+            );
+            if ((entity.getPoint().getY() + entity.getDimension().getHalfHeight()) >= 250) {
+                entity.setVelocityY(0);
+                entity.getPoint().setY(250 - entity.getDimension().getHalfHeight());
+                jump = true;
             }
 
-            if (key("a") || key("d")) {
-                if (key("a")) {
-                    entity.setVelocityX(-horizontalVelocity);
-                    entity.setSprite((Sprite) assets.get("walk"));
-                    assets.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
+            entity.setSprite((Sprite) assetGroup.get("spriteStatic"));
+            entity.setVelocityX(0);
+            if (Keyboard.key('d') || Keyboard.key('a')) {
+                if (Keyboard.key('d')) {
+                    entity.setVelocityX(125);
+                    assetGroup.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
                 }
-                if (key("d")) {
-                    entity.setVelocityX(horizontalVelocity);
-                    entity.setSprite((Sprite) assets.get("walk"));
-                    assets.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
+                if (Keyboard.key('a')) {
+                    entity.setVelocityX(-125);
+                    assetGroup.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
                 }
-            } else {
-                entity.setVelocityX(0);
-                entity.setSprite((Sprite) assets.get("stand"));
+                entity.setSprite((Sprite) assetGroup.get("spriteWalk"));
             }
-
-            if (!salto) {
-                entity.setSprite((Sprite) assets.get("jump"));
+            if (Keyboard.key('w') && jump) {
+                jump = false;
+                entity.setVelocityY(-300);
             }
+            if (!jump) entity.setSprite((Sprite) assetGroup.get("spriteJump"));
 
-            if (salto && key("w")) {
-                entity.setVelocityY(-jumpVelocity);
-                salto = false;
-            }
+            if (Keyboard.key('l')) ((Audio) assetGroup.get("Queen-UnderPresure")).loop();
+            else if (Keyboard.key('1')) ((Audio) assetGroup.get("Queen-UnderPresure")).resume();
+            else if (Keyboard.key('2')) ((Audio) assetGroup.get("Queen-UnderPresure")).pause();
 
-            if (entity.collide(play)) ((Audio) assets.get("queen-underPresure")).play();
-            else if (entity.collide(pause)) ((Audio) assets.get("queen-underPresure")).pause();
-            else if (entity.collide(resume)) ((Audio) assets.get("queen-underPresure")).resume();
-            else if (entity.collide(stop)) assets.get("queen-underPresure").close();
-            else if (entity.collide(loop)) {
-                ((Audio) assets.get("queen-underPresure")).loop();
-                loop.delete();
-            }
-
-            if (entity.collide(group)) {
-                salto = true;
-            }
-
-            if (entity.overlap(collectables)) {
-                GameElement collectable = entity.getOverlapElement(collectables);
-                if (collectable != null) collectable.delete();
-            }
-
-            Camera.setPosition(
-                    (int) (-entity.getPoint().getX() + getDimension().getHalfWidth()),
-                    (int) (-entity.getPoint().getY() + getDimension().getHalfHeight()));
-
-            draw(entity, collectables, group);
-            drawText(songName);
-        }
-
-        @Override
-        protected void canvas(Graphics g) {
-            super.canvas(g);
-
+            add(entity);
         }
     };
 
-    gf.start();
+    GameWindow window = new GameWindow(60, new Dimension(500, 500), scene);
 
 }
 
-private class Entity extends GameElement implements Colision, Portble {
+private class Entity extends GameElement {
 
     public Entity(double x, double y, double width, double height, Sprite sprite) {
         super(x, y, width, height, sprite);

@@ -5,8 +5,6 @@ import rroyo.jgameengine.core.gameobjects.Point;
 
 public final class Camera {
 
-    private static final Dimension cameraDimensions = new Dimension(0, 0);
-
     private static final Point position = new Point();
     private static double zoom = 1;
 
@@ -37,8 +35,6 @@ public final class Camera {
     }
 
     public static void setWindowDimensions(Dimension windowDimensions) {
-        cameraDimensions.setWidth(windowDimensions.getWidth() * zoom);
-        cameraDimensions.setHeight(windowDimensions.getHeight() * zoom);
         move(
                 (int) windowDimensions.getHalfWidth(),
                 (int) windowDimensions.getHalfHeight()
