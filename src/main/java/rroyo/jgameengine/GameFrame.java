@@ -44,8 +44,22 @@ public abstract class GameFrame {
             double camX = Camera.getCameraPosition().getX();
             double camY = Camera.getCameraPosition().getY();
 
+            double viewWorldX = centerX - (centerX / zoom) - camX;
+            double viewWorldY = centerY - (centerY / zoom) - camY;
+            double viewWorldWidth = dimension.getWidth() / zoom;
+            double viewWorldHeight = dimension.getHeight() / zoom;
+
             for (GameElement go : gameElements) {
                 if (go.isDeleted()) continue;
+
+                double objX = go.getPoint().getX() - go.getDimension().getHalfWidth();
+                double objY = go.getPoint().getY() - go.getDimension().getHalfHeight();
+                double objW = go.getDimension().getWidth();
+                double objH = go.getDimension().getHeight();
+
+                if (objX + objW < viewWorldX || objX > viewWorldX + viewWorldWidth ||
+                        objY + objH < viewWorldY || objY > viewWorldY + viewWorldHeight
+                ) continue;
 
                 double worldX, worldY, width, height;
 
@@ -138,6 +152,7 @@ public abstract class GameFrame {
                     gameElements.add(ge);
                 }
             } else if (go instanceof Group group) {
+                if (group.getMembers() == null) continue;
                 for (GameElement ge : group.getMembers()) {
                     if (!gameElements.contains(ge)) {
                         gameElements.add(ge);

@@ -54,9 +54,6 @@ public final class Camera {
         Camera.zoom = zoom;
     }
 
-    public static Dimension getCameraDimensions() {
-        return cameraDimensions;
-    }
     public static Point getCameraPosition() {
         return position;
     }

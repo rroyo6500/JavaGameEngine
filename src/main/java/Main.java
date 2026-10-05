@@ -70,10 +70,10 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
     double horizontalVelocity = 125; //125
     double verticalVelocity = 800; //800
 
-    //Camera.setZoom(0.5);
+    //Camera.setZoom(0.01);
     //Camera.setZoom(1.5);
 
-    Time.setTimeScale(0.1);
+    //Time.setTimeScale(0.1);
 
     GameFrame gf = new GameFrame(60, new Dimension(500, 500)) {
 
@@ -82,10 +82,10 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
         @Override
         protected void code() throws IllegalClassFormatException {
 
-            if (key("w")) Camera.moveY(5);
-            if (key("s")) Camera.moveY(-5);
-            if (key("a")) Camera.moveX(5);
-            if (key("d")) Camera.moveX(-5);
+            if (keyUp()) Camera.moveY(5);
+            if (keyDown()) Camera.moveY(-5);
+            if (keyLeft()) Camera.moveX(5);
+            if (keyRight()) Camera.moveX(-5);
             if (key("+")) Camera.setZoom(Camera.getZoom() + 0.1);
             if (key("-")) Camera.setZoom(Camera.getZoom() - 0.1);
 
@@ -98,13 +98,13 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
                 salto = true;
             }
 
-            if (keyLeft() || keyRight()) {
-                if (keyLeft()) {
+            if (key("a") || key("d")) {
+                if (key("a")) {
                     entity.setVelocityX(-horizontalVelocity);
                     entity.setSprite((Sprite) assets.get("walk"));
                     assets.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
                 }
-                if (keyRight()) {
+                if (key("d")) {
                     entity.setVelocityX(horizontalVelocity);
                     entity.setSprite((Sprite) assets.get("walk"));
                     assets.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
@@ -118,7 +118,7 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
                 entity.setSprite((Sprite) assets.get("jump"));
             }
 
-            if (salto && keyUp()) {
+            if (salto && key("w")) {
                 entity.setVelocityY(-jumpVelocity);
                 salto = false;
             }
@@ -140,6 +140,10 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
                 GameElement collectable = entity.getOverlapElement(collectables);
                 if (collectable != null) collectable.delete();
             }
+
+            Camera.setPosition(
+                    (int) (-entity.getPoint().getX() + getDimension().getHalfWidth()),
+                    (int) (-entity.getPoint().getY() + getDimension().getHalfHeight()));
 
             draw(entity, collectables, group);
             drawText(songName);
