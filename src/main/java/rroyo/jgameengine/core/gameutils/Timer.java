@@ -2,14 +2,14 @@ package rroyo.jgameengine.core.gameutils;
 
 import java.util.*;
 
-public class Timer {
+public final class Timer {
 
     private static final List<Timer> timers = new ArrayList<>();
     private static final List<Timer> pendingAdd = new ArrayList<>();
 
     private float remaining;
     private final Runnable callback;
-    private boolean loop;
+    private final boolean loop;
     private boolean cancelled;
     private final float initialDuration;
 

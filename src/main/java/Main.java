@@ -2,14 +2,13 @@ import rroyo.jgameengine.GameFrame;
 import rroyo.jgameengine.core.assets.Audio;
 import rroyo.jgameengine.core.assets.Sprite;
 import rroyo.jgameengine.core.assets.AssetGroup;
+import rroyo.jgameengine.core.gameobjects.*;
+import rroyo.jgameengine.core.gameobjects.Dimension;
+import rroyo.jgameengine.core.gameobjects.Point;
 import rroyo.jgameengine.core.gameutils.*;
-import rroyo.jgameengine.core.gameutils.Dimension;
-import rroyo.jgameengine.core.gameutils.Point;
 import rroyo.jgameengine.enums.SpriteHorizontalDirection;
 import rroyo.jgameengine.interfaces.Colision;
 import rroyo.jgameengine.interfaces.Portble;
-import rroyo.jgameengine.core.gameobjects.GameElement;
-import rroyo.jgameengine.core.gameobjects.Group;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
@@ -32,20 +31,20 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
             ))
             .add("queen-underPresure", new Audio(new File("src/main/resources/audio/Queen - Under Pressure.wav")));
 
-    Entity entity = new Entity(250, 0, 32, 64, (Sprite) assets.get("stand"));
-    GameElement play = new GameElement(50, 300, 50, 50, new Sprite(
+    Entity entity = new Entity(0, -250, 32, 64, (Sprite) assets.get("stand"));
+    GameElement play = new GameElement(-200, 50, 50, 50, new Sprite(
             ImageIO.read(new File("src/main/resources/sprites/play.png"))
     ));
-    GameElement pause = new GameElement(375, 300, 50, 50, new Sprite(
+    GameElement pause = new GameElement(75, 50, 50, 50, new Sprite(
             ImageIO.read(new File("src/main/resources/sprites/pause.png"))
     ));
-    GameElement resume = new GameElement(125, 300, 50, 50, new Sprite(
+    GameElement resume = new GameElement(-125, 50, 50, 50, new Sprite(
             ImageIO.read(new File("src/main/resources/sprites/resume.png"))
     ));
-    GameElement stop = new GameElement(450, 300, 50, 50, new Sprite(
+    GameElement stop = new GameElement(150, 50, 50, 50, new Sprite(
             ImageIO.read(new File("src/main/resources/sprites/stop.png"))
     ));
-    GameElement loop = new GameElement(200, 300, 50, 50, new Sprite(
+    GameElement loop = new GameElement(-50, 50, 50, 50, new Sprite(
             ImageIO.read(new File("src/main/resources/sprites/loop.png"))
     ));
 
@@ -55,17 +54,26 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
             resume,
             stop,
             loop,
-            new GameElement(250, 490, 500, 100, new Sprite(Color.gray))
+            new GameElement(0, 240, 500, 100, new Sprite(Color.gray))
     );
 
     Group collectables = new Group(
-            new GameElement(50, 400, 10, 10, new Sprite(Color.YELLOW)),
-            new GameElement(100, 400, 10, 10, new Sprite(Color.YELLOW)),
-            new GameElement(150, 400, 10, 10, new Sprite(Color.YELLOW)),
-            new GameElement(200, 300, 10, 10, new Sprite(Color.YELLOW))
+            new GameElement(-50, 50, 10, 10, new Sprite(Color.YELLOW)),
+            new GameElement(100, 150, 10, 10, new Sprite(Color.YELLOW)),
+            new GameElement(150, 150, 10, 10, new Sprite(Color.YELLOW)),
+            new GameElement(200, 150, 10, 10, new Sprite(Color.YELLOW))
     );
 
     Text songName = new Text("Queen - Under Pressure", 0, 0).setForeground(Color.white);
+
+    double jumpVelocity = 300; //300
+    double horizontalVelocity = 125; //125
+    double verticalVelocity = 800; //800
+
+    //Camera.setZoom(0.5);
+    //Camera.setZoom(1.5);
+
+    Time.setTimeScale(0.1);
 
     GameFrame gf = new GameFrame(60, new Dimension(500, 500)) {
 
@@ -74,23 +82,30 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
         @Override
         protected void code() throws IllegalClassFormatException {
 
+            if (key("w")) Camera.moveY(5);
+            if (key("s")) Camera.moveY(-5);
+            if (key("a")) Camera.moveX(5);
+            if (key("d")) Camera.moveX(-5);
+            if (key("+")) Camera.setZoom(Camera.getZoom() + 0.1);
+            if (key("-")) Camera.setZoom(Camera.getZoom() - 0.1);
+
             if (((entity.getPoint().getY() + entity.getDimension().getHalfHeight()) < getDimension().getHeight())) {
                 entity.setVelocityY(
-                        entity.getVelocityY() + (800 * Time.deltaTime())
+                        entity.getVelocityY() + (verticalVelocity * Time.deltaTime())
                 );
             } else {
                 entity.getPoint().setY(getDimension().getHeight() - entity.getDimension().getHalfHeight());
                 salto = true;
             }
 
-            if ((keyLeft() || key("a")) || (keyRight() || key("d"))) {
-                if (keyLeft() || key("a")) {
-                    entity.setVelocityX(-125);
+            if (keyLeft() || keyRight()) {
+                if (keyLeft()) {
+                    entity.setVelocityX(-horizontalVelocity);
                     entity.setSprite((Sprite) assets.get("walk"));
                     assets.setHorizontalDirection(SpriteHorizontalDirection.LEFT);
                 }
-                if (keyRight() || key("d")) {
-                    entity.setVelocityX(125);
+                if (keyRight()) {
+                    entity.setVelocityX(horizontalVelocity);
                     entity.setSprite((Sprite) assets.get("walk"));
                     assets.setHorizontalDirection(SpriteHorizontalDirection.RIGHT);
                 }
@@ -103,8 +118,8 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
                 entity.setSprite((Sprite) assets.get("jump"));
             }
 
-            if (salto && (keyUp() || key("w"))) {
-                entity.setVelocityY(-300);
+            if (salto && keyUp()) {
+                entity.setVelocityY(-jumpVelocity);
                 salto = false;
             }
 
@@ -134,9 +149,6 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
         protected void canvas(Graphics g) {
             super.canvas(g);
 
-            g.setColor(Color.MAGENTA);
-            g.fillOval(100, 100, 100, 100);
-
         }
     };
 
@@ -152,6 +164,11 @@ private class Entity extends GameElement implements Colision, Portble {
 
     public Entity(Point point, Dimension dimension, Sprite sprite) {
         super(point, dimension, sprite);
+    }
+
+    @Override
+    protected double transformVelocity(double velocity) {
+        return velocity * Time.deltaTime();
     }
 
 }

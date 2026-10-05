@@ -3,8 +3,9 @@ package rroyo.jgameengine;
 import rroyo.jgameengine.core.gameobjects.GameElement;
 import rroyo.jgameengine.core.gameobjects.GameObject;
 import rroyo.jgameengine.core.gameobjects.Group;
-import rroyo.jgameengine.core.gameutils.Dimension;
-import rroyo.jgameengine.core.gameutils.Text;
+import rroyo.jgameengine.core.gameobjects.Dimension;
+import rroyo.jgameengine.core.gameobjects.Text;
+import rroyo.jgameengine.core.gameutils.Camera;
 import rroyo.jgameengine.core.gameutils.Time;
 
 import javax.swing.*;
@@ -37,31 +38,51 @@ public abstract class GameFrame {
             g.setColor(backgroundColor);
             g.fillRect(0, 0, getWidth(), getHeight());
 
+            double centerX = dimension.getHalfWidth();
+            double centerY = dimension.getHalfHeight();
+            double zoom = Camera.getZoom();
+            double camX = Camera.getCameraPosition().getX();
+            double camY = Camera.getCameraPosition().getY();
+
             for (GameElement go : gameElements) {
                 if (go.isDeleted()) continue;
+
+                double worldX, worldY, width, height;
+
                 go.getSprite().next();
-                if (go.getSprite().hasSpriteImage())
-                    g.drawImage(
-                            go.getSprite().getSpriteImages(),
-                            (int) switch (go.getSprite().getHorizontalDirection()) {
-                                case RIGHT -> (go.getPoint().getX() - go.getDimension().getHalfWidth());
-                                case LEFT -> (go.getPoint().getX() - go.getDimension().getHalfWidth()) + go.getDimension().getWidth();
-                            },
-                            (int) (go.getPoint().getY() - go.getDimension().getHalfHeight()),
-                            (int) switch (go.getSprite().getHorizontalDirection()) {
-                                case RIGHT -> go.getDimension().getWidth();
-                                case LEFT -> -go.getDimension().getWidth();
-                            },
-                            (int) go.getDimension().getHeight(),
-                            null
-                    );
+                if (go.getSprite().hasSpriteImage()) {
+                    worldX = switch (go.getSprite().getHorizontalDirection()) {
+                        case RIGHT -> go.getPoint().getX() - go.getDimension().getHalfWidth();
+                        case LEFT -> (go.getPoint().getX() - go.getDimension().getHalfWidth()) + go.getDimension().getWidth();
+                    };
+                    worldY = go.getPoint().getY() - go.getDimension().getHalfHeight();
+
+                    width = switch (go.getSprite().getHorizontalDirection()) {
+                        case RIGHT -> go.getDimension().getWidth();
+                        case LEFT -> -go.getDimension().getWidth();
+                    };
+                    height = go.getDimension().getHeight();
+
+                    int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
+                    int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
+                    int drawW = (int) (width * zoom);
+                    int drawH = (int) (height * zoom);
+
+                    g.drawImage(go.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
+                }
                 else {
+                    worldX = go.getPoint().getX() - go.getDimension().getHalfWidth();
+                    worldY = go.getPoint().getY() - go.getDimension().getHalfHeight();
+                    width = go.getDimension().getWidth();
+                    height = go.getDimension().getHeight();
+
+                    int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
+                    int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
+                    int drawW = (int) (width * zoom);
+                    int drawH = (int) (height * zoom);
+
                     g.setColor(go.getSprite().getSpriteColor());
-                    g.fillRect(
-                            (int) (go.getPoint().getX() - go.getDimension().getHalfWidth()),
-                            (int) (go.getPoint().getY() - go.getDimension().getHalfHeight()),
-                            (int) go.getDimension().getWidth(), (int) go.getDimension().getHeight()
-                    );
+                    g.fillRect(drawX, drawY, drawW, drawH);
                 }
             }
             for (Text text : texts) {
@@ -75,6 +96,7 @@ public abstract class GameFrame {
     public GameFrame(int fps, Dimension dimensions) {
         this.fps = fps;
         this.dimension = dimensions;
+        Camera.setWindowDimensions(dimensions);
 
         JFrame frame = new JFrame();
         frame.setSize(new java.awt.Dimension((int) dimensions.getWidth(), (int) dimensions.getHeight()));

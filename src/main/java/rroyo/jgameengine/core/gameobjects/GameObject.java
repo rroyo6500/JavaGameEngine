@@ -8,7 +8,7 @@ public class GameObject {
         this.deleted = true;
     }
 
-    public boolean isDeleted() {
+    public final boolean isDeleted() {
         return deleted;
     }
 }

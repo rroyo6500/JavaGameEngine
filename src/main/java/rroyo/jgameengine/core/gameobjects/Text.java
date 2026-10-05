@@ -1,4 +1,4 @@
-package rroyo.jgameengine.core.gameutils;
+package rroyo.jgameengine.core.gameobjects;
 
 import java.awt.*;
 

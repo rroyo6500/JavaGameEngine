@@ -2,8 +2,6 @@ package rroyo.jgameengine.core.gameobjects;
 
 import rroyo.jgameengine.core.assets.Sprite;
 import rroyo.jgameengine.core.gameutils.*;
-import rroyo.jgameengine.core.gameutils.Dimension;
-import rroyo.jgameengine.core.gameutils.Point;
 
 import java.awt.*;
 
@@ -26,7 +24,7 @@ public class GameElement extends GameObject {
         this.sprite = sprite;
     }
 
-    public Overlap getOverlap(GameElement go) {
+    public final Overlap getOverlap(GameElement go) {
         if (isDeleted() || go.isDeleted()) return null;
         if (!this.inRange(go)) {
             return null;
@@ -45,14 +43,14 @@ public class GameElement extends GameObject {
         return new Overlap(overlapX, overlapY);
     }
 
-    public boolean overlap(GameElement go) {
+    public final boolean overlap(GameElement go) {
         if (isDeleted() || go.isDeleted()) return false;
         Overlap overlap = getOverlap(go);
         if (overlap == null) return false;
         return overlap.overlapX() > 0 && overlap.overlapY() > 0;
     }
 
-    public boolean overlap(Group group) {
+    public final boolean overlap(Group group) {
         if (isDeleted()) return false;
         for (GameElement go : group.getMembers()) {
             if (this.overlap(go)) {
@@ -62,7 +60,7 @@ public class GameElement extends GameObject {
         return false;
     }
 
-    public GameElement getOverlapElement(Group group) {
+    public final GameElement getOverlapElement(Group group) {
         if (isDeleted()) return null;
         for (GameElement go : group.getMembers()) {
             if (this.overlap(go)) {
@@ -72,7 +70,7 @@ public class GameElement extends GameObject {
         return null;
     }
 
-    public boolean inRange(GameElement go) {
+    public final boolean inRange(GameElement go) {
         if (isDeleted() || go.isDeleted()) return false;
         double secureRange = (this.getDimension().getWidth() + this.getDimension().getHeight()) +
                 (go.getDimension().getWidth() + go.getDimension().getHeight());
@@ -88,7 +86,7 @@ public class GameElement extends GameObject {
         return distance <= (secureRange * secureRange);
     }
 
-    public boolean inRange(Group group) {
+    public final boolean inRange(Group group) {
         if (isDeleted() || group.isDeleted()) return false;
         for (GameElement go : group.getMembers()) {
             if (this.inRange(go)) {
@@ -98,7 +96,7 @@ public class GameElement extends GameObject {
         return false;
     }
 
-    public GameElement getInRangeElement(Group group) {
+    public final GameElement getInRangeElement(Group group) {
         if (isDeleted() || group.isDeleted()) return null;
         for (GameElement go : group.getMembers()) {
             if (this.inRange(go)) {
@@ -108,15 +106,18 @@ public class GameElement extends GameObject {
         return null;
     }
 
-    public void move() {
-        if (isDeleted()) return ;
-        point.setPoint(
-                point.getX() + (velocity.getVelocityX() * Time.deltaTime()),
-                point.getY() + (velocity.getVelocityY() * Time.deltaTime())
+    protected double transformVelocity(double velocity) {
+        return velocity;
+    }
+
+    public final void move() {
+        move(
+                transformVelocity(velocity.getVelocityX()),
+                transformVelocity(velocity.getVelocityY())
         );
     }
 
-    public void move(double dx, double dy) {
+    public final void move(double dx, double dy) {
         if (isDeleted()) return ;
         point.setPoint(
                 point.getX() + dx,
@@ -124,19 +125,15 @@ public class GameElement extends GameObject {
         );
     }
 
-    public Point getPoint() {
+    public final Point getPoint() {
         return point;
     }
 
-    public Sprite getSprite() {
+    public final Sprite getSprite() {
         return sprite;
     }
 
-    public Velocity getVelocity() {
-        return velocity;
-    }
-
-    public Rectangle getBounds() {
+    public final Rectangle getBounds() {
         if (isDeleted()) return null;
         return new Rectangle(
                 (int) (point.getX() - this.getDimension().getHalfWidth()),
@@ -145,13 +142,17 @@ public class GameElement extends GameObject {
         );
     }
 
-    public Dimension getDimension() {
+    public final Dimension getDimension() {
         return dimension;
     }
 
-    public void setSprite(Sprite sprite) {
+    public final void setSprite(Sprite sprite) {
         if (isDeleted()) return ;
         this.sprite = sprite;
+    }
+
+    public final Velocity getVelocity() {
+        return velocity;
     }
 
     @Override

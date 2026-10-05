@@ -1,12 +1,12 @@
-package rroyo.jgameengine.core.gameutils;
+package rroyo.jgameengine.core.gameobjects;
 
 public class Dimension {
 
     private double halfWidth = 0, halfHeight = 0;
 
     public Dimension(double width, double height) {
-        this.halfWidth = width / 2;
-        this.halfHeight = height / 2;
+        this.halfWidth = width < 0 ? 0 : width / 2;
+        this.halfHeight = height < 0 ? 0 : height / 2;
     }
 
     public double getHalfWidth() {
@@ -26,10 +26,12 @@ public class Dimension {
     }
 
     public void setWidth(double width) {
+        if (width < 0) width = 0;
         this.halfWidth = width / 2;
     }
 
     public void setHeight(double height) {
+        if (height < 0) height = 0;
         this.halfHeight = height / 2;
     }
 }

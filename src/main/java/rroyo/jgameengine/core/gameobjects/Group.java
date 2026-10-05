@@ -25,7 +25,7 @@ public class Group extends GameObject {
         return false;
     }
 
-    public boolean overlap(Group group) {
+    public final boolean overlap(Group group) {
         if (isDeleted() || group.isDeleted()) return false;
         for (GameElement m : members) {
             if (m.overlap(group)) {
@@ -35,7 +35,7 @@ public class Group extends GameObject {
         return false;
     }
 
-    public boolean inRange(GameElement go) {
+    public final boolean inRange(GameElement go) {
         if (isDeleted() || go.isDeleted()) return false;
         for (GameElement m : members) {
             if (m.inRange(go)) {
@@ -45,7 +45,7 @@ public class Group extends GameObject {
         return false;
     }
 
-    public boolean inRange(Group group) {
+    public final boolean inRange(Group group) {
         if (isDeleted() || group.isDeleted()) return false;
         for (GameElement m : members) {
             if (m.inRange(group)) {
@@ -55,7 +55,7 @@ public class Group extends GameObject {
         return false;
     }
 
-    public List<GameElement> getMembers() {
+    public final List<GameElement> getMembers() {
         if (isDeleted()) return null;
         return List.copyOf(members);
     }

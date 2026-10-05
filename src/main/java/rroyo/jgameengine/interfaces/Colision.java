@@ -12,7 +12,7 @@ public interface Colision {
         if (this instanceof GameElement self) {
             if (self.overlap(gameElement)) {
                 Overlap overlap = self.getOverlap(gameElement);
-
+                if (overlap == null) return false;
                 if (overlap.overlapX() < overlap.overlapY()) {
                     if (self.getPoint().getX() < gameElement.getPoint().getX()) {
                         self.move(-overlap.overlapX(), 0);
