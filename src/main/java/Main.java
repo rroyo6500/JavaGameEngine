@@ -16,8 +16,15 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
+GameWindow window;
 
 void main(String[] args) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    window = new GameWindow(60, new Dimension(500, 500), scene1());
+}
+
+Scene scene1() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
     AssetGroup assetGroup = new AssetGroup()
             .add("spriteStatic",
@@ -43,7 +50,7 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
 
     Entity entity = new Entity(0, 150, 32, 64, (Sprite) assetGroup.get("spriteStatic"));
 
-    Scene scene = new Scene() {
+    return new Scene() {
 
         private boolean jump = false;
 
@@ -93,10 +100,8 @@ void main(String[] args) throws IOException, UnsupportedAudioFileException, Line
 
             add(entity, platforms);
         }
+
     };
-
-    GameWindow window = new GameWindow(60, new Dimension(500, 500), scene);
-
 }
 
 private class Entity extends GameElement {

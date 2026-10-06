@@ -8,8 +8,6 @@ import javax.swing.*;
 
 public class GameWindow {
 
-
-
     public GameWindow(int targetFPS, Dimension dimension, Scene scene) {
         Camera.setWindowDimensions(dimension);
 

@@ -1,11 +1,8 @@
 package rroyo.jgameengine.core.gameobjects;
 
 import rroyo.jgameengine.core.assets.Sprite;
-import rroyo.jgameengine.core.gameutils.*;
 
 import java.awt.*;
-import java.lang.instrument.IllegalClassFormatException;
-
 
 public class GameElement extends GameObject {
 

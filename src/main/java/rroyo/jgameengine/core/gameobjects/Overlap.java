@@ -1,6 +1,7 @@
-package rroyo.jgameengine.core.gameutils;
+package rroyo.jgameengine.core.gameobjects;
 
 public class Overlap {
+
     private double overlapX;
     private double overlapY;
 
