@@ -1,4 +1,4 @@
-name: Publish Gradle Package
+name: Publish Maven Package
 
 on:
   workflow_dispatch:
@@ -21,31 +21,31 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Set up Java and Maven publishing
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '23'
-          cache: gradle
+          java-version: '26'
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Publish manual version
+      - name: Set manual version
         if: github.event_name == 'workflow_dispatch'
-        run: ./gradlew publish -PprojVersion=${{ inputs.version }}
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B versions:set -DnewVersion=${{ inputs.version }} -DgenerateBackupPoms=false
 
-      - name: Publish tag version
+      - name: Set tag version
         if: github.event_name == 'push'
         shell: bash
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          ./gradlew publish -PprojVersion="$VERSION"
+          mvn -B versions:set -DnewVersion="$VERSION" -DgenerateBackupPoms=false
+
+      - name: Publish to GitHub Packages
+        run: mvn -B clean deploy
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
