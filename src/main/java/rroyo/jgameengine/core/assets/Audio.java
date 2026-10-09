@@ -45,10 +45,4 @@ public class Audio extends Asset {
         return clip.isRunning();
     }
 
-    @Override
-    public synchronized void close() {
-        super.close();
-        if (clip != null) clip.close();
-        clip = null;
-    }
 }

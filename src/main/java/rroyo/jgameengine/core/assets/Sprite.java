@@ -80,11 +80,4 @@ public class Sprite extends Asset {
         }
     }
 
-    @Override
-    public void close() {
-        super.close();
-        horizontalDirection = null;
-        spriteColor = null;
-        spriteImages = null;
-    }
 }

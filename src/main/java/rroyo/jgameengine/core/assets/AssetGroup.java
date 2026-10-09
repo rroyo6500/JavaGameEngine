@@ -4,6 +4,7 @@ import rroyo.jgameengine.enums.SpriteHorizontalDirection;
 import rroyo.jgameengine.utils.Log;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -29,6 +30,10 @@ public class AssetGroup {
         if (!sprites.containsKey(id))
             Log.warning("Sprite ID '" + id + "' does not exist in the SpriteGroup");
         return sprites.get(id);
+    }
+
+    public List<Asset> getMembers() {
+        return List.copyOf(sprites.values());
     }
 
     public void remove(String id) {
