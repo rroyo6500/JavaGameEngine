@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 group = "rroyo.jgameengine"
@@ -10,7 +11,23 @@ java {
     withJavadocJar()
 }
 
-
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/rroyo6500/JavaGameEngine")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
 
 repositories {
     mavenCentral()
