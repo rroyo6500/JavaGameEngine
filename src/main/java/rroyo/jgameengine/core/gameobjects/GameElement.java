@@ -3,6 +3,8 @@ package rroyo.jgameengine.core.gameobjects;
 import rroyo.jgameengine.core.assets.Sprite;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameElement extends GameObject {
 
@@ -68,7 +70,7 @@ public class GameElement extends GameObject {
     }
 
     public final GameElement getOverlapElement(Group group) {
-        if (isDeleted()) return null;
+        if (isDeleted() || group.isDeleted()) return null;
         for (GameElement go : group.getMembers()) {
             if (this.overlap(go)) {
                 return go;
@@ -113,7 +115,8 @@ public class GameElement extends GameObject {
         return null;
     }
 
-    public boolean collide(GameElement gameElement) {
+    public final boolean collide(GameElement gameElement) {
+        if (isDeleted() || gameElement.isDeleted()) return false;
         if (this.overlap(gameElement)) {
             Overlap overlap = this.getOverlap(gameElement);
             if (overlap == null) return false;
@@ -135,7 +138,8 @@ public class GameElement extends GameObject {
         return false;
     }
 
-    public boolean collide(Group group) {
+    public final boolean collide(Group group) {
+        if (isDeleted() || group.isDeleted()) return false;
         for (GameElement go : group.getMembers()) {
             if (this.collide(go)) {
                 return true;

@@ -20,7 +20,6 @@ public class Sprite extends Asset {
     private float frameDuration = 0.0f;
     private float frameTimer = 0.0f;
 
-
     public Sprite(BufferedImage... spriteImage) {
         spriteImages.addAll(Arrays.asList(spriteImage));
     }

@@ -24,13 +24,13 @@ public abstract class Scene {
     public abstract void update();
 
     public final void processFrame() {
-        update();
-
         for (GameElement ge : gameElements) {
             if (!ge.isDeleted()) {
                 ge.move();
             }
         }
+
+        update();
 
         gameElements.removeIf(GameObject::isDeleted);
         texts.removeIf(Text::isDeleted);
