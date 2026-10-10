@@ -31,6 +31,10 @@ public class GameElement extends GameObject {
         this.dimension = dimension;
         this.sprite = sprite;
         scripts.addAll(List.of(script));
+
+        for (Script s : scripts) {
+            s.start(this);
+        }
     }
 
     public final void update() {
