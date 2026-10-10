@@ -5,6 +5,7 @@ import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameobjects.Group;
 import rroyo.jge.core.gameobjects.Text;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +59,10 @@ public abstract class Scene {
         for (Text text : newTexts) {
             if (!texts.contains(text)) texts.add(text);
         }
+    }
+
+    public final void setBackgroundColor(Color color) {
+        renderer.setBackgroundColor(color);
     }
 
     public void clear() {

@@ -1,7 +1,7 @@
 package rroyo.jge.core.gameobjects;
 
 import rroyo.jge.core.assets.Sprite;
-import rroyo.jge.core.gameutils.Script;
+import rroyo.jge.interfaces.Script;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -1,7 +1,6 @@
-package rroyo.jge.core.gameutils;
+package rroyo.jge.interfaces;
 
 import rroyo.jge.core.gameobjects.GameElement;
-import rroyo.jge.core.gameobjects.GameObject;
 
 public interface Script {
 
