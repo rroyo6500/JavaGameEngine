@@ -127,7 +127,7 @@ public class GameElement extends GameObject {
     public final boolean collide(GameElement gameElement) {
         if (isDeleted() || gameElement.isDeleted()) return false;
         if (this.ov(gameElement)) {
-            Overlap overlap = this.getOverlap(gameElement);
+            Overlap overlap = calculateOverlap(gameElement);
             if (overlap == null) return false;
             if (overlap.getOverlapX() < overlap.getOverlapY()) {
                 if (this.getPoint().getX() < gameElement.getPoint().getX())
