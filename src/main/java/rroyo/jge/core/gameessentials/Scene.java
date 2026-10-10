@@ -46,10 +46,16 @@ public abstract class Scene {
     public final void add(GameObject... gameObjects) {
         for (GameObject go : gameObjects) {
             if (go instanceof  GameElement ge) {
-                if (!gameElements.contains(ge)) gameElements.add(ge);
+                if (!gameElements.contains(ge)) {
+                    gameElements.add(ge);
+                    ge.start();
+                }
             } else if (go instanceof Group group) {
                 for (GameElement ge : group.getMembers()) {
-                    if (!gameElements.contains(ge)) gameElements.add(ge);
+                    if (!gameElements.contains(ge)) {
+                        gameElements.add(ge);
+                        ge.start();
+                    }
                 }
             }
         }
