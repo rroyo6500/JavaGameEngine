@@ -30,14 +30,10 @@ public class GameWindow {
 
     public final void setScene(int targetFPS, Scene scene) {
         scene.setRenderer(renderer);
-        if (gameLoop != null) {
+        if (gameLoop != null)
             gameLoop.stop();
-            gameLoop.setOnRender(scene::processFrame);
-            gameLoop.start();
-        } else {
-            gameLoop = new GameLoop(targetFPS, scene::processFrame, null);
-            gameLoop.start();
-        }
+        gameLoop = new GameLoop(targetFPS, scene::processFrame, null);
+        gameLoop.start();
     }
 
 }
