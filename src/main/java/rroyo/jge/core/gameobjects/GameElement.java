@@ -47,7 +47,7 @@ public class GameElement extends GameObject {
 
     protected final Overlap calculateOverlap(GameElement go) {
         if (isDeleted() || go.isDeleted()) return null;
-        if (!this.inRange(go)) {
+        if (!this.ir(go)) {
             return null;
         }
 
@@ -68,7 +68,8 @@ public class GameElement extends GameObject {
 
     protected final boolean ov(GameElement ge) {
         if (isDeleted() || ge.isDeleted()) return false;
-        calculateOverlap(ge);
+        Overlap overlap = calculateOverlap(ge);
+        if (overlap == null) return false;
         return overlap.getOverlapX() > 0 && overlap.getOverlapY() > 0;
     }
 
@@ -96,7 +97,7 @@ public class GameElement extends GameObject {
         return overlap;
     }
 
-    public final boolean inRange(GameElement ge) {
+    protected final boolean ir(GameElement ge) {
         if (isDeleted() || ge.isDeleted()) return false;
         double secureRange = (this.getDimension().getWidth() + this.getDimension().getHeight()) +
                 (ge.getDimension().getWidth() + ge.getDimension().getHeight());
@@ -109,14 +110,17 @@ public class GameElement extends GameObject {
         }
 
         double distance = (deltaX * deltaX) + (deltaY * deltaY);
-        boolean ret = distance <= (secureRange * secureRange);
 
+        return distance <= (secureRange * secureRange);
+    }
+
+    public final boolean inRange(GameElement ge) {
+        boolean ret = ir(ge);
         if (ret) {
             for (Script script : scripts) {
                 script.onInRange(this, ge);
             }
         }
-
         return ret;
     }
 
