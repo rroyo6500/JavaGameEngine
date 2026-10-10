@@ -9,8 +9,8 @@ public class GameLoop implements Runnable {
     private boolean running = false;
 
     private final int targetFPS;
-    private final Runnable onUpdate;
-    private final Runnable onRender;
+    private Runnable onUpdate;
+    private Runnable onRender;
 
     public GameLoop(int targetFPS, Runnable onUpdate, Runnable onRender) {
         this.targetFPS = targetFPS;
@@ -69,6 +69,14 @@ public class GameLoop implements Runnable {
 
         }
 
+    }
+
+    public void setOnUpdate(Runnable onUpdate) {
+        this.onUpdate = onUpdate;
+    }
+
+    public void setOnRender(Runnable onRender) {
+        this.onRender = onRender;
     }
 
 }
