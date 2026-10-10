@@ -7,6 +7,8 @@ public final class FrameWaiter {
 
     private static final Map<String, Integer> frameWaiters = new HashMap<>();
 
+    private FrameWaiter() {}
+
     public static boolean wait(String id, int delay) {
         if (!frameWaiters.containsKey(id)) {
             frameWaiters.put(id, delay);

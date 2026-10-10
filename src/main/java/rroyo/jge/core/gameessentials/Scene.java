@@ -27,6 +27,7 @@ public abstract class Scene {
         for (GameElement ge : gameElements) {
             if (!ge.isDeleted()) {
                 ge.move();
+                ge.update();
             }
         }
 

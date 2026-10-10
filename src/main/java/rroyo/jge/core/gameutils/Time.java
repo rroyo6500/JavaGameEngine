@@ -6,8 +6,7 @@ public final class Time {
     private static float deltaTime;
     private static float time;
 
-    private Time() {
-    }
+    private Time() {}
 
     public static float deltaTime() {
         return (float) (deltaTime * timeScale);

@@ -1,10 +1,15 @@
 package rroyo.jge.core.gameobjects;
 
 import rroyo.jge.core.assets.Sprite;
+import rroyo.jge.core.gameutils.Script;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameElement extends GameObject {
+
+    private final List<Script> scripts = new ArrayList<>();
 
     private final Rectangle bounds = new Rectangle();
     private final Overlap overlap = new Overlap(0, 0);
@@ -15,14 +20,23 @@ public class GameElement extends GameObject {
     protected Dimension dimension;
     protected Sprite sprite;
 
-    public GameElement(double x, double y, double width, double height, Sprite sprite) {
-        this(new Point(x, y), new Dimension(width, height), sprite);
+    public GameElement(double x, double y, double width, double height, Sprite sprite,
+                       Script... script) {
+        this(new Point(x, y), new Dimension(width, height), sprite, script);
     }
 
-    public GameElement(Point point, Dimension dimension, Sprite sprite) {
+    public GameElement(Point point, Dimension dimension, Sprite sprite,
+                       Script... script) {
         this.point = point;
         this.dimension = dimension;
         this.sprite = sprite;
+        scripts.addAll(List.of(script));
+    }
+
+    public final void update() {
+        for (Script script : scripts) {
+            script.update(this);
+        }
     }
 
     protected final Overlap calculateOverlap(GameElement go) {
@@ -46,11 +60,20 @@ public class GameElement extends GameObject {
         return overlap;
     }
 
-    public final boolean overlap(GameElement go) {
-        if (isDeleted() || go.isDeleted()) return false;
-        Overlap overlap = calculateOverlap(go);
-        if (overlap == null) return false;
+    protected final boolean ov(GameElement ge) {
+        if (isDeleted() || ge.isDeleted()) return false;
+        calculateOverlap(ge);
         return overlap.getOverlapX() > 0 && overlap.getOverlapY() > 0;
+    }
+
+    public final boolean overlap(GameElement ge) {
+        boolean isOverlap = ov(ge);
+        if (isOverlap) {
+            for (Script script : scripts) {
+                script.onOverlap(this, ge);
+            }
+        }
+        return isOverlap;
     }
 
     public final boolean overlap(Group group) {
@@ -67,30 +90,28 @@ public class GameElement extends GameObject {
         return overlap;
     }
 
-    public final GameElement getOverlapElement(Group group) {
-        if (isDeleted() || group.isDeleted()) return null;
-        for (GameElement go : group.getMembers()) {
-            if (this.overlap(go)) {
-                return go;
-            }
-        }
-        return null;
-    }
-
-    public final boolean inRange(GameElement go) {
-        if (isDeleted() || go.isDeleted()) return false;
+    public final boolean inRange(GameElement ge) {
+        if (isDeleted() || ge.isDeleted()) return false;
         double secureRange = (this.getDimension().getWidth() + this.getDimension().getHeight()) +
-                (go.getDimension().getWidth() + go.getDimension().getHeight());
+                (ge.getDimension().getWidth() + ge.getDimension().getHeight());
 
-        double deltaX = go.getPoint().getX() - this.getPoint().getX();
-        double deltaY = go.getPoint().getY() - this.getPoint().getY();
+        double deltaX = ge.getPoint().getX() - this.getPoint().getX();
+        double deltaY = ge.getPoint().getY() - this.getPoint().getY();
 
         if (Math.abs(deltaX) > secureRange || Math.abs(deltaY) > secureRange) {
             return false;
         }
 
         double distance = (deltaX * deltaX) + (deltaY * deltaY);
-        return distance <= (secureRange * secureRange);
+        boolean ret = distance <= (secureRange * secureRange);
+
+        if (ret) {
+            for (Script script : scripts) {
+                script.onInRange(this, ge);
+            }
+        }
+
+        return ret;
     }
 
     public final boolean inRange(Group group) {
@@ -103,19 +124,9 @@ public class GameElement extends GameObject {
         return false;
     }
 
-    public final GameElement getInRangeElement(Group group) {
-        if (isDeleted() || group.isDeleted()) return null;
-        for (GameElement go : group.getMembers()) {
-            if (this.inRange(go)) {
-                return go;
-            }
-        }
-        return null;
-    }
-
     public final boolean collide(GameElement gameElement) {
         if (isDeleted() || gameElement.isDeleted()) return false;
-        if (this.overlap(gameElement)) {
+        if (this.ov(gameElement)) {
             Overlap overlap = this.getOverlap(gameElement);
             if (overlap == null) return false;
             if (overlap.getOverlapX() < overlap.getOverlapY()) {
@@ -131,6 +142,11 @@ public class GameElement extends GameObject {
                     this.move(0, overlap.getOverlapY());
                 this.setVelocityY(0);
             }
+
+            for (Script script : scripts) {
+                script.onCollide(this, gameElement);
+            }
+
             return true;
         }
         return false;

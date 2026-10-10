@@ -8,6 +8,8 @@ public final class Camera {
     private static final Point position = new Point();
     private static double zoom = 1;
 
+    private Camera() {}
+
     public static void moveX(int dx) {
         position.setX(position.getX() + dx);
     }
