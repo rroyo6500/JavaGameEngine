@@ -30,7 +30,10 @@ public class GameElement extends GameObject {
         this.point = point;
         this.dimension = dimension;
         this.sprite = sprite;
-        scripts.addAll(List.of(script));
+        for (Script s : script) {
+            if (!scripts.contains(s))
+                scripts.add(s);
+        }
     }
 
     public final void start() {
