@@ -36,7 +36,7 @@ public class GameWindow {
             gameLoop.start();
         } else {
             gameLoop = new GameLoop(targetFPS, scene::processFrame, null);
-            gameLoop.stop();
+            gameLoop.start();
         }
     }
 
