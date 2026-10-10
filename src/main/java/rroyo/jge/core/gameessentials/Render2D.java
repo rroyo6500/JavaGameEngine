@@ -10,14 +10,39 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The {@code Render2D} class extends {@link JPanel} and handles the rendering of 2D game elements.
+ * It is responsible for drawing game objects (sprites or colored rectangles) and text onto the screen,
+ * taking into account camera position and zoom levels to create a view of the game world.
+ */
 public class Render2D extends JPanel {
 
+    /**
+     * The dimensions of the game window, used for calculating view boundaries and scaling.
+     */
     private final Dimension windowDimension;
+
+    /**
+     * The background color of the rendering panel. Defaults to black.
+     */
     private Color backgroundColor = Color.BLACK;
 
+    /**
+     * A list of {@link GameElement}s that need to be drawn in the current frame.
+     */
     private List<GameElement> gameElementsToDraw = new ArrayList<>();
+
+    /**
+     * A list of {@link Text} elements that need to be drawn in the current frame.
+     */
     private List<Text> textsToDraw = new ArrayList<>();
 
+    /**
+     * Constructs a new {@code Render2D} component with the specified window dimensions.
+     * It configures the preferred size of the panel and enables double buffering for smoother rendering.
+     *
+     * @param windowDimension The dimension (width and height) of the render view.
+     */
     public Render2D(Dimension windowDimension) {
         this.windowDimension = windowDimension;
 
@@ -29,15 +54,35 @@ public class Render2D extends JPanel {
         this.setDoubleBuffered(true);
     }
 
+    /**
+     * Sets the background color of the render view.
+     *
+     * @param backgroundColor The new background {@link Color}.
+     */
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 
+    /**
+     * Prepares the lists of elements and text to be drawn in the next rendering pass.
+     * This method is typically called by a {@link Scene} before asking the renderer to repaint.
+     *
+     * @param gameElements The list of {@link GameElement}s to render.
+     * @param texts        The list of {@link Text} elements to render.
+     */
     public void prepareFrame(List<GameElement> gameElements, List<Text> texts) {
         this.gameElementsToDraw = gameElements;
         this.textsToDraw = texts;
     }
 
+    /**
+     * Overrides the {@code paintComponent} method of {@link JPanel} to perform custom rendering.
+     * It clears the screen with the background color, calculates the visible area based on the camera,
+     * culls elements outside the viewport for optimization, and draws the visible elements and texts.
+     * Support is provided for drawing either image-based sprites or colored rectangles, depending on the element's sprite configuration.
+     *
+     * @param g The {@link Graphics} context used for drawing.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
