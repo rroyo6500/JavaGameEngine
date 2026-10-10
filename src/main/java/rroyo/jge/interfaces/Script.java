@@ -4,6 +4,8 @@ import rroyo.jge.core.gameobjects.GameElement;
 
 public interface Script {
 
+    void start(GameElement self);
+
     void update(GameElement self);
 
     default void onOverlap(GameElement self, GameElement objective) {
