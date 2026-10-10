@@ -8,10 +8,14 @@ import javax.swing.*;
 
 public class GameWindow {
 
+    private final int targetFPS;
+
     private final Render2D renderer;
     private GameLoop gameLoop;
 
     public GameWindow(int targetFPS, Dimension dimension, Scene scene) {
+        this.targetFPS = targetFPS;
+
         Camera.setWindowDimensions(dimension);
 
         JFrame frame = new JFrame();
@@ -20,7 +24,7 @@ public class GameWindow {
         renderer = new Render2D(dimension);
         frame.add(renderer);
 
-        setScene(targetFPS, scene);
+        setScene(scene);
 
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -28,12 +32,16 @@ public class GameWindow {
         frame.setVisible(true);
     }
 
-    public final void setScene(int targetFPS, Scene scene) {
+    public final void setScene(Scene scene) {
         scene.setRenderer(renderer);
-        if (gameLoop != null)
-            gameLoop.stop();
-        gameLoop = new GameLoop(targetFPS, scene::processFrame, null);
-        gameLoop.start();
+
+        if (gameLoop == null) {
+            gameLoop = new GameLoop(targetFPS, scene::processFrame, null);
+            gameLoop.start();
+        } else {
+            gameLoop.setOnUpdate(scene::processFrame);
+        }
+
     }
 
 }
