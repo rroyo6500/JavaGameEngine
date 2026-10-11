@@ -5,7 +5,6 @@ import rroyo.jge.core.gameobjects.Group;
 import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameutils.Overlap;
 import rroyo.jge.core.gameutils.Point;
-import rroyo.jge.core.gameutils.Velocity;
 import rroyo.jge.interfaces.Script;
 
 public abstract class Trigger extends ScriptableGameObject {
@@ -34,14 +33,34 @@ public abstract class Trigger extends ScriptableGameObject {
         addScript(new TriggerScript());
     }
 
-    public abstract void onTrigger(GameElement triggeredElement);
+    /**
+     * Action to execute when the {@code Trigger} is activated
+     *
+     * @param triggeredObject  The {@link PositionableGameObject} to check
+     */
+    public abstract void onTrigger(PositionableGameObject triggeredObject);
 
-    public final void trigger(PositionableGameObject triggeredElement) {
-        sendOnOverlap(this, triggeredElement);
+    /**
+     * Check if the {@code triggeredObject} intersects with the {@code Trigger}
+     *
+     * @param triggeredObject
+     */
+    public final boolean trigger(PositionableGameObject triggeredObject) {
+        if (isDeleted() || triggeredObject.isDeleted()) return false;
+        boolean isOverlap = Overlap.ov(this, triggeredObject);
+        if (isOverlap)
+            sendOnOverlap(this, triggeredObject);
+        return isOverlap;
     }
 
-    public final void trigger(Group triggeredGroup) {
-        sendOnOverlap(this, triggeredGroup);
+    public final boolean trigger(Group triggeredGroup) {
+        if (isDeleted() || triggeredGroup.isDeleted()) return false;
+        for (PositionableGameObject go : triggeredGroup.getMembers()) {
+            if (trigger(go)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
@@ -60,11 +79,6 @@ class TriggerScript implements Script {
 
     @Override
     public void onOverlap(GameObject self, GameObject objective) {
-        ((Trigger) self).onTrigger((GameElement) objective);
-    }
-
-    @Override
-    public void onCollide(GameObject self, GameObject objective) {
         ((Trigger) self).onTrigger((GameElement) objective);
     }
 }
