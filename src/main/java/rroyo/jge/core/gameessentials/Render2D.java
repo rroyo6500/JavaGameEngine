@@ -1,7 +1,8 @@
 package rroyo.jge.core.gameessentials;
 
+import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.core.gameutils.Dimension;
-import rroyo.jge.core.gameobjects.GameElement;
+import rroyo.jge.core.gameobjects.positionable.GameElement;
 import rroyo.jge.core.gameobjects.Text;
 import rroyo.jge.core.gameutils.Camera;
 
@@ -30,7 +31,7 @@ public class Render2D extends JPanel {
     /**
      * A list of {@link GameElement}s that need to be drawn in the current frame.
      */
-    private List<GameElement> gameElementsToDraw = new ArrayList<>();
+    private List<PositionableGameObject> gameElementsToDraw = new ArrayList<>();
 
     /**
      * A list of {@link Text} elements that need to be drawn in the current frame.
@@ -67,11 +68,11 @@ public class Render2D extends JPanel {
      * Prepares the lists of elements and text to be drawn in the next rendering pass.
      * This method is typically called by a {@link Scene} before asking the renderer to repaint.
      *
-     * @param gameElements The list of {@link GameElement}s to render.
+     * @param gameObjects The list of {@link PositionableGameObject}s to render.
      * @param texts        The list of {@link Text} elements to render.
      */
-    public void prepareFrame(List<GameElement> gameElements, List<Text> texts) {
-        this.gameElementsToDraw = gameElements;
+    public void prepareFrame(List<PositionableGameObject> gameObjects, List<Text> texts) {
+        this.gameElementsToDraw = gameObjects;
         this.textsToDraw = texts;
     }
 
@@ -103,59 +104,61 @@ public class Render2D extends JPanel {
         double viewWorldWidth = windowDimension.getWidth() / zoom;
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
-        for (GameElement go : gameElementsToDraw) {
-            if (go.isDeleted() || !go.isVisible()) continue;
+        for (PositionableGameObject pgo : gameElementsToDraw) {
+            if (pgo instanceof GameElement gameElement) {
+                if (gameElement.isDeleted() || !gameElement.isVisible()) continue;
 
-            double objX = go.getPosition().getX() - go.getSize().getHalfWidth();
-            double objY = go.getPosition().getY() - go.getSize().getHalfHeight();
-            double objW = go.getSize().getWidth();
-            double objH = go.getSize().getHeight();
+                double objX = gameElement.getPosition().getX() - gameElement.getSize().getHalfWidth();
+                double objY = gameElement.getPosition().getY() - gameElement.getSize().getHalfHeight();
+                double objW = gameElement.getSize().getWidth();
+                double objH = gameElement.getSize().getHeight();
 
-            if (objX + objW < viewWorldX || objX > viewWorldX + viewWorldWidth ||
-                    objY + objH < viewWorldY || objY > viewWorldY + viewWorldHeight
-            ) continue;
+                if (objX + objW < viewWorldX || objX > viewWorldX + viewWorldWidth ||
+                        objY + objH < viewWorldY || objY > viewWorldY + viewWorldHeight
+                ) continue;
 
-            double worldX, worldY, width, height;
+                double worldX, worldY, width, height;
 
-            go.getSprite().next();
-            if (go.getSprite().hasSpriteImage()) {
-                worldX = switch (go.getSprite().getHorizontalDirection()) {
-                    case RIGHT -> go.getPosition().getX() - go.getSize().getHalfWidth();
-                    case LEFT -> (go.getPosition().getX() - go.getSize().getHalfWidth()) + go.getSize().getWidth();
-                };
-                worldY = go.getPosition().getY() - go.getSize().getHalfHeight();
+                gameElement.getSprite().next();
+                if (gameElement.getSprite().hasSpriteImage()) {
+                    worldX = switch (gameElement.getSprite().getHorizontalDirection()) {
+                        case RIGHT -> gameElement.getPosition().getX() - gameElement.getSize().getHalfWidth();
+                        case LEFT -> (gameElement.getPosition().getX() - gameElement.getSize().getHalfWidth()) + gameElement.getSize().getWidth();
+                    };
+                    worldY = gameElement.getPosition().getY() - gameElement.getSize().getHalfHeight();
 
-                width = switch (go.getSprite().getHorizontalDirection()) {
-                    case RIGHT -> go.getSize().getWidth();
-                    case LEFT -> -go.getSize().getWidth();
-                };
-                height = go.getSize().getHeight();
+                    width = switch (gameElement.getSprite().getHorizontalDirection()) {
+                        case RIGHT -> gameElement.getSize().getWidth();
+                        case LEFT -> -gameElement.getSize().getWidth();
+                    };
+                    height = gameElement.getSize().getHeight();
 
-                int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                int drawW = (int) (width * zoom);
-                int drawH = (int) (height * zoom);
+                    int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
+                    int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
+                    int drawW = (int) (width * zoom);
+                    int drawH = (int) (height * zoom);
 
-                g.drawImage(go.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
-            }
-            else {
-                worldX = go.getPosition().getX() - go.getSize().getHalfWidth();
-                worldY = go.getPosition().getY() - go.getSize().getHalfHeight();
-                width = go.getSize().getWidth();
-                height = go.getSize().getHeight();
+                    g.drawImage(gameElement.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
+                }
+                else {
+                    worldX = gameElement.getPosition().getX() - gameElement.getSize().getHalfWidth();
+                    worldY = gameElement.getPosition().getY() - gameElement.getSize().getHalfHeight();
+                    width = gameElement.getSize().getWidth();
+                    height = gameElement.getSize().getHeight();
 
-                int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                int drawW = (int) (width * zoom);
-                int drawH = (int) (height * zoom);
+                    int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
+                    int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
+                    int drawW = (int) (width * zoom);
+                    int drawH = (int) (height * zoom);
 
-                g.setColor(go.getSprite().getSpriteColor());
-                g.fillRect(drawX, drawY, drawW, drawH);
+                    g.setColor(gameElement.getSprite().getSpriteColor());
+                    g.fillRect(drawX, drawY, drawW, drawH);
+                }
             }
         }
         for (Text text : textsToDraw) {
             if (text.getText() != null) g.setColor(text.getForeground());
-            g.drawString(text.getText(), (int) text.getPoint().getX()+5, (int) text.getPoint().getY()+15);
+            g.drawString(text.getText(), (int) text.getPosition().getX()+5, (int) text.getPosition().getY()+15);
         }
     }
 }

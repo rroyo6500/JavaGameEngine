@@ -1,9 +1,11 @@
 package rroyo.jge.core.gameessentials;
 
-import rroyo.jge.core.gameobjects.GameElement;
+import rroyo.jge.core.gameobjects.positionable.GameElement;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameobjects.Group;
 import rroyo.jge.core.gameobjects.Text;
+import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
+import rroyo.jge.core.gameobjects.positionable.ScriptableGameObject;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public abstract class Scene {
     /**
      * A list containing all the active {@link GameElement}s in this scene.
      */
-    private final List<GameElement> gameElements = new ArrayList<>();
+    private final List<PositionableGameObject> gameElements = new ArrayList<>();
 
     /**
      * A list containing all the active {@link Text} elements in this scene.
@@ -72,10 +74,12 @@ public abstract class Scene {
      * elements to the renderer to be drawn on screen.
      */
     public final void processFrame() {
-        for (GameElement ge : gameElements) {
-            if (!ge.isDeleted()) {
-                ge.move();
-                ge.update();
+        for (PositionableGameObject gameObject : gameElements) {
+            if (!gameObject.isDeleted()) {
+                gameObject.move();
+                if (gameObject instanceof ScriptableGameObject sgo) {
+                    sgo.update();
+                }
             }
         }
 
@@ -100,16 +104,18 @@ public abstract class Scene {
      */
     public final void add(GameObject... gameObjects) {
         for (GameObject go : gameObjects) {
-            if (go instanceof  GameElement ge) {
+            if (go instanceof GameElement ge) {
                 if (!gameElements.contains(ge)) {
                     gameElements.add(ge);
                     ge.start();
                 }
             } else if (go instanceof Group group) {
-                for (GameElement ge : group.getMembers()) {
-                    if (!gameElements.contains(ge)) {
-                        gameElements.add(ge);
-                        ge.start();
+                for (PositionableGameObject pgo : group.getMembers()) {
+                    if (!gameElements.contains(pgo)) {
+                        gameElements.add(pgo);
+                        if (pgo instanceof ScriptableGameObject sgo) {
+                            sgo.start();
+                        }
                     }
                 }
             }
