@@ -35,15 +35,14 @@ public interface Event2d {
      * @return {@code true} if in range of at least one member; {@code false} otherwise.
      */
     default boolean inRange(Group group) {
+        boolean ret = false;
         if (this instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || group.isDeleted()) return false;
             for (PositionableGameObject go : group.getMembers()) {
-                if (inRange(go)) {
-                    return true;
-                }
+                ret = inRange(go);
             }
         }
-        return false;
+        return ret;
     }
 
     /**
@@ -75,15 +74,14 @@ public interface Event2d {
      * @return {@code true} if overlapping with at least one member; {@code false} otherwise.
      */
     default boolean overlap(Group group) {
+        boolean ret = false;
         if (this instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || group.isDeleted()) return false;
             for (PositionableGameObject go : group.getMembers()) {
-                if (overlap(go)) {
-                    return true;
-                }
+                ret = overlap(go);
             }
         }
-        return false;
+        return ret;
     }
 
     /**
@@ -134,15 +132,14 @@ public interface Event2d {
      * @return {@code true} if a collision occurred with any member; {@code false} otherwise.
      */
     default boolean collide(Group group) {
+        boolean ret = false;
         if (this instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || group.isDeleted()) return false;
             for (PositionableGameObject go : group.getMembers()) {
-                if (collide(go)) {
-                    return true;
-                }
+                ret = collide(go);
             }
         }
-        return false;
+        return ret;
     }
 
 }
