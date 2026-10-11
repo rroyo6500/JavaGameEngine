@@ -114,20 +114,32 @@ public class Render2D extends JPanel {
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
         for (PositionableGameObject pgo : gameElementsToDraw) {
+
+            if (pgo.isDeleted() || !pgo.isVisible()) continue;
+
+            double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
+            double objY = pgo.getPosition().getY() - pgo.getSize().getHalfHeight();
+            double objW = pgo.getSize().getWidth();
+            double objH = pgo.getSize().getHeight();
+
+            if (objX + objW < viewWorldX || objX > viewWorldX + viewWorldWidth ||
+                    objY + objH < viewWorldY || objY > viewWorldY + viewWorldHeight
+            ) continue;
+
+            double worldX, worldY, width, height;
+            int drawX, drawY, drawW, drawH;
+
+            worldX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
+            worldY = pgo.getPosition().getY() - pgo.getSize().getHalfHeight();
+            width = pgo.getSize().getWidth();
+            height = pgo.getSize().getHeight();
+
+            drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
+            drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
+            drawW = (int) (width * zoom);
+            drawH = (int) (height * zoom);
+
             if (pgo instanceof GameElement gameElement) {
-                if (gameElement.isDeleted() || !gameElement.isVisible()) continue;
-
-                double objX = gameElement.getPosition().getX() - gameElement.getSize().getHalfWidth();
-                double objY = gameElement.getPosition().getY() - gameElement.getSize().getHalfHeight();
-                double objW = gameElement.getSize().getWidth();
-                double objH = gameElement.getSize().getHeight();
-
-                if (objX + objW < viewWorldX || objX > viewWorldX + viewWorldWidth ||
-                        objY + objH < viewWorldY || objY > viewWorldY + viewWorldHeight
-                ) continue;
-
-                double worldX, worldY, width, height;
-                int drawX, drawY, drawW, drawH;
 
                 gameElement.getSprite().next();
                 if (gameElement.getSprite().hasSpriteImage()) {
@@ -151,28 +163,18 @@ public class Render2D extends JPanel {
                     g.drawImage(gameElement.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
                 }
                 else {
-                    worldX = gameElement.getPosition().getX() - gameElement.getSize().getHalfWidth();
-                    worldY = gameElement.getPosition().getY() - gameElement.getSize().getHalfHeight();
-                    width = gameElement.getSize().getWidth();
-                    height = gameElement.getSize().getHeight();
-
-                    drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                    drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                    drawW = (int) (width * zoom);
-                    drawH = (int) (height * zoom);
-
                     g.setColor(gameElement.getSprite().getSpriteColor());
                     g.fillRect(drawX, drawY, drawW, drawH);
                 }
-                if (debugMode) {
-                    int objectHash = gameElement.hashCode();
-                    int rgb = objectHash % 0xFFFFFF;
+            }
+            if (debugMode) {
+                int objectHash = pgo.hashCode();
+                int rgb = objectHash % 0xFFFFFF;
 
-                    g.setColor(new Color(rgb));
-                    g.drawRect(drawX, drawY, drawW, drawH);
-                    g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
-                    g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
-                }
+                g.setColor(new Color(rgb));
+                g.drawRect(drawX, drawY, drawW, drawH);
+                g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
+                g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
             }
         }
         for (Text text : textsToDraw) {
