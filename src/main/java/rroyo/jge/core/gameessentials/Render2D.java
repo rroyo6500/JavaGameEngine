@@ -165,11 +165,18 @@ public class Render2D extends JPanel {
                     g.fillRect(drawX, drawY, drawW, drawH);
                 }
                 if (debugMode) {
+                    Color debugColor;
+                    if (gameElement.getSprite().getSpriteColor() != null)
+                        debugColor = gameElement.getSprite().getSpriteColor();
+                    else {
+                        debugColor = backgroundColor;
+                    }
+
                     g.setColor(new Color(
-                            r.nextInt(255)+1,
-                            r.nextInt(255)+1,
-                            r.nextInt(255)+1)
-                    );
+                            255 - debugColor.getRed(),
+                            255 - debugColor.getGreen(),
+                            255 - debugColor.getBlue()
+                    ));
                     g.drawRect(drawX, drawY, drawW, drawH);
                     g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
                     g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);

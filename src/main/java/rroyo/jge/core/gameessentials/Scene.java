@@ -55,6 +55,7 @@ public abstract class Scene {
     public void  setRenderer(Render2D renderer) {
         this.renderer = renderer;
         renderer.setBackgroundColor(backgroundColor);
+        renderer.setDebugMode(debugMode);
     }
 
     /**
