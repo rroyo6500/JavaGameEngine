@@ -1,4 +1,4 @@
-package rroyo.jge.core.gameobjects;
+package rroyo.jge.core.gameutils;
 
 /**
  * The {@code Velocity} class is a data component that encapsulates the speed and direction

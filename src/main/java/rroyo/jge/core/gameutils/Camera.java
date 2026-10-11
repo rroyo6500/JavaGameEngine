@@ -1,8 +1,5 @@
 package rroyo.jge.core.gameutils;
 
-import rroyo.jge.core.gameobjects.Dimension;
-import rroyo.jge.core.gameobjects.Point;
-
 /**
  * The {@code Camera} class manages the global viewpoint of the 2D game world.
  * It controls the coordinate offset (position) and the magnification level (zoom)

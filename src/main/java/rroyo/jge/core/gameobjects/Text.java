@@ -1,5 +1,7 @@
 package rroyo.jge.core.gameobjects;
 
+import rroyo.jge.core.gameutils.Point;
+
 import java.awt.*;
 
 /**
@@ -12,7 +14,7 @@ public class Text extends GameObject {
     /**
      * The positional coordinate of where the text will be drawn.
      */
-    private final Point point;
+    private final rroyo.jge.core.gameutils.Point point;
 
     /**
      * The actual text string content to be displayed.
@@ -32,16 +34,16 @@ public class Text extends GameObject {
      * @param y    The vertical Y position to render the text.
      */
     public Text(String text, double x, double y) {
-        this(text, new Point(x, y));
+        this(text, new rroyo.jge.core.gameutils.Point(x, y));
     }
 
     /**
      * Constructs a new {@code Text} element using a coordinate object.
      *
      * @param text  The string content to render.
-     * @param point The {@link Point} object defining the location.
+     * @param point The {@link rroyo.jge.core.gameutils.Point} object defining the location.
      */
-    public Text(String text, Point point) {
+    public Text(String text, rroyo.jge.core.gameutils.Point point) {
         this.point = point;
         this.text = text;
     }
@@ -67,7 +69,7 @@ public class Text extends GameObject {
     /**
      * Retrieves the spatial coordinate point of the text.
      *
-     * @return The {@link Point} indicating position.
+     * @return The {@link rroyo.jge.core.gameutils.Point} indicating position.
      */
     public Point getPoint() {
         return point;

@@ -1,4 +1,4 @@
-package rroyo.jge.core.gameobjects;
+package rroyo.jge.core.gameutils;
 
 /**
  * The {@code Point} class represents a specific location in a 2D coordinate space.

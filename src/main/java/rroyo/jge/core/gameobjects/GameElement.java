@@ -1,6 +1,9 @@
 package rroyo.jge.core.gameobjects;
 
 import rroyo.jge.core.assets.Sprite;
+import rroyo.jge.core.gameutils.Dimension;
+import rroyo.jge.core.gameutils.Overlap;
+import rroyo.jge.core.gameutils.Velocity;
 import rroyo.jge.interfaces.Script;
 
 import java.awt.*;
@@ -32,22 +35,22 @@ public class GameElement extends GameObject {
     /**
      * The physical velocity vector of the game element.
      */
-    protected Velocity velocity = new Velocity();
+    private final Velocity velocity = new Velocity();
 
     /**
      * The central position coordinate of the element in the game world.
      */
-    protected Point point;
+    private final rroyo.jge.core.gameutils.Point position;
 
     /**
      * The physical dimensions (width and height) of the element.
      */
-    protected Dimension dimension;
+    private final rroyo.jge.core.gameutils.Dimension size;
 
     /**
      * The visual asset (image or color) used to render the element.
      */
-    protected Sprite sprite;
+    private Sprite sprite;
 
     /**
      * Constructs a new {@code GameElement} using primitive coordinates and dimensions.
@@ -61,21 +64,21 @@ public class GameElement extends GameObject {
      */
     public GameElement(double x, double y, double width, double height, Sprite sprite,
                        Script... script) {
-        this(new Point(x, y), new Dimension(width, height), sprite, script);
+        this(new rroyo.jge.core.gameutils.Point(x, y), new rroyo.jge.core.gameutils.Dimension(width, height), sprite, script);
     }
 
     /**
      * Constructs a new {@code GameElement} using object-based spatial properties.
      *
-     * @param point     The {@link Point} representing the element's center.
-     * @param dimension The {@link Dimension} representing the element's size.
+     * @param position     The {@link rroyo.jge.core.gameutils.Point} representing the element's center.
+     * @param size The {@link rroyo.jge.core.gameutils.Dimension} representing the element's size.
      * @param sprite    The visual {@link Sprite} for the element.
      * @param script    A variable number of {@link Script}s to attach for customized behavior.
      */
-    public GameElement(Point point, Dimension dimension, Sprite sprite,
+    public GameElement(rroyo.jge.core.gameutils.Point position, rroyo.jge.core.gameutils.Dimension size, Sprite sprite,
                        Script... script) {
-        this.point = point;
-        this.dimension = dimension;
+        this.position = position;
+        this.size = size;
         this.sprite = sprite;
         for (Script s : script) {
             if (!scripts.contains(s))
@@ -151,13 +154,13 @@ public class GameElement extends GameObject {
         }
 
         // X
-        double deltaX = Math.abs((int) this.getPoint().getX() - (int) go.getPoint().getX());
-        double limitX = this.getDimension().getHalfWidth() + go.getDimension().getHalfWidth();
+        double deltaX = Math.abs((int) this.getPosition().getX() - (int) go.getPosition().getX());
+        double limitX = this.getSize().getHalfWidth() + go.getSize().getHalfWidth();
         double overlapX = limitX - deltaX;
 
         // Y
-        double deltaY = Math.abs((int) this.getPoint().getY() - (int) go.getPoint().getY());
-        double limitY = this.getDimension().getHalfHeight() + go.getDimension().getHalfHeight();
+        double deltaY = Math.abs((int) this.getPosition().getY() - (int) go.getPosition().getY());
+        double limitY = this.getSize().getHalfHeight() + go.getSize().getHalfHeight();
         double overlapY = limitY - deltaY;
 
         overlap.setOverlap(overlapX, overlapY);
@@ -232,11 +235,11 @@ public class GameElement extends GameObject {
      */
     protected final boolean ir(GameElement ge) {
         if (isDeleted() || ge.isDeleted()) return false;
-        double secureRange = (this.getDimension().getWidth() + this.getDimension().getHeight()) +
-                (ge.getDimension().getWidth() + ge.getDimension().getHeight());
+        double secureRange = (this.getSize().getWidth() + this.getSize().getHeight()) +
+                (ge.getSize().getWidth() + ge.getSize().getHeight());
 
-        double deltaX = ge.getPoint().getX() - this.getPoint().getX();
-        double deltaY = ge.getPoint().getY() - this.getPoint().getY();
+        double deltaX = ge.getPosition().getX() - this.getPosition().getX();
+        double deltaY = ge.getPosition().getY() - this.getPosition().getY();
 
         if (Math.abs(deltaX) > secureRange || Math.abs(deltaY) > secureRange) {
             return false;
@@ -294,13 +297,13 @@ public class GameElement extends GameObject {
             Overlap overlap = calculateOverlap(gameElement);
             if (overlap == null) return false;
             if (overlap.getOverlapX() < overlap.getOverlapY()) {
-                if (this.getPoint().getX() < gameElement.getPoint().getX())
+                if (this.getPosition().getX() < gameElement.getPosition().getX())
                     this.move(-overlap.getOverlapX(), 0);
                 else
                     this.move(overlap.getOverlapX(), 0);
                 this.setVelocityX(0);
             } else {
-                if (this.getPoint().getY() < gameElement.getPoint().getY())
+                if (this.getPosition().getY() < gameElement.getPosition().getY())
                     this.move(0, -overlap.getOverlapY());
                 else
                     this.move(0, overlap.getOverlapY());
@@ -366,9 +369,9 @@ public class GameElement extends GameObject {
      */
     public final void move(double dx, double dy) {
         if (isDeleted()) return ;
-        point.setPoint(
-                point.getX() + dx,
-                point.getY() + dy
+        position.setPoint(
+                position.getX() + dx,
+                position.getY() + dy
         );
     }
 
@@ -439,10 +442,10 @@ public class GameElement extends GameObject {
     /**
      * Retrieves the positional coordinate object of the element.
      *
-     * @return The {@link Point} representing the center of the element.
+     * @return The {@link rroyo.jge.core.gameutils.Point} representing the center of the element.
      */
-    public final Point getPoint() {
-        return point;
+    public final rroyo.jge.core.gameutils.Point getPosition() {
+        return position;
     }
 
     /**
@@ -461,9 +464,9 @@ public class GameElement extends GameObject {
      */
     public final Rectangle getBounds() {
         bounds.setBounds(
-                (int) (point.getX() - this.getDimension().getHalfWidth()),
-                (int) (point.getY() - this.getDimension().getHalfHeight()),
-                (int) this.getDimension().getWidth(), (int) this.getDimension().getHeight()
+                (int) (position.getX() - this.getSize().getHalfWidth()),
+                (int) (position.getY() - this.getSize().getHalfHeight()),
+                (int) this.getSize().getWidth(), (int) this.getSize().getHeight()
         );
         return bounds;
     }
@@ -471,10 +474,10 @@ public class GameElement extends GameObject {
     /**
      * Retrieves the spatial dimensions of the element.
      *
-     * @return The {@link Dimension} object of the element.
+     * @return The {@link rroyo.jge.core.gameutils.Dimension} object of the element.
      */
-    public final Dimension getDimension() {
-        return dimension;
+    public final Dimension getSize() {
+        return size;
     }
 
     /**

@@ -1,4 +1,4 @@
-package rroyo.jge.core.gameobjects;
+package rroyo.jge.core.gameutils;
 
 /**
  * The {@code Overlap} class is a data container used to store the amount of intersection depth

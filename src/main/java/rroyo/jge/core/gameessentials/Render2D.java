@@ -1,6 +1,6 @@
 package rroyo.jge.core.gameessentials;
 
-import rroyo.jge.core.gameobjects.Dimension;
+import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameobjects.GameElement;
 import rroyo.jge.core.gameobjects.Text;
 import rroyo.jge.core.gameutils.Camera;
@@ -104,12 +104,12 @@ public class Render2D extends JPanel {
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
         for (GameElement go : gameElementsToDraw) {
-            if (go.isDeleted()) continue;
+            if (go.isDeleted() || !go.isVisible()) continue;
 
-            double objX = go.getPoint().getX() - go.getDimension().getHalfWidth();
-            double objY = go.getPoint().getY() - go.getDimension().getHalfHeight();
-            double objW = go.getDimension().getWidth();
-            double objH = go.getDimension().getHeight();
+            double objX = go.getPosition().getX() - go.getSize().getHalfWidth();
+            double objY = go.getPosition().getY() - go.getSize().getHalfHeight();
+            double objW = go.getSize().getWidth();
+            double objH = go.getSize().getHeight();
 
             if (objX + objW < viewWorldX || objX > viewWorldX + viewWorldWidth ||
                     objY + objH < viewWorldY || objY > viewWorldY + viewWorldHeight
@@ -120,16 +120,16 @@ public class Render2D extends JPanel {
             go.getSprite().next();
             if (go.getSprite().hasSpriteImage()) {
                 worldX = switch (go.getSprite().getHorizontalDirection()) {
-                    case RIGHT -> go.getPoint().getX() - go.getDimension().getHalfWidth();
-                    case LEFT -> (go.getPoint().getX() - go.getDimension().getHalfWidth()) + go.getDimension().getWidth();
+                    case RIGHT -> go.getPosition().getX() - go.getSize().getHalfWidth();
+                    case LEFT -> (go.getPosition().getX() - go.getSize().getHalfWidth()) + go.getSize().getWidth();
                 };
-                worldY = go.getPoint().getY() - go.getDimension().getHalfHeight();
+                worldY = go.getPosition().getY() - go.getSize().getHalfHeight();
 
                 width = switch (go.getSprite().getHorizontalDirection()) {
-                    case RIGHT -> go.getDimension().getWidth();
-                    case LEFT -> -go.getDimension().getWidth();
+                    case RIGHT -> go.getSize().getWidth();
+                    case LEFT -> -go.getSize().getWidth();
                 };
-                height = go.getDimension().getHeight();
+                height = go.getSize().getHeight();
 
                 int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
                 int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
@@ -139,10 +139,10 @@ public class Render2D extends JPanel {
                 g.drawImage(go.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
             }
             else {
-                worldX = go.getPoint().getX() - go.getDimension().getHalfWidth();
-                worldY = go.getPoint().getY() - go.getDimension().getHalfHeight();
-                width = go.getDimension().getWidth();
-                height = go.getDimension().getHeight();
+                worldX = go.getPosition().getX() - go.getSize().getHalfWidth();
+                worldY = go.getPosition().getY() - go.getSize().getHalfHeight();
+                width = go.getSize().getWidth();
+                height = go.getSize().getHeight();
 
                 int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
                 int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);

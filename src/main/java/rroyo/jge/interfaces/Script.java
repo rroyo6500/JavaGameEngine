@@ -1,6 +1,7 @@
 package rroyo.jge.interfaces;
 
 import rroyo.jge.core.gameobjects.GameElement;
+import rroyo.jge.core.gameobjects.GameObject;
 
 /**
  * The {@code Script} interface defines a set of lifecycle and interaction hooks
@@ -16,7 +17,7 @@ public interface Script {
      *
      * @param self The {@link GameElement} this script is attached to.
      */
-    void start(GameElement self);
+    void start(GameObject self);
 
     /**
      * Called every frame during the game loop.
@@ -24,7 +25,7 @@ public interface Script {
      *
      * @param self The {@link GameElement} this script is attached to.
      */
-    void update(GameElement self);
+    void update(GameObject self);
 
     /**
      * Triggered when the bounding area of this element overlaps with another element,
@@ -33,7 +34,7 @@ public interface Script {
      * @param self      The {@link GameElement} this script is attached to.
      * @param objective The other {@link GameElement} that was overlapped.
      */
-    default void onOverlap(GameElement self, GameElement objective) {
+    default void onOverlap(GameObject self, GameObject objective) {
     }
 
     /**
@@ -42,7 +43,7 @@ public interface Script {
      * @param self      The {@link GameElement} this script is attached to.
      * @param objective The other {@link GameElement} involved in the collision.
      */
-    default void onCollide(GameElement self, GameElement objective) {
+    default void onCollide(GameObject self, GameObject objective) {
     }
 
     /**
@@ -51,7 +52,7 @@ public interface Script {
      * @param self      The {@link GameElement} this script is attached to.
      * @param objective The other {@link GameElement} that is within range.
      */
-    default void onInRange(GameElement self, GameElement objective) {
+    default void onInRange(GameObject self, GameObject objective) {
     }
 
 }

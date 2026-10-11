@@ -13,6 +13,11 @@ public class GameObject {
     private boolean deleted = false;
 
     /**
+     * A flagindicating if this object is visible (if not this didn't draw on the screen
+     */
+    private boolean visible = true;
+
+    /**
      * Marks this object for deletion. The game engine's loop will typically
      * check this flag and remove the object from active processing arrays.
      */
@@ -34,5 +39,23 @@ public class GameObject {
      */
     public final boolean isDeleted() {
         return deleted;
+    }
+
+    /**
+     * Checks if this object is visible or not
+     *
+     * @return  If the object is visible
+     */
+    public boolean isVisible() {
+        return visible;
+    }
+
+    /**
+     * Sets the visibility of the {@code GameObject}
+     *
+     * @param visible   The visibility of the object
+     */
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

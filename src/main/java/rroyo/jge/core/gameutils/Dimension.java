@@ -1,4 +1,4 @@
-package rroyo.jge.core.gameobjects;
+package rroyo.jge.core.gameutils;
 
 /**
  * The {@code Dimension} class represents the 2D size (width and height) of a game object.

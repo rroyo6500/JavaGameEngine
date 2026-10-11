@@ -1,6 +1,6 @@
 package rroyo.jge.core.gameessentials;
 
-import rroyo.jge.core.gameobjects.Dimension;
+import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameutils.Camera;
 import rroyo.jge.core.gameutils.Keyboard;
 import rroyo.jge.core.gameutils.Timer;
