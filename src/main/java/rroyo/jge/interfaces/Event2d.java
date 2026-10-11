@@ -82,7 +82,7 @@ public interface Event2d {
     default Overlap calculateOverlap(PositionableGameObject gameObject) {
         if (this instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || gameObject.isDeleted()) return null;
-            if (!this.inRange(gameObject)) {
+            if (!ir(gameObject)) {
                 return null;
             }
 
