@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * The {@code Render2D} class extends {@link JPanel} and handles the rendering of 2D game elements.
@@ -17,6 +18,8 @@ import java.util.List;
  * taking into account camera position and zoom levels to create a view of the game world.
  */
 public class Render2D extends JPanel {
+
+    private final Random r = new Random();
 
     /**
      * The dimensions of the game window, used for calculating view boundaries and scaling.
@@ -27,6 +30,8 @@ public class Render2D extends JPanel {
      * The background color of the rendering panel. Defaults to black.
      */
     private Color backgroundColor = Color.BLACK;
+
+    private boolean debugMode = false;
 
     /**
      * A list of {@link GameElement}s that need to be drawn in the current frame.
@@ -62,6 +67,10 @@ public class Render2D extends JPanel {
      */
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
     }
 
     /**
@@ -118,6 +127,7 @@ public class Render2D extends JPanel {
                 ) continue;
 
                 double worldX, worldY, width, height;
+                int drawX, drawY, drawW, drawH;
 
                 gameElement.getSprite().next();
                 if (gameElement.getSprite().hasSpriteImage()) {
@@ -133,10 +143,10 @@ public class Render2D extends JPanel {
                     };
                     height = gameElement.getSize().getHeight();
 
-                    int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                    int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                    int drawW = (int) (width * zoom);
-                    int drawH = (int) (height * zoom);
+                    drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
+                    drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
+                    drawW = (int) (width * zoom);
+                    drawH = (int) (height * zoom);
 
                     g.drawImage(gameElement.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
                 }
@@ -146,13 +156,23 @@ public class Render2D extends JPanel {
                     width = gameElement.getSize().getWidth();
                     height = gameElement.getSize().getHeight();
 
-                    int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                    int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                    int drawW = (int) (width * zoom);
-                    int drawH = (int) (height * zoom);
+                    drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
+                    drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
+                    drawW = (int) (width * zoom);
+                    drawH = (int) (height * zoom);
 
                     g.setColor(gameElement.getSprite().getSpriteColor());
                     g.fillRect(drawX, drawY, drawW, drawH);
+                }
+                if (debugMode) {
+                    g.setColor(new Color(
+                            r.nextInt(255)+1,
+                            r.nextInt(255)+1,
+                            r.nextInt(255)+1)
+                    );
+                    g.drawRect(drawX, drawY, drawW, drawH);
+                    g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
+                    g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
                 }
             }
         }

@@ -28,6 +28,10 @@ public abstract class Scene {
      */
     private final List<Text> texts = new ArrayList<>();
 
+    private Color backgroundColor = Color.BLACK;
+
+    private boolean debugMode = false;
+
     /**
      * The renderer responsible for drawing the visual representation of this scene.
      */
@@ -50,6 +54,7 @@ public abstract class Scene {
      */
     public void  setRenderer(Render2D renderer) {
         this.renderer = renderer;
+        renderer.setBackgroundColor(backgroundColor);
     }
 
     /**
@@ -134,13 +139,27 @@ public abstract class Scene {
         }
     }
 
+    public Color getBackgroundColor() {
+        return backgroundColor;
+    }
+
     /**
      * Sets the background color of the scene by delegating to the renderer.
      *
      * @param color The new background {@link Color} for the scene.
      */
     public final void setBackgroundColor(Color color) {
-        renderer.setBackgroundColor(color);
+        backgroundColor = color;
+        renderer.setBackgroundColor(backgroundColor);
+    }
+
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+        renderer.setDebugMode(debugMode);
     }
 
     /**

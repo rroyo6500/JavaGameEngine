@@ -39,7 +39,7 @@ public interface Event2d {
         if (this instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || group.isDeleted()) return false;
             for (PositionableGameObject go : group.getMembers()) {
-                ret = inRange(go);
+                if (inRange(go)) ret = true;
             }
         }
         return ret;
@@ -78,7 +78,7 @@ public interface Event2d {
         if (this instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || group.isDeleted()) return false;
             for (PositionableGameObject go : group.getMembers()) {
-                ret = overlap(go);
+                if (overlap(go)) ret = true;
             }
         }
         return ret;
@@ -136,7 +136,7 @@ public interface Event2d {
         if (this instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || group.isDeleted()) return false;
             for (PositionableGameObject go : group.getMembers()) {
-                ret = collide(go);
+                if (collide(go)) ret = true;
             }
         }
         return ret;

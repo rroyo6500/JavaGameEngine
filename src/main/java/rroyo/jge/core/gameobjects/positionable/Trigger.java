@@ -57,7 +57,7 @@ public abstract class Trigger extends ScriptableGameObject {
         boolean ret = false;
         if (isDeleted() || triggeredGroup.isDeleted()) return false;
         for (PositionableGameObject go : triggeredGroup.getMembers()) {
-            ret = trigger(go);
+            if (trigger(go)) ret = true;
         }
         return ret;
     }

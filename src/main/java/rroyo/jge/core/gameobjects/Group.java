@@ -40,14 +40,13 @@ public class Group extends GameObject {
      * @return {@code true} if a collision happened with at least one member; {@code false} otherwise.
      */
     public boolean collide(PositionableGameObject gameObject) {
-        boolean ret = false;
         if (isDeleted() || gameObject.isDeleted()) return false;
         for (PositionableGameObject m : members) {
-            if (m instanceof Event2d event2d) {
-                ret = event2d.collide(gameObject);
+            if (m instanceof Event2d event2d && event2d.collide(gameObject)) {
+                return true;
             }
         }
-        return ret;
+        return false;
     }
 
     /**
@@ -57,14 +56,13 @@ public class Group extends GameObject {
      * @return {@code true} if any collision happened; {@code false} otherwise.
      */
     public boolean collide(Group group) {
-        boolean ret = false;
         if (isDeleted() || group.isDeleted()) return false;
         for (PositionableGameObject m : members) {
-            if (m instanceof Event2d event2d) {
-                ret = event2d.collide(group);
+            if (m instanceof Event2d event2d && event2d.collide(group)) {
+                return true;
             }
         }
-        return ret;
+        return false;
     }
 
     /**
@@ -74,14 +72,13 @@ public class Group extends GameObject {
      * @return {@code true} if an overlap occurred with at least one member; {@code false} otherwise.
      */
     public boolean overlap(PositionableGameObject gameObject) {
-        boolean ret = false;
         if (isDeleted() || gameObject.isDeleted()) return false;
         for (PositionableGameObject m : members) {
-            if (m instanceof Event2d event2d) {
-                ret = event2d.overlap(gameObject);
+            if (m instanceof Event2d event2d && event2d.overlap(gameObject)) {
+                return true;
             }
         }
-        return ret;
+        return false;
     }
 
     /**
@@ -91,14 +88,13 @@ public class Group extends GameObject {
      * @return {@code true} if any overlap occurred; {@code false} otherwise.
      */
     public final boolean overlap(Group group) {
-        boolean ret = false;
         if (isDeleted() || group.isDeleted()) return false;
         for (PositionableGameObject m : members) {
-            if (m instanceof Event2d event2d) {
-                ret = event2d.overlap(group);
+            if (m instanceof Event2d event2d && event2d.overlap(group)) {
+                return true;
             }
         }
-        return ret;
+        return false;
     }
 
     /**
@@ -108,14 +104,13 @@ public class Group extends GameObject {
      * @return {@code true} if the element is in range of at least one member; {@code false} otherwise.
      */
     public final boolean inRange(PositionableGameObject gameObject) {
-        boolean ret = false;
         if (isDeleted() || gameObject.isDeleted()) return false;
         for (PositionableGameObject m : members) {
-            if (m instanceof Event2d event2d) {
-                ret = event2d.inRange(gameObject);
+            if (m instanceof Event2d event2d && event2d.inRange(gameObject)) {
+                return true;
             }
         }
-        return ret;
+        return false;
     }
 
     /**
@@ -128,8 +123,8 @@ public class Group extends GameObject {
         boolean ret = false;
         if (isDeleted() || group.isDeleted()) return false;
         for (PositionableGameObject m : members) {
-            if (m instanceof Event2d event2d) {
-                ret = event2d.inRange(group);
+            if (m instanceof Event2d event2d && event2d.inRange(group)) {
+                ret = true;
             }
         }
         return ret;
