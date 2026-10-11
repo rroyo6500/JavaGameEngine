@@ -110,10 +110,12 @@ public abstract class Scene {
      */
     public final void add(GameObject... gameObjects) {
         for (GameObject go : gameObjects) {
-            if (go instanceof GameElement ge) {
-                if (!gameElements.contains(ge)) {
-                    gameElements.add(ge);
-                    ge.start();
+            if (go instanceof PositionableGameObject pgo) {
+                if (!gameElements.contains(pgo)) {
+                    gameElements.add(pgo);
+                    if (pgo instanceof ScriptableGameObject sgo) {
+                        sgo.start();
+                    }
                 }
             } else if (go instanceof Group group) {
                 for (PositionableGameObject pgo : group.getMembers()) {
