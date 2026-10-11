@@ -103,6 +103,42 @@ public class GameElement extends GameObject {
     }
 
     /**
+     * Sends an {@code onOvelap} event fot this {@code GameElement}
+     *
+     * @param self      This GameElement
+     * @param objective The other GameElement that participates in the interaction
+     */
+    public final void sendOnOverlap(GameElement self, GameElement objective) {
+        for (Script script : scripts) {
+            script.onOverlap(self, objective);
+        }
+    }
+
+    /**
+     * Sends an {@code onCollide} event fot this {@code GameElement}
+     *
+     * @param self      This GameElement
+     * @param objective The other GameElement that participates in the interaction
+     */
+    public final void sendOnCollide(GameElement self, GameElement objective) {
+        for (Script script : scripts) {
+            script.onCollide(self, objective);
+        }
+    }
+
+    /**
+     * Sends an {@code onInRange} event fot this {@code GameElement}
+     *
+     * @param self      This GameElement
+     * @param objective The other GameElement that participates in the interaction
+     */
+    public final void sendOnInRange(GameElement self, GameElement objective) {
+        for (Script script : scripts) {
+            script.onInRange(self, objective);
+        }
+    }
+
+    /**
      * Calculates the Axis-Aligned Bounding Box (AABB) intersection depth between this element and another.
      *
      * @param go The other {@link GameElement} to check against.
@@ -154,6 +190,7 @@ public class GameElement extends GameObject {
         if (isOverlap) {
             for (Script script : scripts) {
                 script.onOverlap(this, ge);
+                ge.sendOnOverlap(ge, this);
             }
         }
         return isOverlap;
@@ -221,6 +258,7 @@ public class GameElement extends GameObject {
         if (ret) {
             for (Script script : scripts) {
                 script.onInRange(this, ge);
+                ge.sendOnInRange(ge, this);
             }
         }
         return ret;
@@ -271,6 +309,7 @@ public class GameElement extends GameObject {
 
             for (Script script : scripts) {
                 script.onCollide(this, gameElement);
+                gameElement.sendOnCollide(gameElement, this);
             }
 
             return true;

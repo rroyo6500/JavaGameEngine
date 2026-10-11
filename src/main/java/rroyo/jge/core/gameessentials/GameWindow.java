@@ -73,6 +73,7 @@ public class GameWindow {
     public final void setScene(Scene scene) {
         if (timer != null && !timer.isFinished()) return;
         scene.setRenderer(renderer);
+        scene.setWindow(this);
 
         if (gameLoop == null) {
             gameLoop = new GameLoop(targetFPS, scene::processFrame, null);

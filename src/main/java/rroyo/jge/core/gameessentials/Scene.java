@@ -32,6 +32,11 @@ public abstract class Scene {
     private Render2D renderer;
 
     /**
+     * The window that contains this scene
+     */
+    protected GameWindow window;
+
+    /**
      * Default constructor for the {@code Scene}.
      */
     public Scene() {}
@@ -39,10 +44,19 @@ public abstract class Scene {
     /**
      * Sets the renderer that this scene will use to draw its elements.
      *
-     * @param renderer The {@link Render2D} instance to be used for drawing.
+     * @param renderer  The {@link Render2D} instance to be used for drawing.
      */
     public void  setRenderer(Render2D renderer) {
         this.renderer = renderer;
+    }
+
+    /**
+     * Sets the window that contains this scene
+     *
+     * @param window    The {@link GameWindow} instance
+     */
+    public void setWindow(GameWindow window) {
+        this.window = window;
     }
 
     /**
