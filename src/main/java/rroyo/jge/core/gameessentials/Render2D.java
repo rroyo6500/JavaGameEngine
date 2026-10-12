@@ -115,9 +115,6 @@ public class Render2D extends JPanel {
         double viewWorldWidth = windowDimension.getWidth() / zoom;
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
-        PositionableGameObject last = null;
-        int lastDX = 0, lastDY = 0, lastDW = 0, lastDH = 0;
-
         for (PositionableGameObject pgo : gameElementsToDraw) {
 
             if (pgo.isDeleted() || !pgo.isVisible()) continue;
@@ -153,10 +150,24 @@ public class Render2D extends JPanel {
                 g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
                 g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
 
-                if (last != null) {
-                    if (Overlap.ir(pgo, last)) {
+                for (PositionableGameObject tmp : gameElementsToDraw) {
+                    if (Overlap.ir(pgo, tmp)) {
+                        double tmpX, tmpY, tmpW, tmpH;
+                        int tmpDX, tmpDY, tmpDW, tmpDH;
+
+                        tmpX = tmp.getPosition().getX() - tmp.getSize().getHalfWidth();
+                        tmpY = tmp.getPosition().getY() - tmp.getSize().getHalfHeight();
+                        tmpW = tmp.getSize().getWidth();
+                        tmpH = tmp.getSize().getHeight();
+
+                        tmpDX = (int) (((tmpX + camX) - centerX) * zoom + centerX);
+                        tmpDY = (int) (((tmpY + camY) - centerY) * zoom + centerY);
+                        tmpDW = (int) (tmpW * zoom);
+                        tmpDH = (int) (tmpH * zoom);
+
                         g.drawLine(
-                                drawX, drawY, (lastDX+(lastDW/2)), (lastDY+(lastDH/2))
+                                (drawX + (drawW/2)), (drawY + (drawH/2)),
+                                (tmpDX + (tmpDW/2)), tmpDY + (tmpDH/2)
                         );
                     }
                 }
@@ -187,11 +198,6 @@ public class Render2D extends JPanel {
                     g.fillRect(drawX, drawY, drawW, drawH);
                 }
             }
-            last = pgo;
-            lastDX = drawX;
-            lastDY = drawY;
-            lastDW = drawW;
-            lastDH = drawH;
         }
         for (Text text : textsToDraw) {
             if (text.getText() != null) g.setColor(text.getForeground());
