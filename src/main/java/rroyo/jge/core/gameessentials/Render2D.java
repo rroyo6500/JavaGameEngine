@@ -99,7 +99,8 @@ public class Render2D extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g;
 
-        g2.setColor(backgroundColor);
+        if (debugMode) g.setColor(Color.BLACK);
+        else g2.setColor(backgroundColor);
         g2.fillRect(0, 0, getWidth(), getHeight());
 
         double centerX = windowDimension.getHalfWidth();
@@ -139,8 +140,15 @@ public class Render2D extends JPanel {
             drawW = (int) (width * zoom);
             drawH = (int) (height * zoom);
 
-            if (pgo instanceof GameElement gameElement) {
-
+            if (debugMode) {
+                g.setColor(new Color(pgo.hashCode() % 0xFFFFFF));
+                g.fillRect(drawX, drawY, drawW, 4);
+                g.fillRect(drawX, drawY, 4, drawH);
+                g.fillRect(drawX, (drawY+drawH)-4, drawW, 4);
+                g.fillRect((drawX+drawW)-4, drawY, 4, drawH);
+                g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
+                g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
+            } else if (pgo instanceof GameElement gameElement) {
                 gameElement.getSprite().next();
                 if (gameElement.getSprite().hasSpriteImage()) {
                     worldX = switch (gameElement.getSprite().getHorizontalDirection()) {
@@ -166,15 +174,6 @@ public class Render2D extends JPanel {
                     g.setColor(gameElement.getSprite().getSpriteColor());
                     g.fillRect(drawX, drawY, drawW, drawH);
                 }
-            }
-            if (debugMode) {
-                g.setColor(new Color(pgo.hashCode() % 0xFFFFFF));
-                g.fillRect(drawX, drawY, drawW, 4);
-                g.fillRect(drawX, drawY, 4, drawH);
-                g.fillRect(drawX, (drawY+drawH)-4, drawW, 4);
-                g.fillRect((drawX+drawW)-4, drawY, 4, drawH);
-                g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
-                g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
             }
         }
         for (Text text : textsToDraw) {
