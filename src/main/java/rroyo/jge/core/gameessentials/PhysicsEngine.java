@@ -28,7 +28,7 @@ public final class PhysicsEngine {
     }
 
     public static List<PositionableGameObject> getGameObjects(Scene scene) {
-        if (startedScene.get(scene.hashCode())) {
+        if (startedScene.containsKey(scene.hashCode()) && !startedScene.get(scene.hashCode())) {
             for (PositionableGameObject pgo : gameObjects.get(scene.hashCode())) {
                 if (pgo instanceof ScriptableGameObject sgo) {
                     sgo.start();
@@ -47,6 +47,10 @@ public final class PhysicsEngine {
 
     public static void remove(PositionableGameObject go) {
         gameObjects.get(go.getSceneHash()).remove(go);
+    }
+
+    public static void remove(Scene scene) {
+        gameObjects.remove(scene.hashCode());
     }
 
     public static void removeIf(Predicate<? super PositionableGameObject> filter) {

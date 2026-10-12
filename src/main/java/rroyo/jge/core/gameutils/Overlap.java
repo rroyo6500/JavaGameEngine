@@ -83,12 +83,12 @@ public record Overlap(double overlapX, double overlapY) {
             }
 
             // X
-            double deltaX = Math.abs((int) pgo.getPosition().getX() - (int) gameObject.getPosition().getX());
+            double deltaX = Math.abs(pgo.getPosition().getX() - gameObject.getPosition().getX());
             double limitX = pgo.getSize().getHalfWidth() + gameObject.getSize().getHalfWidth();
             double overlapX = limitX - deltaX;
 
             // Y
-            double deltaY = Math.abs((int) pgo.getPosition().getY() - (int) gameObject.getPosition().getY());
+            double deltaY = Math.abs(pgo.getPosition().getY() - gameObject.getPosition().getY());
             double limitY = pgo.getSize().getHalfHeight() + gameObject.getSize().getHalfHeight();
             double overlapY = limitY - deltaY;
 

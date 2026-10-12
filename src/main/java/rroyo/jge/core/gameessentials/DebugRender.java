@@ -29,7 +29,7 @@ public final class DebugRender {
             g.setColor(new Color(pgo.hashCode() % 0xFFFFFF));
             g.drawRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
             g.drawLine(dp.drawX(), dp.drawY(), dp.drawX()+dp.drawW(), dp.drawY()+dp.drawH());
-            g.drawLine(dp.drawX(), dp.drawY()+dp.drawH(), dp.drawX()+dp.drawW(), dp.drawH());
+            g.drawLine(dp.drawX(), dp.drawY()+dp.drawH(), dp.drawX()+dp.drawW(), dp.drawY());
 
             for (PositionableGameObject tmp : PhysicsEngine.getGameObjects(scene)) {
                 if (Overlap.ir(pgo, tmp)) {

@@ -33,7 +33,6 @@ public class Group extends GameObject {
                 members.add(m);
             }
         }
-        PhysicsEngine.add(members.toArray(PositionableGameObject[]::new));
     }
 
     /**

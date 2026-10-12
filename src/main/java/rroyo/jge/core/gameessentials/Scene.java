@@ -19,11 +19,6 @@ import java.util.List;
 public abstract class Scene {
 
     /**
-     * A list containing all the active {@link GameElement}s in this scene.
-     */
-    private final List<PositionableGameObject> gameElements = new ArrayList<>();
-
-    /**
      * A list containing all the active {@link Text} elements in this scene.
      */
     private final List<Text> texts = new ArrayList<>();
@@ -101,37 +96,6 @@ public abstract class Scene {
     }
 
     /**
-     * Adds one or more game objects to the scene.
-     * If an object is a single {@link GameElement}, it is added to the scene's list and its {@code start()} method is called.
-     * If an object is a {@link Group}, all its members are individually added and started.
-     * It ensures that duplicates are not added.
-     *
-     * @param gameObjects A variable number of {@link GameObject}s (which can be elements or groups) to add to the scene.
-     */
-    @Deprecated
-    public final void add(GameObject... gameObjects) {
-        for (GameObject go : gameObjects) {
-            if (go instanceof PositionableGameObject pgo) {
-                if (!gameElements.contains(pgo)) {
-                    gameElements.add(pgo);
-                    if (pgo instanceof ScriptableGameObject sgo) {
-                        sgo.start();
-                    }
-                }
-            } else if (go instanceof Group group) {
-                for (PositionableGameObject pgo : group.getMembers()) {
-                    if (!gameElements.contains(pgo)) {
-                        gameElements.add(pgo);
-                        if (pgo instanceof ScriptableGameObject sgo) {
-                            sgo.start();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Adds one or more text objects to the scene to be rendered.
      * It ensures that duplicate text objects are not added.
      *
@@ -171,7 +135,7 @@ public abstract class Scene {
      * Useful for resetting the scene or preparing for a complete change of state.
      */
     public void clear() {
-        gameElements.clear();
+        PhysicsEngine.remove(this);
         texts.clear();
     }
 
