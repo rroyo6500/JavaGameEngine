@@ -1,4 +1,7 @@
-package rroyo.jge.core.gameutils;
+package rroyo.jge.core.gameessentials;
+
+import rroyo.jge.core.gameutils.Camera;
+import rroyo.jge.core.gameutils.Dimension;
 
 public record ViewportParams(
         double centerX,

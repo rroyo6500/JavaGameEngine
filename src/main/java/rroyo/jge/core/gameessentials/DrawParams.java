@@ -1,4 +1,4 @@
-package rroyo.jge.core.gameutils;
+package rroyo.jge.core.gameessentials;
 
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 

@@ -108,7 +108,7 @@ public final class Camera {
      * @param zoom The new zoom multiplier.
      */
     public static void setZoom(double zoom) {
-        if (zoom < 0) zoom = 0;
+        if (zoom <= 0) zoom = 0.01;
         Camera.zoom = zoom;
     }
 

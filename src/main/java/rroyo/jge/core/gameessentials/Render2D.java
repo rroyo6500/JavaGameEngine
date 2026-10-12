@@ -4,15 +4,11 @@ import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameobjects.positionable.GameElement;
 import rroyo.jge.core.gameobjects.Text;
-import rroyo.jge.core.gameutils.Camera;
-import rroyo.jge.core.gameutils.DrawParams;
-import rroyo.jge.core.gameutils.ViewportParams;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * The {@code Render2D} class extends {@link JPanel} and handles the rendering of 2D game elements.
