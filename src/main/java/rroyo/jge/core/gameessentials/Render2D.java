@@ -143,10 +143,7 @@ public class Render2D extends JPanel {
 
             if (debugMode) {
                 g.setColor(new Color(pgo.hashCode() % 0xFFFFFF));
-                g.fillRect(drawX, drawY, drawW, 4);
-                g.fillRect(drawX, drawY, 4, drawH);
-                g.fillRect(drawX, (drawY+drawH)-4, drawW, 4);
-                g.fillRect((drawX+drawW)-4, drawY, 4, drawH);
+                g.drawRect(drawX, drawY, drawW, drawH);
                 g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
                 g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
 
