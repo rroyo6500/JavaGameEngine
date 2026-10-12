@@ -13,26 +13,30 @@ import java.util.function.Predicate;
 public final class PhisicsEngine {
 
     private static final Map<Integer, List<PositionableGameObject>> gameObjects = new HashMap<>();
+    private static final Map<Integer, Boolean> startedScene = new HashMap<>();
 
     public static void add(PositionableGameObject... gameObject) {
         for (PositionableGameObject go : gameObject) {
             if (gameObjects.containsKey(go.getSceneHash())) {
                 gameObjects.get(go.getSceneHash()).add(go);
-                if (go instanceof ScriptableGameObject sgo) {
-                    sgo.start();
-                }
             } else {
                 List<PositionableGameObject> tmp = new ArrayList<>();
                 tmp.add(go);
-                if (go instanceof ScriptableGameObject sgo) {
-                    sgo.start();
-                }
                 gameObjects.put(go.getSceneHash(), tmp);
+                startedScene.put(go.getSceneHash(), false);
             }
         }
     }
 
     public static List<PositionableGameObject> getGameObjects(Scene scene) {
+        if (startedScene.get(scene.hashCode())) {
+            for (PositionableGameObject pgo : gameObjects.get(scene.hashCode())) {
+                if (pgo instanceof ScriptableGameObject sgo) {
+                    sgo.start();
+                }
+            }
+            startedScene.put(scene.hashCode(), true);
+        }
         return List.copyOf(gameObjects.get(scene.hashCode()));
     }
 
