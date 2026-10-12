@@ -1,6 +1,7 @@
 package rroyo.jge.core.gameobjects.positionable;
 
 import rroyo.jge.core.assets.Sprite;
+import rroyo.jge.core.gameessentials.Scene;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameutils.Point;
@@ -31,8 +32,8 @@ public class GameElement extends ScriptableGameObject implements Event2d {
      * @param sprite The visual {@link Sprite} for the element.
      * @param scripts A variable number of {@link Script}s to attach for customized behavior.
      */
-    public GameElement(double x, double y, double width, double height, Sprite sprite, Script... scripts) {
-        super(x, y, width, height, scripts);
+    public GameElement(Scene scene, double x, double y, double width, double height, Sprite sprite, Script... scripts) {
+        super(scene, x, y, width, height, scripts);
         this.sprite = sprite;
     }
 
@@ -44,8 +45,8 @@ public class GameElement extends ScriptableGameObject implements Event2d {
      * @param sprite    The visual {@link Sprite} for the element.
      * @param scripts    A variable number of {@link Script}s to attach for customized behavior.
      */
-    public GameElement(Point position, Dimension size, Sprite sprite, Script... scripts) {
-        super(position, size, scripts);
+    public GameElement(Scene scene, Point position, Dimension size, Sprite sprite, Script... scripts) {
+        super(scene, position, size, scripts);
         this.sprite = sprite;
     }
 

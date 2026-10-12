@@ -44,6 +44,7 @@ public class Text extends GameObject {
      * @param position The {@link rroyo.jge.core.gameutils.Point} object defining the location.
      */
     public Text(String text, rroyo.jge.core.gameutils.Point position) {
+        super(null);
         this.position = position;
         this.text = text;
     }

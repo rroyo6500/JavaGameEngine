@@ -27,6 +27,7 @@ public class Group extends GameObject {
      * @param member A variable number of {@link GameElement} objects to add to the group.
      */
     public Group(PositionableGameObject... member) {
+        super(null);
         for (PositionableGameObject m : member) {
             if (!members.contains(m)) {
                 members.add(m);

@@ -1,5 +1,6 @@
 package rroyo.jge.core.gameobjects.positionable;
 
+import rroyo.jge.core.gameessentials.Scene;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameutils.Point;
@@ -24,8 +25,8 @@ public class ScriptableGameObject extends PositionableGameObject {
      * @param height The total height of the object.
      * @param scripts A variable number of {@link Script}s to attach for customized behavior.
      */
-    public ScriptableGameObject(double x, double y, double width, double height, Script... scripts) {
-        super(x, y, width, height);
+    public ScriptableGameObject(Scene scene, double x, double y, double width, double height, Script... scripts) {
+        super(scene, x, y, width, height);
         addScript(scripts);
     }
 
@@ -36,8 +37,8 @@ public class ScriptableGameObject extends PositionableGameObject {
      * @param size The {@link rroyo.jge.core.gameutils.Dimension} representing the object's size.
      * @param scripts    A variable number of {@link Script}s to attach for customized behavior.
      */
-    public ScriptableGameObject(Point position, Dimension size, Script... scripts) {
-        super(position, size);
+    public ScriptableGameObject(Scene scene, Point position, Dimension size, Script... scripts) {
+        super(scene, position, size);
         addScript(scripts);
     }
 

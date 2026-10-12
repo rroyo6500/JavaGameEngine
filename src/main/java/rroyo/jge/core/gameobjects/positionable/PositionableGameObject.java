@@ -1,6 +1,7 @@
 package rroyo.jge.core.gameobjects.positionable;
 
 import rroyo.jge.core.gameessentials.PhisicsEngine;
+import rroyo.jge.core.gameessentials.Scene;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameutils.Point;
@@ -38,8 +39,8 @@ public class PositionableGameObject extends GameObject {
      * @param width  The total width of the object.
      * @param height The total height of the object.
      */
-    public PositionableGameObject(double x, double y, double width, double height) {
-        this(new Point(x, y), new Dimension(width, height));
+    public PositionableGameObject(Scene scene, double x, double y, double width, double height) {
+        this(scene, new Point(x, y), new Dimension(width, height));
     }
 
     /**
@@ -48,7 +49,8 @@ public class PositionableGameObject extends GameObject {
      * @param position     The {@link rroyo.jge.core.gameutils.Point} representing the element's center.
      * @param size The {@link rroyo.jge.core.gameutils.Dimension} representing the element's size.
      */
-    public PositionableGameObject(Point position, Dimension size) {
+    public PositionableGameObject(Scene scene, Point position, Dimension size) {
+        super(scene);
         this.position = position;
         this.size = size;
         PhisicsEngine.add(this);

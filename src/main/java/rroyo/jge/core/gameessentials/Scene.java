@@ -80,7 +80,7 @@ public abstract class Scene {
      * elements to the renderer to be drawn on screen.
      */
     public final void processFrame() {
-        for (PositionableGameObject gameObject : gameElements) {
+        for (PositionableGameObject gameObject : PhisicsEngine.getGameObjects(this)) {
             if (!gameObject.isDeleted()) {
                 gameObject.move();
                 if (gameObject instanceof ScriptableGameObject sgo) {
@@ -91,11 +91,11 @@ public abstract class Scene {
 
         update();
 
-        gameElements.removeIf(GameObject::isDeleted);
+        PhisicsEngine.removeIf(GameObject::isDeleted);
         texts.removeIf(Text::isDeleted);
 
         if (renderer != null) {
-            renderer.prepareFrame(texts);
+            renderer.prepareFrame(this, texts);
             renderer.repaint();
         }
     }

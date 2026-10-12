@@ -1,11 +1,15 @@
 package rroyo.jge.core.gameobjects;
 
+import rroyo.jge.core.gameessentials.Scene;
+
 /**
  * The {@code GameObject} class is the fundamental base class for all entity types
  * in the game engine, such as elements, groups, and text. It provides a common
  * mechanism to manage the life cycle state, allowing objects to be flagged for deletion.
  */
 public class GameObject {
+
+    private final int sceneHash;
 
     /**
      * A flag indicating if this object has been marked for deletion.
@@ -16,6 +20,11 @@ public class GameObject {
      * A flagindicating if this object is visible (if not this didn't draw on the screen
      */
     private boolean visible = true;
+
+    public GameObject(Scene scene) {
+        if (scene == null) this.sceneHash = 0;
+        else this.sceneHash = scene.hashCode();
+    }
 
     /**
      * Marks this object for deletion. The game engine's loop will typically
@@ -57,5 +66,9 @@ public class GameObject {
      */
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public int getSceneHash() {
+        return sceneHash;
     }
 }

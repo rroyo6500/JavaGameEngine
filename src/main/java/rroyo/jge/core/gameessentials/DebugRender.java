@@ -9,7 +9,7 @@ import java.awt.*;
 
 public final class DebugRender {
 
-    public static void render(Graphics2D g, Dimension windowDimension) {
+    public static void render(Graphics2D g, Scene scene, Dimension windowDimension) {
         g.setBackground(Color.black);
 
         double centerX = windowDimension.getHalfWidth();
@@ -23,7 +23,7 @@ public final class DebugRender {
         double viewWorldWidth = windowDimension.getWidth() / zoom;
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
-        for (PositionableGameObject pgo : PhisicsEngine.getGameObjects()) {
+        for (PositionableGameObject pgo : PhisicsEngine.getGameObjects(scene)) {
             if (pgo.isDeleted() || !pgo.isVisible()) continue;
 
             double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
@@ -53,7 +53,7 @@ public final class DebugRender {
             g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
             g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
 
-            for (PositionableGameObject tmp : PhisicsEngine.getGameObjects()) {
+            for (PositionableGameObject tmp : PhisicsEngine.getGameObjects(scene)) {
                 if (Overlap.ir(pgo, tmp)) {
                     double tmpX, tmpY, tmpW, tmpH;
                     int tmpDX, tmpDY, tmpDW, tmpDH;

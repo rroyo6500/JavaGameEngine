@@ -39,6 +39,8 @@ public final class Render2D extends JPanel {
      */
     private List<Text> textsToDraw = new ArrayList<>();
 
+    private Scene scene;
+
     /**
      * Constructs a new {@code Render2D} component with the specified window dimensions.
      * It configures the preferred size of the panel and enables double buffering for smoother rendering.
@@ -75,7 +77,8 @@ public final class Render2D extends JPanel {
      *
      * @param texts        The list of {@link Text} elements to render.
      */
-    public void prepareFrame(List<Text> texts) {;
+    public void prepareFrame(Scene scene, List<Text> texts) {
+        this.scene = scene;
         this.textsToDraw = texts;
     }
 
@@ -94,7 +97,7 @@ public final class Render2D extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
 
         if (debugMode) {
-            DebugRender.render(g2, windowDimension);
+            DebugRender.render(g2, scene, windowDimension);
             return;
         }
 
@@ -111,7 +114,7 @@ public final class Render2D extends JPanel {
         double viewWorldWidth = windowDimension.getWidth() / zoom;
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
-        for (PositionableGameObject pgo : PhisicsEngine.getGameObjects()) {
+        for (PositionableGameObject pgo : PhisicsEngine.getGameObjects(scene)) {
             if (pgo.isDeleted() || !pgo.isVisible()) continue;
 
             double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();

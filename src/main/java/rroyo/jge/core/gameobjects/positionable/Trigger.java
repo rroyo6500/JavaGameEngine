@@ -1,5 +1,6 @@
 package rroyo.jge.core.gameobjects.positionable;
 
+import rroyo.jge.core.gameessentials.Scene;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameobjects.Group;
 import rroyo.jge.core.gameutils.Dimension;
@@ -17,8 +18,8 @@ public abstract class Trigger extends ScriptableGameObject {
      * @param width  The total width of the object.
      * @param height The total height of the object.
      */
-    public Trigger(double x, double y, double width, double height) {
-        super(x, y, width, height);
+    public Trigger(Scene scene, double x, double y, double width, double height) {
+        super(scene, x, y, width, height);
         addScript(new TriggerScript());
     }
 
@@ -28,8 +29,8 @@ public abstract class Trigger extends ScriptableGameObject {
      * @param position     The {@link rroyo.jge.core.gameutils.Point} representing the object's center.
      * @param size The {@link rroyo.jge.core.gameutils.Dimension} representing the object's size.
      */
-    public Trigger(Point position, Dimension size) {
-        super(position, size);
+    public Trigger(Scene scene, Point position, Dimension size) {
+        super(scene, position, size);
         addScript(new TriggerScript());
     }
 
