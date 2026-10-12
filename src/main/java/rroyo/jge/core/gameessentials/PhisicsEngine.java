@@ -16,11 +16,18 @@ public final class PhisicsEngine {
 
     public static void add(PositionableGameObject... gameObject) {
         for (PositionableGameObject go : gameObject) {
-            if (!gameObjects.containsKey(go.getSceneHash())) {
+            if (gameObjects.containsKey(go.getSceneHash())) {
                 gameObjects.get(go.getSceneHash()).add(go);
                 if (go instanceof ScriptableGameObject sgo) {
                     sgo.start();
                 }
+            } else {
+                List<PositionableGameObject> tmp = new ArrayList<>();
+                tmp.add(go);
+                if (go instanceof ScriptableGameObject sgo) {
+                    sgo.start();
+                }
+                gameObjects.put(go.getSceneHash(), tmp);
             }
         }
     }
