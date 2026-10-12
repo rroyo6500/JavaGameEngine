@@ -5,7 +5,8 @@ import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameobjects.positionable.GameElement;
 import rroyo.jge.core.gameobjects.Text;
 import rroyo.jge.core.gameutils.Camera;
-import rroyo.jge.core.gameutils.Overlap;
+import rroyo.jge.core.gameutils.DrawParams;
+import rroyo.jge.core.gameutils.ViewportParams;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +21,7 @@ import java.util.Random;
  */
 public final class Render2D extends JPanel {
 
-    private final Random r = new Random();
+
 
     /**
      * The dimensions of the game window, used for calculating view boundaries and scaling.
@@ -96,26 +97,17 @@ public final class Render2D extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g;
 
+        ViewportParams vp = ViewportParams.calculateViewport(windowDimension);
+
         if (debugMode) {
-            DebugRender.render(g2, scene, windowDimension);
+            DebugRender.render(g2, scene, vp, windowDimension);
             return;
         }
 
         g2.setColor(backgroundColor);
         g2.fillRect(0, 0, (int) windowDimension.getWidth(), (int) windowDimension.getHeight());
 
-        double centerX = windowDimension.getHalfWidth();
-        double centerY = windowDimension.getHalfHeight();
-        double zoom = Camera.getZoom();
-        double camX = Camera.getCameraPosition().getX();
-        double camY = Camera.getCameraPosition().getY();
-
-        double viewWorldX = centerX - (centerX / zoom) - camX;
-        double viewWorldY = centerY - (centerY / zoom) - camY;
-        double viewWorldWidth = windowDimension.getWidth() / zoom;
-        double viewWorldHeight = windowDimension.getHeight() / zoom;
-
-        for (PositionableGameObject pgo : PhisicsEngine.getGameObjects(scene)) {
+        for (PositionableGameObject pgo : PhysicsEngine.getGameObjects(scene)) {
             if (pgo.isDeleted() || !pgo.isVisible()) continue;
 
             double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
@@ -123,16 +115,16 @@ public final class Render2D extends JPanel {
             double objW = pgo.getSize().getWidth();
             double objH = pgo.getSize().getHeight();
 
-            if (objX + objW < viewWorldX || objX > viewWorldX + viewWorldWidth ||
-                    objY + objH < viewWorldY || objY > viewWorldY + viewWorldHeight
+            if (objX + objW < vp.viewWorldX() || objX > vp.viewWorldX() + vp.viewWorldWidth() ||
+                    objY + objH < vp.viewWorldY() || objY > vp.viewWorldY() + vp.viewWorldHeight()
             ) continue;
-
-            double worldX, worldY, width, height;
-            int drawX, drawY, drawW, drawH;
 
             if (pgo instanceof GameElement gameElement) {
                 gameElement.getSprite().next();
                 if (gameElement.getSprite().hasSpriteImage()) {
+                    double worldX, worldY, width, height;
+                    int drawX, drawY, drawW, drawH;
+
                     worldX = switch (gameElement.getSprite().getHorizontalDirection()) {
                         case RIGHT -> gameElement.getPosition().getX() - gameElement.getSize().getHalfWidth();
                         case LEFT -> (gameElement.getPosition().getX() - gameElement.getSize().getHalfWidth()) + gameElement.getSize().getWidth();
@@ -145,26 +137,18 @@ public final class Render2D extends JPanel {
                     };
                     height = gameElement.getSize().getHeight();
 
-                    drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                    drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                    drawW = (int) (width * zoom);
-                    drawH = (int) (height * zoom);
+                    drawX = (int) (((worldX + vp.camX()) - vp.centerX()) * vp.zoom() + vp.centerX());
+                    drawY = (int) (((worldY + vp.camY()) - vp.centerY()) * vp.zoom() + vp.centerY());
+                    drawW = (int) (width * vp.zoom());
+                    drawH = (int) (height * vp.zoom());
 
                     g.drawImage(gameElement.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
                 }
                 else {
-                    worldX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
-                    worldY = pgo.getPosition().getY() - pgo.getSize().getHalfHeight();
-                    width = pgo.getSize().getWidth();
-                    height = pgo.getSize().getHeight();
-
-                    drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                    drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                    drawW = (int) (width * zoom);
-                    drawH = (int) (height * zoom);
+                    DrawParams dp = DrawParams.calculateDraw(gameElement, vp);
 
                     g.setColor(gameElement.getSprite().getSpriteColor());
-                    g.fillRect(drawX, drawY, drawW, drawH);
+                    g.fillRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
                 }
             }
         }

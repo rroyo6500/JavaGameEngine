@@ -1,6 +1,6 @@
 package rroyo.jge.core.gameobjects.positionable;
 
-import rroyo.jge.core.gameessentials.PhisicsEngine;
+import rroyo.jge.core.gameessentials.PhysicsEngine;
 import rroyo.jge.core.gameessentials.Scene;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameutils.Dimension;
@@ -53,7 +53,7 @@ public class PositionableGameObject extends GameObject {
         super(scene);
         this.position = position;
         this.size = size;
-        PhisicsEngine.add(this);
+        PhysicsEngine.add(this);
     }
 
     /**
@@ -100,7 +100,6 @@ public class PositionableGameObject extends GameObject {
      *
      * @param velocityX The new velocity on the X-axis.
      * @param velocityY The new velocity on the Y-axis.
-     * @throws RuntimeException if an underlying IllegalAccessException occurs in the Velocity object.
      */
     public final void setVelocity(double velocityX, double velocityY) {
         try {
@@ -115,7 +114,6 @@ public class PositionableGameObject extends GameObject {
      * Sets the horizontal velocity of the element.
      *
      * @param velocityX The new velocity on the X-axis.
-     * @throws RuntimeException if an underlying IllegalAccessException occurs in the Velocity object.
      */
     public final void setVelocityX (double velocityX) {
         if (isDeleted()) return;
@@ -130,7 +128,6 @@ public class PositionableGameObject extends GameObject {
      * Sets the vertical velocity of the element.
      *
      * @param velocityY The new velocity on the Y-axis.
-     * @throws RuntimeException if an underlying IllegalAccessException occurs in the Velocity object.
      */
     public final void setVelocityY (double velocityY) {
         if (isDeleted()) return;

@@ -1,6 +1,6 @@
 package rroyo.jge.core.gameobjects;
 
-import rroyo.jge.core.gameessentials.PhisicsEngine;
+import rroyo.jge.core.gameessentials.PhysicsEngine;
 import rroyo.jge.core.gameobjects.positionable.GameElement;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.interfaces.Event2d;
@@ -33,7 +33,7 @@ public class Group extends GameObject {
                 members.add(m);
             }
         }
-        PhisicsEngine.add(members.toArray(PositionableGameObject[]::new));
+        PhysicsEngine.add(members.toArray(PositionableGameObject[]::new));
     }
 
     /**

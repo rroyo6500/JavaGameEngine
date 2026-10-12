@@ -70,7 +70,7 @@ public final class GameWindow {
      *
      * @param scene The new {@link Scene} to be set as active.
      */
-    public final void setScene(Scene scene) {
+    public synchronized void setScene(Scene scene) {
         if (timer != null && !timer.isFinished()) return;
         scene.setRenderer(renderer);
         scene.setWindow(this);

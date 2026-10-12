@@ -1,6 +1,5 @@
 package rroyo.jge.core.gameessentials;
 
-import rroyo.jge.core.gameobjects.Text;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.core.gameobjects.positionable.ScriptableGameObject;
 
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public final class PhisicsEngine {
+public final class PhysicsEngine {
 
     private static final Map<Integer, List<PositionableGameObject>> gameObjects = new HashMap<>();
     private static final Map<Integer, Boolean> startedScene = new HashMap<>();
