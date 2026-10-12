@@ -116,6 +116,7 @@ public class Render2D extends JPanel {
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
         PositionableGameObject last = null;
+        int lastDX = 0, lastDY = 0, lastDW = 0, lastDH = 0;
 
         for (PositionableGameObject pgo : gameElementsToDraw) {
 
@@ -155,8 +156,7 @@ public class Render2D extends JPanel {
                 if (last != null) {
                     if (Overlap.ir(pgo, last)) {
                         g.drawLine(
-                                (int) pgo.getPosition().getX(), (int) pgo.getPosition().getY(),
-                                (int) last.getPosition().getX(), (int) last.getPosition().getY()
+                                drawX, drawY, (lastDX+(lastDW/2)), (lastDY+(lastDH/2))
                         );
                     }
                 }
@@ -188,6 +188,10 @@ public class Render2D extends JPanel {
                 }
             }
             last = pgo;
+            lastDX = drawX;
+            lastDY = drawY;
+            lastDW = drawW;
+            lastDH = drawH;
         }
         for (Text text : textsToDraw) {
             if (text.getText() != null) g.setColor(text.getForeground());
