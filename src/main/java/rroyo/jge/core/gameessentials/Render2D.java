@@ -5,6 +5,7 @@ import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameobjects.positionable.GameElement;
 import rroyo.jge.core.gameobjects.Text;
 import rroyo.jge.core.gameutils.Camera;
+import rroyo.jge.core.gameutils.Overlap;
 
 import javax.swing.*;
 import java.awt.*;
@@ -114,6 +115,8 @@ public class Render2D extends JPanel {
         double viewWorldWidth = windowDimension.getWidth() / zoom;
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
+        PositionableGameObject last = null;
+
         for (PositionableGameObject pgo : gameElementsToDraw) {
 
             if (pgo.isDeleted() || !pgo.isVisible()) continue;
@@ -148,6 +151,15 @@ public class Render2D extends JPanel {
                 g.fillRect((drawX+drawW)-4, drawY, 4, drawH);
                 g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
                 g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
+
+                if (last != null) {
+                    if (Overlap.ir(pgo, last)) {
+                        g.drawLine(
+                                (int) pgo.getPosition().getX(), (int) pgo.getPosition().getY(),
+                                (int) last.getPosition().getX(), (int) last.getPosition().getY()
+                        );
+                    }
+                }
             } else if (pgo instanceof GameElement gameElement) {
                 gameElement.getSprite().next();
                 if (gameElement.getSprite().hasSpriteImage()) {
@@ -175,6 +187,7 @@ public class Render2D extends JPanel {
                     g.fillRect(drawX, drawY, drawW, drawH);
                 }
             }
+            last = pgo;
         }
         for (Text text : textsToDraw) {
             if (text.getText() != null) g.setColor(text.getForeground());
