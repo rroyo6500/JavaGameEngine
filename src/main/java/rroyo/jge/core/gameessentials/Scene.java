@@ -95,7 +95,7 @@ public abstract class Scene {
         texts.removeIf(Text::isDeleted);
 
         if (renderer != null) {
-            renderer.prepareFrame(gameElements, texts);
+            renderer.prepareFrame(texts);
             renderer.repaint();
         }
     }
@@ -108,6 +108,7 @@ public abstract class Scene {
      *
      * @param gameObjects A variable number of {@link GameObject}s (which can be elements or groups) to add to the scene.
      */
+    @Deprecated
     public final void add(GameObject... gameObjects) {
         for (GameObject go : gameObjects) {
             if (go instanceof PositionableGameObject pgo) {

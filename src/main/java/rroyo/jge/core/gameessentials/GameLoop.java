@@ -8,7 +8,7 @@ import rroyo.jge.core.gameutils.Timer;
  * It implements the {@link Runnable} interface, allowing it to run in a separate thread.
  * This loop ensures that the game's state is updated and rendered at a consistent frame rate.
  */
-public class GameLoop implements Runnable {
+public final class GameLoop implements Runnable {
 
     /**
      * The thread in which the game loop will run.

@@ -18,7 +18,7 @@ import java.util.Random;
  * It is responsible for drawing game objects (sprites or colored rectangles) and text onto the screen,
  * taking into account camera position and zoom levels to create a view of the game world.
  */
-public class Render2D extends JPanel {
+public final class Render2D extends JPanel {
 
     private final Random r = new Random();
 
@@ -33,11 +33,6 @@ public class Render2D extends JPanel {
     private Color backgroundColor = Color.BLACK;
 
     private boolean debugMode = false;
-
-    /**
-     * A list of {@link GameElement}s that need to be drawn in the current frame.
-     */
-    private List<PositionableGameObject> gameElementsToDraw = new ArrayList<>();
 
     /**
      * A list of {@link Text} elements that need to be drawn in the current frame.
@@ -78,11 +73,9 @@ public class Render2D extends JPanel {
      * Prepares the lists of elements and text to be drawn in the next rendering pass.
      * This method is typically called by a {@link Scene} before asking the renderer to repaint.
      *
-     * @param gameObjects The list of {@link PositionableGameObject}s to render.
      * @param texts        The list of {@link Text} elements to render.
      */
-    public void prepareFrame(List<PositionableGameObject> gameObjects, List<Text> texts) {
-        this.gameElementsToDraw = gameObjects;
+    public void prepareFrame(List<Text> texts) {;
         this.textsToDraw = texts;
     }
 
@@ -100,9 +93,12 @@ public class Render2D extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g;
 
-        if (debugMode) g.setColor(Color.BLACK);
-        else g2.setColor(backgroundColor);
-        g2.fillRect(0, 0, getWidth(), getHeight());
+        if (debugMode) {
+            DebugRender.render(g2, windowDimension);
+            return;
+        }
+
+        g2.setBackground(backgroundColor);
 
         double centerX = windowDimension.getHalfWidth();
         double centerY = windowDimension.getHalfHeight();
@@ -115,8 +111,7 @@ public class Render2D extends JPanel {
         double viewWorldWidth = windowDimension.getWidth() / zoom;
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
-        for (PositionableGameObject pgo : gameElementsToDraw) {
-
+        for (PositionableGameObject pgo : PhisicsEngine.getGameObjects()) {
             if (pgo.isDeleted() || !pgo.isVisible()) continue;
 
             double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
@@ -131,44 +126,7 @@ public class Render2D extends JPanel {
             double worldX, worldY, width, height;
             int drawX, drawY, drawW, drawH;
 
-            worldX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
-            worldY = pgo.getPosition().getY() - pgo.getSize().getHalfHeight();
-            width = pgo.getSize().getWidth();
-            height = pgo.getSize().getHeight();
-
-            drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-            drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-            drawW = (int) (width * zoom);
-            drawH = (int) (height * zoom);
-
-            if (debugMode) {
-                g.setColor(new Color(pgo.hashCode() % 0xFFFFFF));
-                g.drawRect(drawX, drawY, drawW, drawH);
-                g.drawLine(drawX, drawY, drawX+drawW, drawY+drawH);
-                g.drawLine(drawX, drawY+drawH, drawX+drawW, drawY);
-
-                for (PositionableGameObject tmp : gameElementsToDraw) {
-                    if (Overlap.ir(pgo, tmp)) {
-                        double tmpX, tmpY, tmpW, tmpH;
-                        int tmpDX, tmpDY, tmpDW, tmpDH;
-
-                        tmpX = tmp.getPosition().getX() - tmp.getSize().getHalfWidth();
-                        tmpY = tmp.getPosition().getY() - tmp.getSize().getHalfHeight();
-                        tmpW = tmp.getSize().getWidth();
-                        tmpH = tmp.getSize().getHeight();
-
-                        tmpDX = (int) (((tmpX + camX) - centerX) * zoom + centerX);
-                        tmpDY = (int) (((tmpY + camY) - centerY) * zoom + centerY);
-                        tmpDW = (int) (tmpW * zoom);
-                        tmpDH = (int) (tmpH * zoom);
-
-                        g.drawLine(
-                                (drawX + (drawW/2)), (drawY + (drawH/2)),
-                                (tmpDX + (tmpDW/2)), tmpDY + (tmpDH/2)
-                        );
-                    }
-                }
-            } else if (pgo instanceof GameElement gameElement) {
+            if (pgo instanceof GameElement gameElement) {
                 gameElement.getSprite().next();
                 if (gameElement.getSprite().hasSpriteImage()) {
                     worldX = switch (gameElement.getSprite().getHorizontalDirection()) {
@@ -191,6 +149,16 @@ public class Render2D extends JPanel {
                     g.drawImage(gameElement.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
                 }
                 else {
+                    worldX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
+                    worldY = pgo.getPosition().getY() - pgo.getSize().getHalfHeight();
+                    width = pgo.getSize().getWidth();
+                    height = pgo.getSize().getHeight();
+
+                    drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
+                    drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
+                    drawW = (int) (width * zoom);
+                    drawH = (int) (height * zoom);
+
                     g.setColor(gameElement.getSprite().getSpriteColor());
                     g.fillRect(drawX, drawY, drawW, drawH);
                 }

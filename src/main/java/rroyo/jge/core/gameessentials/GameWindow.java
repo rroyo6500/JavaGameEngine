@@ -12,7 +12,7 @@ import javax.swing.*;
  * It uses a {@link JFrame} to display the game's contents and initializes the rendering system.
  * It also handles switching between different scenes and starting the game loop.
  */
-public class GameWindow {
+public final class GameWindow {
 
     /**
      * A timer used for scheduling actions, typically used when changing scenes.

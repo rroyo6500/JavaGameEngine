@@ -1,5 +1,6 @@
 package rroyo.jge.core.gameobjects.positionable;
 
+import rroyo.jge.core.gameessentials.PhisicsEngine;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameutils.Point;
@@ -50,6 +51,7 @@ public class PositionableGameObject extends GameObject {
     public PositionableGameObject(Point position, Dimension size) {
         this.position = position;
         this.size = size;
+        PhisicsEngine.add(this);
     }
 
     /**
