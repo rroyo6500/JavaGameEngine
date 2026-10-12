@@ -101,7 +101,8 @@ public final class Render2D extends JPanel {
             return;
         }
 
-        g2.setBackground(backgroundColor);
+        g2.setColor(backgroundColor);
+        g2.fillRect(0, 0, (int) windowDimension.getWidth(), (int) windowDimension.getHeight());
 
         double centerX = windowDimension.getHalfWidth();
         double centerY = windowDimension.getHalfHeight();

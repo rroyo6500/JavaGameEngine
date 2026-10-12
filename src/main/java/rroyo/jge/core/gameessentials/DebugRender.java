@@ -10,7 +10,8 @@ import java.awt.*;
 public final class DebugRender {
 
     public static void render(Graphics2D g, Scene scene, Dimension windowDimension) {
-        g.setBackground(Color.black);
+        g.setColor(Color.black);
+        g.fillRect(0, 0, (int) windowDimension.getWidth(), (int) windowDimension.getHeight());
 
         double centerX = windowDimension.getHalfWidth();
         double centerY = windowDimension.getHalfHeight();
