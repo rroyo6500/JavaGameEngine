@@ -47,7 +47,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      * This should typically be called right after the {@link  GameObject} is instantiated or added to a scene.
      */
     public final void start() {
-        for (Script s : getScripts()) {
+        for (Script s : scripts) {
             s.start(this);
         }
     }
@@ -56,7 +56,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      * Updates the {@link GameObject} state for the current frame by delegating to its attached scripts.
      */
     public final void update() {
-        for (Script s : getScripts()) {
+        for (Script s : scripts) {
             s.update(this);
         }
     }
@@ -68,7 +68,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      * @param objective The other {@link  GameObject} that participates in the interaction
      */
     public final void sendOnInRange(GameObject self, GameObject objective) {
-        for (Script s : getScripts()) {
+        for (Script s : scripts) {
             s.onInRange(self, objective);
         }
     }
@@ -80,7 +80,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      * @param objective The other {@link  GameObject} that participates in the interaction
      */
     public final void sendOnOverlap(GameObject self, GameObject objective) {
-        for (Script s : getScripts()) {
+        for (Script s : scripts) {
             s.onOverlap(self, objective);
         }
     }
@@ -92,7 +92,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      * @param objective The other {@link  GameObject} that participates in the interaction
      */
     public final void sendOnCollide(GameObject self, GameObject objective) {
-        for (Script s : getScripts()) {
+        for (Script s : scripts) {
             s.onCollide(self, objective);
         }
     }
