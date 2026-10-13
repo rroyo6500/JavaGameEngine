@@ -1,5 +1,6 @@
 package rroyo.jge.core.gameobjects.positionable;
 
+import org.jetbrains.annotations.NotNull;
 import rroyo.jge.core.assets.Sprite;
 import rroyo.jge.core.gameessentials.Scene;
 import rroyo.jge.core.gameobjects.GameObject;
@@ -8,14 +9,14 @@ import rroyo.jge.core.gameutils.Point;
 import rroyo.jge.interfaces.Event2d;
 import rroyo.jge.interfaces.Script;
 
-import java.awt.*;
+import java.util.Objects;
 
 /**
  * The {@code GameElement} class is the core representation of an interactive entity within the game world.
  * It extends {@link GameObject} and encapsulates position, dimensions, physics (velocity and collisions),
  * visual representation (sprites), and behavior (scripts).
  */
-public class GameElement extends ScriptableGameObject implements Event2d {
+public class SpriteGameObject extends ScriptableGameObject implements Event2d {
 
     /**
      * The visual asset (image or color) used to render the element.
@@ -32,8 +33,9 @@ public class GameElement extends ScriptableGameObject implements Event2d {
      * @param sprite The visual {@link Sprite} for the element.
      * @param scripts A variable number of {@link Script}s to attach for customized behavior.
      */
-    public GameElement(Scene scene, double x, double y, double width, double height, Sprite sprite, Script... scripts) {
+    public SpriteGameObject(Scene scene, double x, double y, double width, double height, @NotNull Sprite sprite, Script... scripts) {
         super(scene, x, y, width, height, scripts);
+        Objects.requireNonNull(sprite);
         this.sprite = sprite;
     }
 
@@ -45,8 +47,9 @@ public class GameElement extends ScriptableGameObject implements Event2d {
      * @param sprite    The visual {@link Sprite} for the element.
      * @param scripts    A variable number of {@link Script}s to attach for customized behavior.
      */
-    public GameElement(Scene scene, Point position, Dimension size, Sprite sprite, Script... scripts) {
+    public SpriteGameObject(Scene scene, Point position, Dimension size, @NotNull Sprite sprite, Script... scripts) {
         super(scene, position, size, scripts);
+        Objects.requireNonNull(sprite);
         this.sprite = sprite;
     }
 
@@ -65,8 +68,9 @@ public class GameElement extends ScriptableGameObject implements Event2d {
      *
      * @param sprite The new {@link Sprite} to apply.
      */
-    public final void setSprite(Sprite sprite) {
-        if (sprite == null || sprite.isClosed()) return;
+    public final void setSprite(@NotNull Sprite sprite) {
+        Objects.requireNonNull(sprite);
+        if (sprite.isClosed()) return;
         if (isDeleted()) return ;
         this.sprite = sprite;
     }

@@ -9,7 +9,7 @@ import rroyo.jge.core.gameessentials.Scene;
  */
 public class GameObject {
 
-    private final int sceneHash;
+    private final Scene scene;
 
     /**
      * A flag indicating if this object has been marked for deletion.
@@ -22,8 +22,7 @@ public class GameObject {
     private boolean visible = true;
 
     public GameObject(Scene scene) {
-        if (scene == null) this.sceneHash = 0;
-        else this.sceneHash = scene.hashCode();
+        this.scene = scene;
     }
 
     /**
@@ -68,7 +67,7 @@ public class GameObject {
         this.visible = visible;
     }
 
-    public int getSceneHash() {
-        return sceneHash;
+    public Scene getScene() {
+        return scene;
     }
 }

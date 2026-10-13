@@ -6,6 +6,8 @@ import rroyo.jge.core.gameutils.Keyboard;
 import rroyo.jge.core.gameutils.Timer;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * The {@code GameWindow} class manages the main application window for the game.
@@ -29,6 +31,8 @@ public final class GameWindow {
      */
     private final Render2D renderer;
 
+    private final Camera camera;
+
     /**
      * The game loop responsible for updating and rendering the active scene.
      */
@@ -45,21 +49,30 @@ public final class GameWindow {
      */
     public GameWindow(int targetFPS, Dimension dimension, Scene scene) {
         this.targetFPS = targetFPS;
+        camera = new Camera();
+        renderer = new Render2D(camera, dimension);
 
-        Camera.setWindowDimensions(dimension);
+        SwingUtilities.invokeLater(() -> {
+            camera.setWindowDimensions(dimension);
 
-        JFrame frame = new JFrame();
-        frame.addKeyListener(Keyboard.listener);
+            JFrame frame = new JFrame();
 
-        renderer = new Render2D(dimension);
-        frame.add(renderer);
+            frame.addKeyListener(Keyboard.listener);
+            frame.addWindowFocusListener(new WindowAdapter() {
+                @Override
+                public void windowLostFocus(WindowEvent e) {
+                    Keyboard.clear();
+                }
+            });
 
-        setScene(scene);
+            frame.add(renderer);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
 
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+            setScene(scene);
+        });
     }
 
     /**
@@ -74,6 +87,7 @@ public final class GameWindow {
         if (timer != null && !timer.isFinished()) return;
         scene.setRenderer(renderer);
         scene.setWindow(this);
+        scene.setCamera(camera);
 
         if (gameLoop == null) {
             gameLoop = new GameLoop(targetFPS, scene::processFrame, null);

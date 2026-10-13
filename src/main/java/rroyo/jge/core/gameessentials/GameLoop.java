@@ -18,7 +18,7 @@ public final class GameLoop implements Runnable {
     /**
      * A flag indicating whether the game loop is currently running.
      */
-    private boolean running = false;
+    private volatile boolean running = false;
 
     /**
      * The target frames per second (FPS) at which the game loop should attempt to run.
@@ -29,13 +29,13 @@ public final class GameLoop implements Runnable {
      * A {@link Runnable} representing the logic to update the game state.
      * This is executed once per frame.
      */
-    private Runnable onUpdate;
+    private volatile Runnable onUpdate;
 
     /**
      * A {@link Runnable} representing the logic after render the game.
      * This is executed once per frame after the update logic.
      */
-    private Runnable onRender;
+    private volatile Runnable onRender;
 
     /**
      * Constructs a new {@code GameLoop} with the specified target FPS, update logic, and logic after render.
@@ -45,6 +45,7 @@ public final class GameLoop implements Runnable {
      * @param onRender  The logic to execute after render the game.
      */
     public GameLoop(int targetFPS, Runnable onUpdate, Runnable onRender) {
+        if (targetFPS <= 0) throw new IllegalArgumentException("Target FPS must be positive");
         this.targetFPS = targetFPS;
         this.onUpdate = onUpdate;
         this.onRender = onRender;
@@ -55,9 +56,10 @@ public final class GameLoop implements Runnable {
      * It creates a new thread named "JGameEngine-MainLoop" and starts it.
      */
     public synchronized void start() {
-        if (running) return;
+        if (running || (thread != null && thread.isAlive())) return;
+
         running = true;
-        thread = new Thread(this, "JGameEngine-MainLoop");
+        thread = new Thread(this, "JGameEngine-" + this.hashCode());
         thread.start();
     }
 
@@ -66,11 +68,18 @@ public final class GameLoop implements Runnable {
      * It sets the running flag to false and waits for the thread to terminate using {@code join()}.
      * If interrupted while waiting, it restores the interrupted status of the thread.
      */
-    public synchronized void stop() {
-        if (!running) return;
-        running = false;
+    public void stop() {
+        Thread threadToStop;
+
+        synchronized (this) {
+            running = false;
+            threadToStop = this.thread;
+        }
+
+        if (threadToStop == null || threadToStop == Thread.currentThread()) return;
+
         try {
-            thread.join();
+            threadToStop.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -87,35 +96,45 @@ public final class GameLoop implements Runnable {
     @Override
     public void run() {
 
-        long lastTime = System.nanoTime();
+        try {
+            Runnable update = onUpdate;
+            Runnable render = onRender;
 
-        final double timePerFrame = 1_000_000_000.0 / targetFPS;
+            long lastTime = System.nanoTime();
 
-        while (running) {
-            long now = System.nanoTime();
-            float deltaTime = (now - lastTime) / 1_000_000_000f;
+            final double timePerFrame = 1_000_000_000.0 / targetFPS;
 
-            if (now - lastTime >= timePerFrame) {
-                lastTime = now;
+            while (running) {
+                long now = System.nanoTime();
+                float deltaTime = (now - lastTime) / 1_000_000_000f;
 
-                if (deltaTime > 0.1f) deltaTime = 0.1f;
+                if (now - lastTime >= timePerFrame) {
+                    lastTime = now;
 
-                Time.setDeltaTime(deltaTime);
-                Timer.update();
+                    if (deltaTime > 0.1f) deltaTime = 0.1f;
 
-                if (onUpdate != null) onUpdate.run();
-                if (onRender != null) onRender.run();
-            } else {
-                long timeToSleep = (long) ((timePerFrame - (now - lastTime)) / 1_000_000f);
-                if (timeToSleep > 0) {
-                    try {
-                        Thread.sleep(timeToSleep);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+                    Time.setDeltaTime(deltaTime);
+                    Timer.update();
+
+                    if (update != null) update.run();
+                    if (render != null) render.run();
+                } else {
+                    long timeToSleep = (long) ((timePerFrame - (now - lastTime)) / 1_000_000f);
+                    if (timeToSleep > 0) {
+                        try {
+                            Thread.sleep(timeToSleep);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
                     }
                 }
-            }
 
+            }
+        } finally {
+            synchronized (this) {
+                if (this.thread == Thread.currentThread()) running = false;
+            }
         }
 
     }
@@ -125,7 +144,7 @@ public final class GameLoop implements Runnable {
      *
      * @param onUpdate A {@link Runnable} containing the new update logic.
      */
-    public void setOnUpdate(Runnable onUpdate) {
+    public synchronized void setOnUpdate(Runnable onUpdate) {
         this.onUpdate = onUpdate;
     }
 
@@ -134,7 +153,7 @@ public final class GameLoop implements Runnable {
      *
      * @param onRender A {@link Runnable} containing the new render logic.
      */
-    public void setOnRender(Runnable onRender) {
+    public synchronized void setOnRender(Runnable onRender) {
         this.onRender = onRender;
     }
 

@@ -2,6 +2,7 @@ package rroyo.jge.core.gameutils;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 /**
  * The {@code Keyboard} class is a global utility that tracks the current state of keyboard keys.
@@ -100,6 +101,10 @@ public final class Keyboard {
      */
     public static boolean keyRight() {
         return key(KeyEvent.VK_RIGHT);
+    }
+
+    public static void clear() {
+        Arrays.fill(keys, false);
     }
 
     /**

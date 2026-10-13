@@ -1,7 +1,7 @@
 package rroyo.jge.core.gameutils;
 
 import rroyo.jge.core.gameobjects.GameObject;
-import rroyo.jge.core.gameobjects.positionable.GameElement;
+import rroyo.jge.core.gameobjects.positionable.SpriteGameObject;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 
 /**
@@ -46,7 +46,7 @@ public record Overlap(double overlapX, double overlapY) {
      * Internal optimized broad-phase check to see if another element is within a general secure distance,
      * quickly eliminating the need for complex AABB checks on distant objects.
      *
-     * @param gameObject The other {@link GameElement}.
+     * @param gameObject The other {@link SpriteGameObject}.
      * @return {@code true} if the elements are close enough to potentially interact; {@code false} otherwise.
      */
     public static boolean ir(GameObject self, PositionableGameObject gameObject) {
@@ -72,7 +72,7 @@ public record Overlap(double overlapX, double overlapY) {
     /**
      * Calculates the Axis-Aligned Bounding Box (AABB) intersection depth between this element and another.
      *
-     * @param gameObject The other {@link GameElement} to check against.
+     * @param gameObject The other {@link SpriteGameObject} to check against.
      * @return An {@link Overlap} object containing the X and Y intersection depths, or {@code null} if there is no collision.
      */
     public static Overlap calculateOverlap(GameObject self, PositionableGameObject gameObject) {
@@ -92,6 +92,8 @@ public record Overlap(double overlapX, double overlapY) {
             double limitY = pgo.getSize().getHalfHeight() + gameObject.getSize().getHalfHeight();
             double overlapY = limitY - deltaY;
 
+            if (overlapX <= 0 || overlapY <= 0) return null;
+
             return new Overlap(overlapX, overlapY);
         }
         return null;
@@ -100,7 +102,7 @@ public record Overlap(double overlapX, double overlapY) {
     /**
      * Internal check to determine if the bounding boxes of this element and another are currently overlapping.
      *
-     * @param gameObject The other {@link GameElement} to check.
+     * @param gameObject The other {@link SpriteGameObject} to check.
      * @return {@code true} if they overlap; {@code false} otherwise.
      */
     public static boolean ov(GameObject self, PositionableGameObject gameObject) {

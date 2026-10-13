@@ -18,6 +18,7 @@ public class Audio extends Asset {
 
     /**
      * Constructs a new {@code Audio} object by loading sound data from the specified file.
+     * Guarantees the closure of the AudioInputStream even if an exception occurs during loading.
      *
      * @param audioFile The {@link File} containing the audio data to load.
      * @throws LineUnavailableException If a line cannot be opened because it is unavailable.
@@ -25,7 +26,9 @@ public class Audio extends Asset {
      * @throws IOException If an input/output exception occurs while reading the file.
      */
     public Audio(File audioFile) throws LineUnavailableException, UnsupportedAudioFileException, IOException {
-        clip.open(AudioSystem.getAudioInputStream(audioFile));
+        try (AudioInputStream ais = AudioSystem.getAudioInputStream(audioFile)) {
+            clip.open(ais);
+        }
     }
 
     /**
@@ -88,4 +91,12 @@ public class Audio extends Asset {
         return clip.isRunning();
     }
 
+    @Override
+    protected void dispose() {
+        if (clip != null) {
+            if (clip.isRunning())
+                clip.stop();
+            clip.close();
+        }
+    }
 }

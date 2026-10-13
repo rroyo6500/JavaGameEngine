@@ -25,6 +25,8 @@ public final class Timer {
      */
     private float remaining;
 
+    private boolean finished = false;
+
     /**
      * The action to be executed when the timer reaches zero.
      */
@@ -58,7 +60,9 @@ public final class Timer {
         this.callback = callback;
         this.loop = loop;
 
-        pendingAdd.add(this);
+        synchronized (pendingAdd) {
+            pendingAdd.add(this);
+        }
     }
 
     /**
@@ -68,13 +72,17 @@ public final class Timer {
      * @param dt The delta time (elapsed time since the last frame) in seconds.
      */
     public void update(float dt) {
-        if (cancelled) return;
+        if (cancelled || finished) return;
 
         remaining -= dt;
-        if (remaining <= 0) {
-            if (callback != null) callback.run();
-            if (loop) remaining = initialDuration;
-        }
+
+        if (remaining > 0) return;
+
+        if (!loop) finished = true;
+
+        if (callback != null) callback.run();
+
+        if (loop && !cancelled) remaining += initialDuration;
     }
 
     /**
@@ -83,8 +91,12 @@ public final class Timer {
      * Finished non-looping timers are automatically removed from the list.
      */
     public static void update() {
-        timers.addAll(pendingAdd);
-        pendingAdd.clear();
+        synchronized (timers) {
+            timers.addAll(pendingAdd);
+        }
+        synchronized (pendingAdd) {
+            pendingAdd.clear();
+        }
 
         float dt = Time.deltaTime();
         for (int i = timers.size() - 1; i >= 0; i--) {
@@ -104,7 +116,7 @@ public final class Timer {
      * @param callback The {@link Runnable} to execute.
      * @return The created {@code Timer} instance.
      */
-    public static Timer schedule(float seconds, Runnable callback) {
+    public synchronized static Timer schedule(float seconds, Runnable callback) {
         return schedule(seconds, callback, false);
     }
 
@@ -116,7 +128,8 @@ public final class Timer {
      * @param loop     {@code true} to make the timer restart automatically; {@code false} for a one-shot execution.
      * @return The created {@code Timer} instance.
      */
-    public static Timer schedule(float seconds, Runnable callback, boolean loop) {
+    public synchronized static Timer schedule(float seconds, Runnable callback, boolean loop) {
+        if (seconds <= 0) throw new IllegalArgumentException("Seconds must be positive");
         return new Timer(seconds, callback, loop);
     }
 
@@ -127,7 +140,7 @@ public final class Timer {
      * @return {@code true} if the time has elapsed and the timer is not set to loop; {@code false} otherwise.
      */
     public boolean isFinished() {
-        return remaining <= 0 && !loop;
+        return finished || cancelled;
     }
 
     /**
@@ -137,30 +150,4 @@ public final class Timer {
         this.cancelled = true;
     }
 
-    /**
-     * Indicates whether some other object is "equal to" this timer.
-     *
-     * @param o The reference object with which to compare.
-     * @return {@code true} if this object is the same as the obj argument; {@code false} otherwise.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Timer timer = (Timer) o;
-        return Float.compare(remaining, timer.remaining) == 0 &&
-                loop == timer.loop &&
-                cancelled == timer.cancelled &&
-                Float.compare(initialDuration, timer.initialDuration) == 0 &&
-                Objects.equals(callback, timer.callback);
-    }
-
-    /**
-     * Returns a hash code value for the timer.
-     *
-     * @return A hash code value for this object.
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(remaining, callback, loop, cancelled, initialDuration);
-    }
 }

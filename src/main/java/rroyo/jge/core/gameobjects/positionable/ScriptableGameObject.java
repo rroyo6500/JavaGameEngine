@@ -1,5 +1,6 @@
 package rroyo.jge.core.gameobjects.positionable;
 
+import org.jetbrains.annotations.NotNull;
 import rroyo.jge.core.gameessentials.Scene;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameutils.Dimension;
@@ -8,8 +9,11 @@ import rroyo.jge.interfaces.Script;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ScriptableGameObject extends PositionableGameObject {
+
+    private boolean started = false;
 
     /**
      * A list of {@link Script} behaviors attached to this object.
@@ -27,7 +31,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      */
     public ScriptableGameObject(Scene scene, double x, double y, double width, double height, Script... scripts) {
         super(scene, x, y, width, height);
-        addScript(scripts);
+        if (scripts != null && scripts.length > 0) addScript(scripts);
     }
 
     /**
@@ -39,7 +43,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      */
     public ScriptableGameObject(Scene scene, Point position, Dimension size, Script... scripts) {
         super(scene, position, size);
-        addScript(scripts);
+        if (scripts != null && scripts.length > 0) addScript(scripts);
     }
 
     /**
@@ -47,6 +51,8 @@ public class ScriptableGameObject extends PositionableGameObject {
      * This should typically be called right after the {@link  GameObject} is instantiated or added to a scene.
      */
     public final void start() {
+        if (started) return;
+        started = true;
         for (Script s : scripts) {
             s.start(this);
         }
@@ -97,10 +103,14 @@ public class ScriptableGameObject extends PositionableGameObject {
         }
     }
 
-    public void addScript(Script... script) {
+    public void addScript(@NotNull Script... script) {
+        Objects.requireNonNull(script);
         for (Script s : script) {
+            Objects.requireNonNull(s);
             if (!scripts.contains(s)) {
                 scripts.add(s);
+                s.start(this);
+                started = true;
             }
         }
     }

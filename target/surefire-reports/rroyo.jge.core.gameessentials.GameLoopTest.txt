@@ -1,0 +1,9 @@
+-------------------------------------------------------------------------------
+Test set: rroyo.jge.core.gameessentials.GameLoopTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.034 s <<< FAILURE! -- in rroyo.jge.core.gameessentials.GameLoopTest
+rroyo.jge.core.gameessentials.GameLoopTest.stopWaitsForAnInProgressCallbackAndThenReturns -- Time elapsed: 0.030 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: stop() is documented to wait while the update callback is still running ==> expected: <false> but was: <true>
+	at org.junit.jupiter.api.Assertions.assertFalse(Assertions.java:266)
+	at rroyo.jge.core.gameessentials.GameLoopTest.stopWaitsForAnInProgressCallbackAndThenReturns(GameLoopTest.java:48)
+

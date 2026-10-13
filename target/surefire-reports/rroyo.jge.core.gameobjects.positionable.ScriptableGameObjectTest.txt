@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: rroyo.jge.core.gameobjects.positionable.ScriptableGameObjectTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in rroyo.jge.core.gameobjects.positionable.ScriptableGameObjectTest

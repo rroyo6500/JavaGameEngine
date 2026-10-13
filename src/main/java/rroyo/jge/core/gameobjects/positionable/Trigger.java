@@ -79,6 +79,7 @@ class TriggerScript implements Script {
 
     @Override
     public void onOverlap(GameObject self, GameObject objective) {
-        ((Trigger) self).onTrigger((PositionableGameObject) objective);
+        if (objective instanceof PositionableGameObject)
+            ((Trigger) self).onTrigger((PositionableGameObject) objective);
     }
 }

@@ -1,7 +1,6 @@
 package rroyo.jge.core.gameobjects;
 
-import rroyo.jge.core.gameessentials.PhysicsEngine;
-import rroyo.jge.core.gameobjects.positionable.GameElement;
+import rroyo.jge.core.gameobjects.positionable.SpriteGameObject;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.interfaces.Event2d;
 
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The {@code Group} class represents a collection of {@link GameElement} objects.
+ * The {@code Group} class represents a collection of {@link SpriteGameObject} objects.
  * It extends {@link GameObject} and is used to manage multiple elements as a single unit,
  * allowing bulk operations like checking collisions or overlaps between an entity and an entire group.
  */
@@ -24,7 +23,7 @@ public class Group extends GameObject {
      * Constructs a new {@code Group} initialized with the provided members.
      * It ensures no duplicate members are added.
      *
-     * @param member A variable number of {@link GameElement} objects to add to the group.
+     * @param member A variable number of {@link SpriteGameObject} objects to add to the group.
      */
     public Group(PositionableGameObject... member) {
         super(null);
@@ -38,7 +37,7 @@ public class Group extends GameObject {
     /**
      * Performs a physical collision check between a given game element and all members of this group.
      *
-     * @param gameObject The {@link GameElement} to check against the group.
+     * @param gameObject The {@link SpriteGameObject} to check against the group.
      * @return {@code true} if a collision happened with at least one member; {@code false} otherwise.
      */
     public boolean collide(PositionableGameObject gameObject) {
@@ -70,7 +69,7 @@ public class Group extends GameObject {
     /**
      * Performs an overlap check between a given game element and all members of this group.
      *
-     * @param gameObject The {@link GameElement} to check.
+     * @param gameObject The {@link SpriteGameObject} to check.
      * @return {@code true} if an overlap occurred with at least one member; {@code false} otherwise.
      */
     public boolean overlap(PositionableGameObject gameObject) {
@@ -102,7 +101,7 @@ public class Group extends GameObject {
     /**
      * Performs a proximity (in-range) check between a given game element and all members of this group.
      *
-     * @param gameObject The {@link GameElement} to check.
+     * @param gameObject The {@link SpriteGameObject} to check.
      * @return {@code true} if the element is in range of at least one member; {@code false} otherwise.
      */
     public final boolean inRange(PositionableGameObject gameObject) {
@@ -135,7 +134,7 @@ public class Group extends GameObject {
     /**
      * Retrieves an immutable copy of the list of game elements belonging to this group.
      *
-     * @return A {@link List} containing the {@link GameElement} members.
+     * @return A {@link List} containing the {@link SpriteGameObject} members.
      */
     public final List<PositionableGameObject> getMembers() {
         return List.copyOf(members);

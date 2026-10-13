@@ -10,24 +10,22 @@ public final class Camera {
     /**
      * The current X and Y position of the camera in the game world.
      */
-    private static final Point position = new Point();
+    private final Point position = new Point();
 
     /**
      * The current zoom scale of the camera. A value of 1 represents default scale.
      */
-    private static double zoom = 1;
+    private double zoom = 1;
 
-    /**
-     * Private constructor to prevent instantiation of this utility class.
-     */
-    private Camera() {}
+
+    public Camera() {}
 
     /**
      * Moves the camera horizontally by a specified delta.
      *
      * @param dx The amount to shift the camera on the X-axis.
      */
-    public static void moveX(int dx) {
+    public void moveX(int dx) {
         position.setX(position.getX() + dx);
     }
 
@@ -36,7 +34,7 @@ public final class Camera {
      *
      * @param dy The amount to shift the camera on the Y-axis.
      */
-    public static void moveY(int dy) {
+    public void moveY(int dy) {
         position.setY(position.getY() + dy);
     }
 
@@ -46,7 +44,7 @@ public final class Camera {
      * @param dx The amount to shift the camera horizontally.
      * @param dy The amount to shift the camera vertically.
      */
-    public static void move(int dx, int dy) {
+    public void move(int dx, int dy) {
         moveX(dx);
         moveY(dy);
     }
@@ -56,7 +54,7 @@ public final class Camera {
      *
      * @param x The new X position.
      */
-    public static void setX(int x) {
+    public void setX(int x) {
         position.setX(x);
     }
 
@@ -65,7 +63,7 @@ public final class Camera {
      *
      * @param y The new Y position.
      */
-    public static void setY(int y) {
+    public void setY(int y) {
         position.setY(y);
     }
 
@@ -75,7 +73,7 @@ public final class Camera {
      * @param x The new X position.
      * @param y The new Y position.
      */
-    public static void setPosition(int x, int y) {
+    public void setPosition(int x, int y) {
         setX(x);
         setY(y);
     }
@@ -86,8 +84,8 @@ public final class Camera {
      *
      * @param windowDimensions The {@link Dimension} representing the size of the view area.
      */
-    public static void setWindowDimensions(Dimension windowDimensions) {
-        move(
+    public void setWindowDimensions(Dimension windowDimensions) {
+        setPosition(
                 (int) windowDimensions.getHalfWidth(),
                 (int) windowDimensions.getHalfHeight()
         );
@@ -98,7 +96,7 @@ public final class Camera {
      *
      * @return The zoom multiplier.
      */
-    public static double getZoom() {
+    public double getZoom() {
         return zoom;
     }
 
@@ -107,9 +105,9 @@ public final class Camera {
      *
      * @param zoom The new zoom multiplier.
      */
-    public static void setZoom(double zoom) {
+    public void setZoom(double zoom) {
         if (zoom <= 0) zoom = 0.01;
-        Camera.zoom = zoom;
+        this.zoom = zoom;
     }
 
     /**
@@ -117,7 +115,7 @@ public final class Camera {
      *
      * @return The {@link Point} object representing the camera's coordinates.
      */
-    public static Point getCameraPosition() {
+    public Point getCameraPosition() {
         return position;
     }
 

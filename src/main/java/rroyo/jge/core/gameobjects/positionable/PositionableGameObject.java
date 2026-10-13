@@ -5,6 +5,7 @@ import rroyo.jge.core.gameessentials.Scene;
 import rroyo.jge.core.gameobjects.GameObject;
 import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameutils.Point;
+import rroyo.jge.core.gameutils.Time;
 import rroyo.jge.core.gameutils.Velocity;
 
 import java.awt.*;
@@ -58,13 +59,13 @@ public class PositionableGameObject extends GameObject {
 
     /**
      * A hook to transform or scale the velocity before it is applied.
-     * By default, returns the unmodified velocity value. Subclasses can override this to apply global modifiers (e.g., time scale).
+     * By default, returns the modified velocity value.
      *
      * @param velocity The original velocity value.
      * @return The processed velocity value.
      */
     protected double transformVelocity(double velocity) {
-        return velocity;
+        return velocity * Time.deltaTime();
     }
 
     /**

@@ -5,7 +5,7 @@ package rroyo.jge.core.assets;
  * such as sprites, audio, or other media files. It provides a common mechanism to manage
  * the lifecycle of an asset, specifically allowing it to be marked as closed or disposed.
  */
-public class Asset {
+public abstract class Asset implements AutoCloseable {
 
     /**
      * A flag indicating whether this asset has been closed.
@@ -13,21 +13,17 @@ public class Asset {
      */
     private boolean closed = false;
 
-    /**
-     * Marks this asset as closed. Subclasses should check the {@link #isClosed()} status
-     * before performing operations to prevent errors if the asset's resources have been released.
-     */
-    public void close() {
-        this.closed = true;
+    @Override
+    public final void close() {
+        if (!closed) {
+            dispose();
+            closed = true;
+        }
     }
 
-    /**
-     * Checks if this asset has been closed.
-     *
-     * @return {@code true} if the asset is closed; {@code false} otherwise.
-     */
-    public boolean isClosed() {
+    protected abstract void dispose();
+
+    public final boolean isClosed() {
         return closed;
     }
-
 }

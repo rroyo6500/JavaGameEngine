@@ -5,14 +5,15 @@ import rroyo.jge.core.gameutils.*;
 import rroyo.jge.core.gameutils.Dimension;
 
 import java.awt.*;
+import java.util.List;
 
 public final class DebugRender {
 
-    public static void render(Graphics2D g, Scene scene, ViewportParams vp, Dimension windowDimension) {
+    public static void render(Graphics2D g, List<PositionableGameObject> gameObjectsToDraw, ViewportParams vp, Dimension windowDimension) {
         g.setColor(Color.black);
         g.fillRect(0, 0, (int) windowDimension.getWidth(), (int) windowDimension.getHeight());
 
-        for (PositionableGameObject pgo : PhysicsEngine.getGameObjects(scene)) {
+        for (PositionableGameObject pgo : gameObjectsToDraw) {
             if (pgo.isDeleted() || !pgo.isVisible()) continue;
 
             double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
@@ -31,7 +32,7 @@ public final class DebugRender {
             g.drawLine(dp.drawX(), dp.drawY(), dp.drawX()+dp.drawW(), dp.drawY()+dp.drawH());
             g.drawLine(dp.drawX(), dp.drawY()+dp.drawH(), dp.drawX()+dp.drawW(), dp.drawY());
 
-            for (PositionableGameObject tmp : PhysicsEngine.getGameObjects(scene)) {
+            for (PositionableGameObject tmp : gameObjectsToDraw) {
                 if (Overlap.ir(pgo, tmp)) {
                     DrawParams tmpdp = DrawParams.calculateDraw(tmp, vp);
 
@@ -43,7 +44,6 @@ public final class DebugRender {
             }
 
         }
-
     }
 
 }

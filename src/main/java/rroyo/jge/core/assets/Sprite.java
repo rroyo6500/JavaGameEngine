@@ -24,7 +24,7 @@ public class Sprite extends Asset {
     /**
      * A list of images that make up the animation sequence for this sprite.
      */
-    private List<BufferedImage> spriteImages = new ArrayList<>();
+    private final List<BufferedImage> spriteImages = new ArrayList<>();
 
     /**
      * The solid color to use if this sprite is not image-based.
@@ -157,4 +157,9 @@ public class Sprite extends Asset {
         }
     }
 
+    @Override
+    protected void dispose() {
+        spriteImages.clear();
+        spriteColor = null;
+    }
 }

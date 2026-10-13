@@ -1,11 +1,11 @@
 package rroyo.jge.core.gameessentials;
 
-import rroyo.jge.core.gameobjects.positionable.GameElement;
+import rroyo.jge.core.gameobjects.positionable.SpriteGameObject;
 import rroyo.jge.core.gameobjects.GameObject;
-import rroyo.jge.core.gameobjects.Group;
 import rroyo.jge.core.gameobjects.Text;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.core.gameobjects.positionable.ScriptableGameObject;
+import rroyo.jge.core.gameutils.Camera;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -37,6 +37,8 @@ public abstract class Scene {
      */
     protected GameWindow window;
 
+    protected Camera camera;
+
     /**
      * Default constructor for the {@code Scene}.
      */
@@ -62,6 +64,10 @@ public abstract class Scene {
         this.window = window;
     }
 
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
     /**
      * Abstract method that must be implemented by subclasses to provide scene-specific update logic.
      * This method is called once per frame during the processing phase.
@@ -77,20 +83,24 @@ public abstract class Scene {
     public final void processFrame() {
         for (PositionableGameObject gameObject : PhysicsEngine.getGameObjects(this)) {
             if (!gameObject.isDeleted()) {
-                gameObject.move();
                 if (gameObject instanceof ScriptableGameObject sgo) {
+                    sgo.start();
+                    sgo.move();
                     sgo.update();
-                }
+                } else gameObject.move();
+
+                if (gameObject instanceof SpriteGameObject spriteGameObject)
+                    spriteGameObject.getSprite().next();
             }
         }
 
         update();
 
-        PhysicsEngine.removeIf(GameObject::isDeleted);
+        PhysicsEngine.removeIf(this, GameObject::isDeleted);
         texts.removeIf(Text::isDeleted);
 
         if (renderer != null) {
-            renderer.prepareFrame(this, texts);
+            renderer.prepareFrame(List.copyOf(PhysicsEngine.getGameObjects(this)),List.copyOf(texts));
             renderer.repaint();
         }
     }
@@ -118,7 +128,7 @@ public abstract class Scene {
      */
     public final void setBackgroundColor(Color color) {
         backgroundColor = color;
-        renderer.setBackgroundColor(backgroundColor);
+        if (renderer != null) renderer.setBackgroundColor(backgroundColor);
     }
 
     public boolean isDebugMode() {
@@ -127,7 +137,7 @@ public abstract class Scene {
 
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
-        renderer.setDebugMode(debugMode);
+        if (renderer != null) renderer.setDebugMode(debugMode);
     }
 
     /**

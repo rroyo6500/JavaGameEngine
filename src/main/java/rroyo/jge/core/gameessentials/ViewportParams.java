@@ -16,12 +16,12 @@ public record ViewportParams(
         double viewWorldHeight
 ) {
 
-    public static ViewportParams calculateViewport(Dimension windowDimension) {
+    public static ViewportParams calculateViewport(Camera camera, Dimension windowDimension) {
         double centerX = windowDimension.getHalfWidth();
         double centerY = windowDimension.getHalfHeight();
-        double zoom = Camera.getZoom();
-        double camX = Camera.getCameraPosition().getX();
-        double camY = Camera.getCameraPosition().getY();
+        double zoom = camera.getZoom();
+        double camX = camera.getCameraPosition().getX();
+        double camY = camera.getCameraPosition().getY();
 
         double viewWorldX = centerX - (centerX / zoom) - camX;
         double viewWorldY = centerY - (centerY / zoom) - camY;

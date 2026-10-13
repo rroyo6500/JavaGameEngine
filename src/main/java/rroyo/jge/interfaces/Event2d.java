@@ -1,7 +1,7 @@
 package rroyo.jge.interfaces;
 
 import rroyo.jge.core.gameobjects.Group;
-import rroyo.jge.core.gameobjects.positionable.GameElement;
+import rroyo.jge.core.gameobjects.positionable.SpriteGameObject;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.core.gameobjects.positionable.ScriptableGameObject;
 import rroyo.jge.core.gameutils.Overlap;
@@ -11,7 +11,7 @@ public interface Event2d {
     /**
      * Checks if this element is in a proximity range of another and triggers the {@code onInRange} script events.
      *
-     * @param gameObject The other {@link GameElement}.
+     * @param gameObject The other {@link SpriteGameObject}.
      * @return {@code true} if in range; {@code false} otherwise.
      */
     default boolean inRange(PositionableGameObject gameObject) {
@@ -49,7 +49,7 @@ public interface Event2d {
      * Checks if this element overlaps with another element and triggers the {@code onOverlap} script events if they do.
      * Unlike a collision, an overlap check does not physically displace the elements.
      *
-     * @param gameObject The other {@link GameElement} to check for overlap.
+     * @param gameObject The other {@link SpriteGameObject} to check for overlap.
      * @return {@code true} if overlapping; {@code false} otherwise.
      */
     default boolean overlap(PositionableGameObject gameObject) {
@@ -89,7 +89,7 @@ public interface Event2d {
      * this element is physically displaced along the axis of minimum penetration to separate them,
      * its velocity on that axis is halted, and the {@code onCollide} script events are triggered.
      *
-     * @param gameObject The other {@link GameElement} to collide with.
+     * @param gameObject The other {@link SpriteGameObject} to collide with.
      * @return {@code true} if a collision occurred and was resolved; {@code false} otherwise.
      */
     default boolean collide(PositionableGameObject gameObject) {
