@@ -280,7 +280,7 @@ Este comando compila el proyecto y ejecuta las pruebas JUnit. El proyecto está 
 - Las comprobaciones de colisión son manuales; no hay una pasada automática de colisiones ni un índice espacial de fase amplia.
 - La respuesta de colisión es una separación AABB sencilla, no sustituye a un motor de física completo.
 - El tiempo, los temporizadores, el teclado y el registro de entidades usan utilidades estáticas globales; varias instancias de juego en un mismo proceso no están aisladas.
-- `GameWindow.setScene(...)` actualiza el callback guardado, pero el bucle activo captura su callback al iniciarse. Por ello, cambiar de escena después de iniciar el bucle no redirige actualmente la ejecución activa.
+- `GameWindow.setScene(...)` actualiza el callback guardado.
 - El renderizado usa Swing/AWT y está orientado a aplicaciones de escritorio.
 
 ### Coordenadas del proyecto
@@ -571,7 +571,7 @@ This compiles the project and runs the JUnit tests. The project currently target
 - Entity collision checks are manual; there is no automatic collision pass or broad-phase spatial index.
 - The collision response is a simple AABB separation and is not a replacement for a complete physics engine.
 - The engine keeps time, timers, keyboard state, and the entity registry in static global utilities, so independent game instances in one process are not isolated.
-- `GameWindow.setScene(...)` updates the stored game-loop callback, but the running loop captures its callback at startup. Scene switching after the loop starts therefore does not currently redirect the active loop.
+- `GameWindow.setScene(...)` updates the stored game-loop callback.
 - Rendering is based on Swing/AWT and is intended for desktop applications.
 
 ## Project coordinates
