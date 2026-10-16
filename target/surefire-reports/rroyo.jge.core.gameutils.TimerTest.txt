@@ -1,9 +1,0 @@
--------------------------------------------------------------------------------
-Test set: rroyo.jge.core.gameutils.TimerTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.009 s <<< FAILURE! -- in rroyo.jge.core.gameutils.TimerTest
-rroyo.jge.core.gameutils.TimerTest.oneShotCallbackDoesNotRunAgainOnLaterUpdates -- Time elapsed: 0.002 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: A one-shot callback must run only once after expiration ==> expected: <1> but was: <2>
-	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:601)
-	at rroyo.jge.core.gameutils.TimerTest.oneShotCallbackDoesNotRunAgainOnLaterUpdates(TimerTest.java:50)
-

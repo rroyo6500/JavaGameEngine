@@ -51,30 +51,12 @@ public class Point {
     }
 
     /**
-     * Sets the X coordinate using an integer value.
-     *
-     * @param x The new X coordinate.
-     */
-    public void setX(int x) {
-        setX((double) x);
-    }
-
-    /**
      * Retrieves the current Y coordinate.
      *
      * @return The Y coordinate.
      */
     public double getY() {
         return y;
-    }
-
-    /**
-     * Sets the Y coordinate using an integer value.
-     *
-     * @param y The new Y coordinate.
-     */
-    public void setY(int y) {
-        setY((double) y);
     }
 
     /**

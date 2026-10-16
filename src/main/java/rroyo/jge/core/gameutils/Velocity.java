@@ -36,7 +36,7 @@ public class Velocity {
      * @param velocityX The new horizontal velocity.
      * @throws IllegalAccessException if constraints or internal architecture prevent this assignment.
      */
-    public void setVelocityX(double velocityX) throws IllegalAccessException {
+    public void setVelocityX(double velocityX) {
         this.velocityX = velocityX;
     }
 
@@ -55,7 +55,7 @@ public class Velocity {
      * @param velocityY The new vertical velocity.
      * @throws IllegalAccessException if constraints or internal architecture prevent this assignment.
      */
-    public void setVelocityY(double velocityY) throws IllegalAccessException {
+    public void setVelocityY(double velocityY) {
         this.velocityY = velocityY;
     }
 }

@@ -52,19 +52,16 @@ public record Overlap(double overlapX, double overlapY) {
     public static boolean ir(GameObject self, PositionableGameObject gameObject) {
         if (self instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || gameObject.isDeleted()) return false;
-            double secureRange = (pgo.getSize().getWidth() + pgo.getSize().getHeight()) +
-                    (gameObject.getSize().getWidth() + gameObject.getSize().getHeight());
 
-            double deltaX = gameObject.getPosition().getX() - pgo.getPosition().getX();
-            double deltaY = gameObject.getPosition().getY() - pgo.getPosition().getY();
+            double dx = pgo.getPosition().getX() - gameObject.getPosition().getX();
+            double dy = pgo.getPosition().getY() - gameObject.getPosition().getY();
+            double distanceSq = dx * dx + dy * dy;
 
-            if (Math.abs(deltaX) > secureRange || Math.abs(deltaY) > secureRange) {
-                return false;
-            }
+            double radiusX = (pgo.getSize().getWidth() + gameObject.getSize().getWidth());
+            double radiusY = (pgo.getSize().getHeight() + gameObject.getSize().getHeight());
 
-            double distance = (deltaX * deltaX) + (deltaY * deltaY);
-
-            return distance <= (secureRange * secureRange);
+            double maxRadius = Math.max(radiusX, radiusY);
+            return distanceSq <= (maxRadius * maxRadius * 1.5);
         }
         return false;
     }

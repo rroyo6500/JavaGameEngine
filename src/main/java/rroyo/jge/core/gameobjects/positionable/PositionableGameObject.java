@@ -103,12 +103,8 @@ public class PositionableGameObject extends GameObject {
      * @param velocityY The new velocity on the Y-axis.
      */
     public final void setVelocity(double velocityX, double velocityY) {
-        try {
-            this.getVelocity().setVelocityX(velocityX);
-            this.getVelocity().setVelocityY(velocityY);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        this.getVelocity().setVelocityX(velocityX);
+        this.getVelocity().setVelocityY(velocityY);
     }
 
     /**
@@ -118,11 +114,7 @@ public class PositionableGameObject extends GameObject {
      */
     public final void setVelocityX (double velocityX) {
         if (isDeleted()) return;
-        try {
-            this.getVelocity().setVelocityX(velocityX);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        this.getVelocity().setVelocityX(velocityX);
     }
 
     /**
@@ -132,11 +124,7 @@ public class PositionableGameObject extends GameObject {
      */
     public final void setVelocityY (double velocityY) {
         if (isDeleted()) return;
-        try {
-            this.getVelocity().setVelocityY(velocityY);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        this.getVelocity().setVelocityY(velocityY);
     }
 
     /**

@@ -1,13 +1,16 @@
 package rroyo.jge.core.gameessentials;
 
+import rroyo.jge.core.assets.Sprite;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.core.gameutils.Camera;
 import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameobjects.positionable.SpriteGameObject;
 import rroyo.jge.core.gameobjects.Text;
+import rroyo.jge.enums.SpriteHorizontalDirection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +38,12 @@ public final class Render2D extends JPanel {
     /**
      * A list of {@link PositionableGameObject} elements that need to be drawn in the current frame.
      */
-    private List<PositionableGameObject> gameObjectsToDraw = new ArrayList<>();
+    private volatile List<PositionableGameObject> gameObjectsToDraw = new ArrayList<>();
 
     /**
      * A list of {@link Text} elements that need to be drawn in the current frame.
      */
-    private List<Text> textsToDraw = new ArrayList<>();
+    private volatile List<Text> textsToDraw = new ArrayList<>();
 
     /**
      * Constructs a new {@code Render2D} component with the specified window dimensions.
@@ -80,8 +83,8 @@ public final class Render2D extends JPanel {
      * @param texts        The list of {@link Text} elements to render.
      */
     public void prepareFrame(List<PositionableGameObject> gameObjects, List<Text> texts) {
-        this.gameObjectsToDraw = gameObjects;
-        this.textsToDraw = texts;
+        this.gameObjectsToDraw = new ArrayList<>(gameObjects);
+        this.textsToDraw = new ArrayList<>(texts);
     }
 
     /**
@@ -96,20 +99,23 @@ public final class Render2D extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        List<PositionableGameObject> objects = this.gameObjectsToDraw;
+        List<Text> texts = this.textsToDraw;
+
         Graphics2D g2 = (Graphics2D) g.create();
 
         try {
             ViewportParams vp = ViewportParams.calculateViewport(camera, windowDimension);
 
             if (debugMode) {
-                DebugRender.render(g2, gameObjectsToDraw, vp, windowDimension);
+                DebugRender.render(g2, objects, vp, windowDimension);
                 return;
             }
 
             g2.setColor(backgroundColor);
             g2.fillRect(0, 0, (int) windowDimension.getWidth(), (int) windowDimension.getHeight());
 
-            for (PositionableGameObject pgo : gameObjectsToDraw) {
+            for (PositionableGameObject pgo : objects) {
                 if (pgo.isDeleted() || !pgo.isVisible()) continue;
 
                 double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
@@ -123,40 +129,36 @@ public final class Render2D extends JPanel {
 
                 if (pgo instanceof SpriteGameObject spriteGameObject) {
                     if (spriteGameObject.getSprite().hasSpriteImage()) {
-                        double worldX, worldY, width, height;
-                        int drawX, drawY, drawW, drawH;
+                        Sprite sprite = spriteGameObject.getSprite();
+                        BufferedImage img = sprite.getSpriteImages();
 
-                        worldX = switch (spriteGameObject.getSprite().getHorizontalDirection()) {
-                            case RIGHT -> spriteGameObject.getPosition().getX() - spriteGameObject.getSize().getHalfWidth();
-                            case LEFT -> (spriteGameObject.getPosition().getX() - spriteGameObject.getSize().getHalfWidth()) + spriteGameObject.getSize().getWidth();
-                        };
-                        worldY = spriteGameObject.getPosition().getY() - spriteGameObject.getSize().getHalfHeight();
+                        double worldX = spriteGameObject.getPosition().getX() - spriteGameObject.getSize().getHalfWidth();
+                        double worldY = spriteGameObject.getPosition().getY() - spriteGameObject.getSize().getHalfHeight();
+                        double width = spriteGameObject.getSize().getWidth();
+                        double height = spriteGameObject.getSize().getHeight();
 
-                        width = switch (spriteGameObject.getSprite().getHorizontalDirection()) {
-                            case RIGHT -> spriteGameObject.getSize().getWidth();
-                            case LEFT -> -spriteGameObject.getSize().getWidth();
-                        };
-                        height = spriteGameObject.getSize().getHeight();
+                        int drawX = (int) (((worldX + vp.camX()) - vp.centerX()) * vp.zoom() + vp.centerX());
+                        int drawY = (int) (((worldY + vp.camY()) - vp.centerY()) * vp.zoom() + vp.centerY());
+                        int drawW = (int) (width * vp.zoom());
+                        int drawH = (int) (height * vp.zoom());
 
-                        drawX = (int) (((worldX + vp.camX()) - vp.centerX()) * vp.zoom() + vp.centerX());
-                        drawY = (int) (((worldY + vp.camY()) - vp.centerY()) * vp.zoom() + vp.centerY());
-                        drawW = (int) (width * vp.zoom());
-                        drawH = (int) (height * vp.zoom());
-
-                        g.drawImage(spriteGameObject.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
+                        if (sprite.getHorizontalDirection() == SpriteHorizontalDirection.LEFT)
+                            g2.drawImage(img, drawX + drawW, drawY, drawX, drawY + drawH, null);
+                        else
+                            g2.drawImage(img, drawX, drawY, drawX + drawW, drawY + drawH, null);
                     }
                     else {
                         DrawParams dp = DrawParams.calculateDraw(spriteGameObject, vp);
 
-                        g.setColor(spriteGameObject.getSprite().getSpriteColor());
-                        g.fillRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
+                        g2.setColor(spriteGameObject.getSprite().getSpriteColor());
+                        g2.fillRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
                     }
                 }
             }
-            for (Text text : textsToDraw) {
+            for (Text text : texts) {
                 if (text.getText() != null) {
-                    g.setColor(text.getForeground());
-                    g.drawString(text.getText(), (int) text.getPosition().getX()+5, (int) text.getPosition().getY()+15);
+                    g2.setColor(text.getForeground());
+                    g2.drawString(text.getText(), (int) text.getPosition().getX()+5, (int) text.getPosition().getY()+15);
                 }
             }
         } finally {

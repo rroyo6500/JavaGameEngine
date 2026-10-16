@@ -97,14 +97,14 @@ public final class GameLoop implements Runnable {
     public void run() {
 
         try {
-            Runnable update = onUpdate;
-            Runnable render = onRender;
-
             long lastTime = System.nanoTime();
 
             final double timePerFrame = 1_000_000_000.0 / targetFPS;
 
             while (running) {
+                Runnable update = onUpdate;
+                Runnable render = onRender;
+
                 long now = System.nanoTime();
                 float deltaTime = (now - lastTime) / 1_000_000_000f;
 

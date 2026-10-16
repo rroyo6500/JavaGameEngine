@@ -27,7 +27,7 @@ public final class DebugRender {
 
             DrawParams dp = DrawParams.calculateDraw(pgo, vp);
 
-            g.setColor(new Color(pgo.hashCode() % 0xFFFFFF));
+            g.setColor(new Color(Math.abs(pgo.hashCode()) % 0xFFFFFF));
             g.drawRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
             g.drawLine(dp.drawX(), dp.drawY(), dp.drawX()+dp.drawW(), dp.drawY()+dp.drawH());
             g.drawLine(dp.drawX(), dp.drawY()+dp.drawH(), dp.drawX()+dp.drawW(), dp.drawY());

@@ -17,7 +17,7 @@ public class AssetGroup {
     /**
      * A map storing the assets, where the key is a unique string identifier and the value is the {@link Asset}.
      */
-    private final Map<String, Asset> sprites = new HashMap<>();
+    private final Map<String, Asset> assets = new HashMap<>();
 
     /**
      * Default constructor for creating an empty {@code AssetGroup}.
@@ -31,7 +31,7 @@ public class AssetGroup {
      * @param direction The new {@link SpriteHorizontalDirection} to apply to all sprites in the group.
      */
     public void setHorizontalDirection(SpriteHorizontalDirection direction) {
-        for (Asset asset : sprites.values()) {
+        for (Asset asset : assets.values()) {
             if (asset instanceof Sprite sprite)
                 sprite.setHorizontalDirection(direction);
         }
@@ -45,7 +45,7 @@ public class AssetGroup {
      * @return This {@code AssetGroup} instance, allowing for method chaining.
      */
     public AssetGroup add(String id, Asset asset) {
-        sprites.put(id, asset);
+        assets.put(id, asset);
         return this;
     }
 
@@ -57,9 +57,9 @@ public class AssetGroup {
      * @return The {@link Asset} associated with the ID, or {@code null} if it does not exist.
      */
     public Asset get(String id) {
-        if (!sprites.containsKey(id))
-            Log.warn("Sprite ID '" + id + "' does not exist in the SpriteGroup");
-        return sprites.get(id);
+        if (!assets.containsKey(id))
+            Log.warn("Asset ID '" + id + "' does not exist in the AssetGroup");
+        return assets.get(id);
     }
 
     /**
@@ -69,7 +69,7 @@ public class AssetGroup {
      * @return An unmodifiable {@link List} of all {@link Asset}s in the group.
      */
     public List<Asset> getMembers() {
-        return List.copyOf(sprites.values());
+        return List.copyOf(assets.values());
     }
 
     /**
@@ -79,8 +79,8 @@ public class AssetGroup {
      * @param id The unique string identifier of the asset to remove.
      */
     public void remove(String id) {
-        if (!sprites.containsKey(id)) Log.warn("Sprite ID '" + id + "' does not exist in the SpriteGroup");
-        sprites.remove(id);
+        if (!assets.containsKey(id)) Log.warn("Sprite ID '" + id + "' does not exist in the SpriteGroup");
+        assets.remove(id);
     }
 
 }

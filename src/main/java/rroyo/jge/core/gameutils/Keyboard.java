@@ -3,6 +3,8 @@ package rroyo.jge.core.gameutils;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@code Keyboard} class is a global utility that tracks the current state of keyboard keys.
@@ -11,11 +13,7 @@ import java.util.Arrays;
  */
 public final class Keyboard {
 
-    /**
-     * A boolean array mapping key codes to their current pressed state.
-     * Supports up to 1024 key codes.
-     */
-    private static final boolean[] keys = new boolean[1024];
+    private static final Map<Integer, Boolean> keys = new HashMap<>();
 
     /**
      * Private constructor to prevent instantiation of this utility class.
@@ -28,9 +26,7 @@ public final class Keyboard {
      * @param keyCode The integer key code to press.
      */
     public static void press(int keyCode) {
-        if (keyCode >= 0 && keyCode < keys.length) {
-            keys[keyCode] = true;
-        }
+        keys.put(keyCode, true);
     }
 
     /**
@@ -39,9 +35,7 @@ public final class Keyboard {
      * @param keyCode The integer key code to release.
      */
     public static void release(int keyCode) {
-        if (keyCode >= 0 && keyCode < keys.length) {
-            keys[keyCode] = false;
-        }
+        keys.put(keyCode, false);
     }
 
     /**
@@ -51,10 +45,7 @@ public final class Keyboard {
      * @return {@code true} if the key is pressed; {@code false} otherwise.
      */
     public static boolean key(int keyCode) {
-        if (keyCode >= 0 && keyCode < keys.length) {
-            return keys[keyCode];
-        }
-        return false;
+        return keys.getOrDefault(keyCode, false);
     }
 
     /**
@@ -104,7 +95,7 @@ public final class Keyboard {
     }
 
     public static void clear() {
-        Arrays.fill(keys, false);
+        keys.clear();
     }
 
     /**

@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: rroyo.jge.core.gameessentials.PhysicsEngineTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in rroyo.jge.core.gameessentials.PhysicsEngineTest

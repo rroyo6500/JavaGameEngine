@@ -34,7 +34,7 @@ public final class Log {
     /**
      * Text string where message logs are saved if a 'LogFile' does not exist.
      */
-    private static final StringBuilder logs = new StringBuilder();
+    private static final StringBuffer logs = new StringBuffer();
 
     /**
      * Indicates whether the 'debug logs' will be printed in the console.
@@ -228,21 +228,23 @@ public final class Log {
                 System.out.print(log);
             }
         }
-        logs.append(TStyle.clearStyle(log));
-        if (logDirectory != null) {
-            File logFile = new File(String.format("%s%sLog_%s.log",
-                    logDirectory.getAbsolutePath(),
-                    File.separator,
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            ));
+        synchronized (logs) {
+            logs.append(TStyle.clearStyle(log));
+            if (logDirectory != null) {
+                File logFile = new File(String.format("%s%sLog_%s.log",
+                        logDirectory.getAbsolutePath(),
+                        File.separator,
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                ));
 
-            try (java.io.FileWriter fw = new java.io.FileWriter(logFile, true)) {
-                fw.write(logs.toString());
-                logs.delete(0, logs.length());
-            } catch (IOException ignored) {
-                System.err.println("Critical: Could not write to log file.");
+                try (java.io.FileWriter fw = new java.io.FileWriter(logFile, true)) {
+                    fw.write(logs.toString());
+                    logs.delete(0, logs.length());
+                } catch (IOException ignored) {
+                    System.err.println("Critical: Could not write to log file.");
+                }
+
             }
-
         }
         return log;
     }

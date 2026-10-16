@@ -17,11 +17,6 @@ import java.awt.event.WindowEvent;
 public final class GameWindow {
 
     /**
-     * A timer used for scheduling actions, typically used when changing scenes.
-     */
-    private Timer timer;
-
-    /**
      * The target frames per second (FPS) for the game loop running in this window.
      */
     private final int targetFPS;
@@ -84,7 +79,6 @@ public final class GameWindow {
      * @param scene The new {@link Scene} to be set as active.
      */
     public synchronized void setScene(Scene scene) {
-        if (timer != null && !timer.isFinished()) return;
         scene.setRenderer(renderer);
         scene.setWindow(this);
         scene.setCamera(camera);
@@ -95,8 +89,6 @@ public final class GameWindow {
         } else {
             gameLoop.setOnUpdate(scene::processFrame);
         }
-
-        timer = Timer.schedule(1.0f, null);
     }
 
 }

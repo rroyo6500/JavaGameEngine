@@ -97,6 +97,8 @@ public class Audio extends Asset {
             if (clip.isRunning())
                 clip.stop();
             clip.close();
+
+            clip = null;
         }
     }
 }
