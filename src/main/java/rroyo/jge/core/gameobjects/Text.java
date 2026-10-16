@@ -1,39 +1,96 @@
 package rroyo.jge.core.gameobjects;
 
+import rroyo.jge.core.gameutils.Point;
+
 import java.awt.*;
 
+/**
+ * The {@code Text} class represents a renderable text string in the game world.
+ * It extends {@link GameObject} and holds the character string to display, its position,
+ * and the specific color to draw it with.
+ */
 public class Text extends GameObject {
 
-    private final Point point;
+    /**
+     * The positional coordinate of where the text will be drawn.
+     */
+    private final rroyo.jge.core.gameutils.Point position;
+
+    /**
+     * The actual text string content to be displayed.
+     */
     private String text;
 
+    /**
+     * The color applied to the text.
+     */
     private Color foreground;
 
+    /**
+     * Constructs a new {@code Text} element using explicit x and y coordinates.
+     *
+     * @param text The string content to render.
+     * @param x    The horizontal X position to start rendering the text.
+     * @param y    The vertical Y position to render the text.
+     */
     public Text(String text, double x, double y) {
-        this(text, new Point(x, y));
+        this(text, new rroyo.jge.core.gameutils.Point(x, y));
     }
 
-    public Text(String text, Point point) {
-        this.point = point;
+    /**
+     * Constructs a new {@code Text} element using a coordinate object.
+     *
+     * @param text  The string content to render.
+     * @param position The {@link rroyo.jge.core.gameutils.Point} object defining the location.
+     */
+    public Text(String text, rroyo.jge.core.gameutils.Point position) {
+        super(null);
+        this.position = position;
         this.text = text;
     }
 
+    /**
+     * Retrieves the current textual content of this object.
+     *
+     * @return The text string.
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     * Sets a new string value to be rendered.
+     *
+     * @param text The new string to display.
+     */
     public void setText(String text) {
         this.text = text;
     }
 
-    public Point getPoint() {
-        return point;
+    /**
+     * Retrieves the spatial coordinate position of the text.
+     *
+     * @return The {@link rroyo.jge.core.gameutils.Point} indicating position.
+     */
+    public Point getPosition() {
+        return position;
     }
 
+    /**
+     * Retrieves the color applied to the font.
+     *
+     * @return The {@link Color} of the text.
+     */
     public Color getForeground() {
         return foreground;
     }
 
+    /**
+     * Sets the font color for the rendered text. Returns the instance itself to allow for method chaining.
+     *
+     * @param foreground The new {@link Color} to apply.
+     * @return This {@code Text} instance.
+     */
     public Text setForeground(Color foreground) {
         this.foreground = foreground;
         return this;

@@ -3,72 +3,160 @@ package rroyo.jge.core.gameessentials;
 import rroyo.jge.core.gameutils.Time;
 import rroyo.jge.core.gameutils.Timer;
 
-public class GameLoop implements Runnable {
+/**
+ * The {@code GameLoop} class is responsible for managing the main execution loop of the game.
+ * It implements the {@link Runnable} interface, allowing it to run in a separate thread.
+ * This loop ensures that the game's state is updated and rendered at a consistent frame rate.
+ */
+public final class GameLoop implements Runnable {
 
+    /**
+     * The thread in which the game loop will run.
+     */
     private Thread thread;
-    private boolean running = false;
 
+    /**
+     * A flag indicating whether the game loop is currently running.
+     */
+    private volatile boolean running = false;
+
+    /**
+     * The target frames per second (FPS) at which the game loop should attempt to run.
+     */
     private final int targetFPS;
-    private final Runnable onUpdate;
-    private final Runnable onRender;
 
+    /**
+     * A {@link Runnable} representing the logic to update the game state.
+     * This is executed once per frame.
+     */
+    private volatile Runnable onUpdate;
+
+    /**
+     * A {@link Runnable} representing the logic after render the game.
+     * This is executed once per frame after the update logic.
+     */
+    private volatile Runnable onRender;
+
+    /**
+     * Constructs a new {@code GameLoop} with the specified target FPS, update logic, and logic after render.
+     *
+     * @param targetFPS The desired frames per second for the game loop.
+     * @param onUpdate  The logic to execute to update the game state during each frame.
+     * @param onRender  The logic to execute after render the game.
+     */
     public GameLoop(int targetFPS, Runnable onUpdate, Runnable onRender) {
+        if (targetFPS <= 0) throw new IllegalArgumentException("Target FPS must be positive");
         this.targetFPS = targetFPS;
         this.onUpdate = onUpdate;
         this.onRender = onRender;
     }
 
+    /**
+     * Starts the game loop. If the loop is already running, this method does nothing.
+     * It creates a new thread named "JGameEngine-MainLoop" and starts it.
+     */
     public synchronized void start() {
-        if (running) return;
+        if (running || (thread != null && thread.isAlive())) return;
+
         running = true;
-        thread = new Thread(this, "JGameEngine-MainLoop");
+        thread = new Thread(this, "JGameEngine-" + this.hashCode());
         thread.start();
     }
 
-    public synchronized void stop() {
-        if (!running) return;
-        running = false;
+    /**
+     * Stops the game loop gracefully. If the loop is not running, this method does nothing.
+     * It sets the running flag to false and waits for the thread to terminate using {@code join()}.
+     * If interrupted while waiting, it restores the interrupted status of the thread.
+     */
+    public void stop() {
+        Thread threadToStop;
+
+        synchronized (this) {
+            running = false;
+            threadToStop = this.thread;
+        }
+
+        if (threadToStop == null || threadToStop == Thread.currentThread()) return;
+
         try {
-            thread.join();
+            threadToStop.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
+    /**
+     * The core execution loop of the game.
+     * It manages the timing to achieve the target FPS.
+     * In each iteration, it calculates the delta time, updates the global {@link Time} and {@link Timer} utilities,
+     * and calls the provided update and render logic.
+     * If a frame finishes earlier than the target time per frame, the thread sleeps for the remaining time
+     * to prevent CPU overuse and maintain the target FPS.
+     */
     @Override
     public void run() {
 
-        long lastTime = System.nanoTime();
+        try {
+            long lastTime = System.nanoTime();
 
-        final double timePerFrame = 1_000_000_000.0 / targetFPS;
+            final double timePerFrame = 1_000_000_000.0 / targetFPS;
 
-        while (running) {
-            long now = System.nanoTime();
-            float deltaTime = (now - lastTime) / 1_000_000_000f;
+            while (running) {
+                Runnable update = onUpdate;
+                Runnable render = onRender;
 
-            if (now - lastTime >= timePerFrame) {
-                lastTime = now;
+                long now = System.nanoTime();
+                float deltaTime = (now - lastTime) / 1_000_000_000f;
 
-                if (deltaTime > 0.1f) deltaTime = 0.1f;
+                if (now - lastTime >= timePerFrame) {
+                    lastTime = now;
 
-                Time.setDeltaTime(deltaTime);
-                Timer.update();
+                    if (deltaTime > 0.1f) deltaTime = 0.1f;
 
-                if (onUpdate != null) onUpdate.run();
-                if (onRender != null) onRender.run();
-            } else {
-                long timeToSleep = (long) ((timePerFrame - (now - lastTime)) / 1_000_000f);
-                if (timeToSleep > 0) {
-                    try {
-                        Thread.sleep(timeToSleep);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+                    Time.setDeltaTime(deltaTime);
+                    Timer.update();
+
+                    if (update != null) update.run();
+                    if (render != null) render.run();
+                } else {
+                    long timeToSleep = (long) ((timePerFrame - (now - lastTime)) / 1_000_000f);
+                    if (timeToSleep > 0) {
+                        try {
+                            Thread.sleep(timeToSleep);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
                     }
                 }
-            }
 
+            }
+        } finally {
+            synchronized (this) {
+                if (this.thread == Thread.currentThread()) running = false;
+            }
         }
 
+    }
+
+    /**
+     * Replaces the update callback stored by this loop. A running loop captures its callbacks
+     * when {@link #run()} begins, so this setter configures the callback for a subsequent run.
+     *
+     * @param onUpdate A {@link Runnable} containing the new update logic.
+     */
+    public synchronized void setOnUpdate(Runnable onUpdate) {
+        this.onUpdate = onUpdate;
+    }
+
+    /**
+     * Replaces the render callback stored by this loop. A running loop captures its callbacks
+     * when {@link #run()} begins, so this setter configures the callback for a subsequent run.
+     *
+     * @param onRender A {@link Runnable} containing the new render logic.
+     */
+    public synchronized void setOnRender(Runnable onRender) {
+        this.onRender = onRender;
     }
 
 }

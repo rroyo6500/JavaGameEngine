@@ -1,24 +1,62 @@
 package rroyo.jge.core.gameessentials;
 
-import rroyo.jge.core.gameobjects.Dimension;
-import rroyo.jge.core.gameobjects.GameElement;
-import rroyo.jge.core.gameobjects.Text;
+import rroyo.jge.core.assets.Sprite;
+import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.core.gameutils.Camera;
+import rroyo.jge.core.gameutils.Dimension;
+import rroyo.jge.core.gameobjects.positionable.SpriteGameObject;
+import rroyo.jge.core.gameobjects.Text;
+import rroyo.jge.enums.SpriteHorizontalDirection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Render2D extends JPanel {
+/**
+ * Swing panel that renders a snapshot of a 2D scene using a camera transform.
+ * It draws sprite images or solid-color rectangles, overlays screen-space text, culls entities
+ * outside the visible world bounds, and can switch to diagnostic geometry through debug mode.
+ * Frame data is published as immutable-by-convention list snapshots before Swing repaints the panel.
+ */
+public final class Render2D extends JPanel {
 
+    /**
+     * The dimensions of the game window, used for calculating view boundaries and scaling.
+     */
     private final Dimension windowDimension;
+
+    /** Camera transform used to map world coordinates into the panel's screen coordinates. */
+    private final Camera camera;
+
+    /**
+     * The background color of the rendering panel. Defaults to black.
+     */
     private Color backgroundColor = Color.BLACK;
 
-    private List<GameElement> gameElementsToDraw = new ArrayList<>();
-    private List<Text> textsToDraw = new ArrayList<>();
+    /** Selects diagnostic geometry rendering instead of normal sprites and text. */
+    private boolean debugMode = false;
 
-    public Render2D(Dimension windowDimension) {
+    /**
+     * A list of {@link PositionableGameObject} elements that need to be drawn in the current frame.
+     */
+    private volatile List<PositionableGameObject> gameObjectsToDraw = new ArrayList<>();
+
+    /**
+     * A list of {@link Text} elements that need to be drawn in the current frame.
+     */
+    private volatile List<Text> textsToDraw = new ArrayList<>();
+
+    /**
+     * Constructs a new {@code Render2D} component with the specified window dimensions.
+     * It configures the preferred size of the panel and enables double buffering for smoother rendering.
+     *
+     * @param camera camera that supplies position and zoom for drawing
+     * @param windowDimension logical dimensions of the render view in pixels
+     */
+    public Render2D(Camera camera, Dimension windowDimension) {
+        this.camera = camera;
         this.windowDimension = windowDimension;
 
         this.setPreferredSize(new java.awt.Dimension(
@@ -29,88 +67,112 @@ public class Render2D extends JPanel {
         this.setDoubleBuffered(true);
     }
 
+    /**
+     * Sets the background color of the render view.
+     *
+     * @param backgroundColor The new background {@link Color}.
+     */
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 
-    public void prepareFrame(List<GameElement> gameElements, List<Text> texts) {
-        this.gameElementsToDraw = gameElements;
-        this.textsToDraw = texts;
+    /**
+     * Enables or disables diagnostic rendering for subsequent paint operations.
+     *
+     * @param debugMode {@code true} to draw debug bounds and proximity links; {@code false} for normal rendering
+     */
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
     }
 
+    /**
+     * Prepares the lists of elements and text to be drawn in the next rendering pass.
+     * This method is typically called by a {@link Scene} before asking the renderer to repaint.
+     *
+     * @param gameObjects positionable entity snapshot for the next paint operation
+     * @param texts text snapshot for the next paint operation
+     */
+    public void prepareFrame(List<PositionableGameObject> gameObjects, List<Text> texts) {
+        this.gameObjectsToDraw = new ArrayList<>(gameObjects);
+        this.textsToDraw = new ArrayList<>(texts);
+    }
+
+    /**
+     * Overrides the {@code paintComponent} method of {@link JPanel} to perform custom rendering.
+     * It clears the screen with the background color, calculates the visible area based on the camera,
+     * culls elements outside the viewport for optimization, and draws the visible elements and texts.
+     * Support is provided for drawing either image-based sprites or colored rectangles, depending on the element's sprite configuration.
+     *
+     * @param g The {@link Graphics} context used for drawing.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Graphics2D g2 = (Graphics2D) g;
+        List<PositionableGameObject> objects = this.gameObjectsToDraw;
+        List<Text> texts = this.textsToDraw;
 
-        g2.setColor(backgroundColor);
-        g2.fillRect(0, 0, getWidth(), getHeight());
+        Graphics2D g2 = (Graphics2D) g.create();
 
-        double centerX = windowDimension.getHalfWidth();
-        double centerY = windowDimension.getHalfHeight();
-        double zoom = Camera.getZoom();
-        double camX = Camera.getCameraPosition().getX();
-        double camY = Camera.getCameraPosition().getY();
+        try {
+            ViewportParams vp = ViewportParams.calculateViewport(camera, windowDimension);
 
-        double viewWorldX = centerX - (centerX / zoom) - camX;
-        double viewWorldY = centerY - (centerY / zoom) - camY;
-        double viewWorldWidth = windowDimension.getWidth() / zoom;
-        double viewWorldHeight = windowDimension.getHeight() / zoom;
-
-        for (GameElement go : gameElementsToDraw) {
-            if (go.isDeleted()) continue;
-
-            double objX = go.getPoint().getX() - go.getDimension().getHalfWidth();
-            double objY = go.getPoint().getY() - go.getDimension().getHalfHeight();
-            double objW = go.getDimension().getWidth();
-            double objH = go.getDimension().getHeight();
-
-            if (objX + objW < viewWorldX || objX > viewWorldX + viewWorldWidth ||
-                    objY + objH < viewWorldY || objY > viewWorldY + viewWorldHeight
-            ) continue;
-
-            double worldX, worldY, width, height;
-
-            go.getSprite().next();
-            if (go.getSprite().hasSpriteImage()) {
-                worldX = switch (go.getSprite().getHorizontalDirection()) {
-                    case RIGHT -> go.getPoint().getX() - go.getDimension().getHalfWidth();
-                    case LEFT -> (go.getPoint().getX() - go.getDimension().getHalfWidth()) + go.getDimension().getWidth();
-                };
-                worldY = go.getPoint().getY() - go.getDimension().getHalfHeight();
-
-                width = switch (go.getSprite().getHorizontalDirection()) {
-                    case RIGHT -> go.getDimension().getWidth();
-                    case LEFT -> -go.getDimension().getWidth();
-                };
-                height = go.getDimension().getHeight();
-
-                int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                int drawW = (int) (width * zoom);
-                int drawH = (int) (height * zoom);
-
-                g.drawImage(go.getSprite().getSpriteImages(), drawX, drawY, drawW, drawH, null);
+            if (debugMode) {
+                DebugRender.render(g2, objects, vp, windowDimension);
+                return;
             }
-            else {
-                worldX = go.getPoint().getX() - go.getDimension().getHalfWidth();
-                worldY = go.getPoint().getY() - go.getDimension().getHalfHeight();
-                width = go.getDimension().getWidth();
-                height = go.getDimension().getHeight();
 
-                int drawX = (int) (((worldX + camX) - centerX) * zoom + centerX);
-                int drawY = (int) (((worldY + camY) - centerY) * zoom + centerY);
-                int drawW = (int) (width * zoom);
-                int drawH = (int) (height * zoom);
+            g2.setColor(backgroundColor);
+            g2.fillRect(0, 0, (int) windowDimension.getWidth(), (int) windowDimension.getHeight());
 
-                g.setColor(go.getSprite().getSpriteColor());
-                g.fillRect(drawX, drawY, drawW, drawH);
+            for (PositionableGameObject pgo : objects) {
+                if (pgo.isDeleted() || !pgo.isVisible()) continue;
+
+                double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
+                double objY = pgo.getPosition().getY() - pgo.getSize().getHalfHeight();
+                double objW = pgo.getSize().getWidth();
+                double objH = pgo.getSize().getHeight();
+
+                if (objX + objW < vp.viewWorldX() || objX > vp.viewWorldX() + vp.viewWorldWidth() ||
+                        objY + objH < vp.viewWorldY() || objY > vp.viewWorldY() + vp.viewWorldHeight()
+                ) continue;
+
+                if (pgo instanceof SpriteGameObject spriteGameObject) {
+                    if (spriteGameObject.getSprite().hasSpriteImage()) {
+                        Sprite sprite = spriteGameObject.getSprite();
+                        BufferedImage img = sprite.getSpriteImages();
+
+                        double worldX = spriteGameObject.getPosition().getX() - spriteGameObject.getSize().getHalfWidth();
+                        double worldY = spriteGameObject.getPosition().getY() - spriteGameObject.getSize().getHalfHeight();
+                        double width = spriteGameObject.getSize().getWidth();
+                        double height = spriteGameObject.getSize().getHeight();
+
+                        int drawX = (int) (((worldX + vp.camX()) - vp.centerX()) * vp.zoom() + vp.centerX());
+                        int drawY = (int) (((worldY + vp.camY()) - vp.centerY()) * vp.zoom() + vp.centerY());
+                        int drawW = (int) (width * vp.zoom());
+                        int drawH = (int) (height * vp.zoom());
+
+                        if (sprite.getHorizontalDirection() == SpriteHorizontalDirection.LEFT)
+                            g2.drawImage(img, drawX + drawW, drawY, drawX, drawY + drawH, null);
+                        else
+                            g2.drawImage(img, drawX, drawY, drawX + drawW, drawY + drawH, null);
+                    }
+                    else {
+                        DrawParams dp = DrawParams.calculateDraw(spriteGameObject, vp);
+
+                        g2.setColor(spriteGameObject.getSprite().getSpriteColor());
+                        g2.fillRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
+                    }
+                }
             }
-        }
-        for (Text text : textsToDraw) {
-            if (text.getText() != null) g.setColor(text.getForeground());
-            g.drawString(text.getText(), (int) text.getPoint().getX()+5, (int) text.getPoint().getY()+15);
+            for (Text text : texts) {
+                if (text.getText() != null) {
+                    g2.setColor(text.getForeground());
+                    g2.drawString(text.getText(), (int) text.getPosition().getX()+5, (int) text.getPosition().getY()+15);
+                }
+            }
+        } finally {
+            g2.dispose();
         }
     }
 }
