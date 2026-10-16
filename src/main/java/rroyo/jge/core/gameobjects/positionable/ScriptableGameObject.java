@@ -11,8 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A positionable entity that delegates lifecycle and interaction behavior to attached scripts.
+ * Each script is initialized when attached, while the object's normal start phase is guarded
+ * so it runs only once. Updates and interaction notifications are forwarded in attachment order.
+ */
 public class ScriptableGameObject extends PositionableGameObject {
 
+    /** Prevents the regular start phase from invoking scripts more than once. */
     private boolean started = false;
 
     /**
@@ -28,6 +34,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      * @param width  The total width of the object.
      * @param height The total height of the object.
      * @param scripts A variable number of {@link Script}s to attach for customized behavior.
+     * @param scene scene that owns and updates this entity
      */
     public ScriptableGameObject(Scene scene, double x, double y, double width, double height, Script... scripts) {
         super(scene, x, y, width, height);
@@ -40,6 +47,7 @@ public class ScriptableGameObject extends PositionableGameObject {
      * @param position     The {@link rroyo.jge.core.gameutils.Point} representing the object's center.
      * @param size The {@link rroyo.jge.core.gameutils.Dimension} representing the object's size.
      * @param scripts    A variable number of {@link Script}s to attach for customized behavior.
+     * @param scene scene that owns and updates this entity
      */
     public ScriptableGameObject(Scene scene, Point position, Dimension size, Script... scripts) {
         super(scene, position, size);
@@ -68,10 +76,10 @@ public class ScriptableGameObject extends PositionableGameObject {
     }
 
     /**
-     * Sends an {@code onInRange} event fot this {@link  GameObject}
+     * Dispatches an in-range notification to each attached script.
      *
-     * @param self      This {@link  GameObject}
-     * @param objective The other {@link  GameObject} that participates in the interaction
+     * @param self object reported as the source of the event
+     * @param objective other object reported as the event target
      */
     public final void sendOnInRange(GameObject self, GameObject objective) {
         for (Script s : scripts) {
@@ -80,10 +88,10 @@ public class ScriptableGameObject extends PositionableGameObject {
     }
 
     /**
-     * Sends an {@code onOvelap} event fot this {@link  GameObject}
+     * Dispatches an overlap notification to each attached script.
      *
-     * @param self      This {@link  GameObject}
-     * @param objective The other {@link  GameObject} that participates in the interaction
+     * @param self object reported as the source of the event
+     * @param objective other object reported as the event target
      */
     public final void sendOnOverlap(GameObject self, GameObject objective) {
         for (Script s : scripts) {
@@ -92,10 +100,10 @@ public class ScriptableGameObject extends PositionableGameObject {
     }
 
     /**
-     * Sends an {@code onCollide} event fot this {@link  GameObject}
+     * Dispatches a collision notification to each attached script.
      *
-     * @param self      This {@link  GameObject}
-     * @param objective The other {@link  GameObject} that participates in the interaction
+     * @param self object reported as the source of the event
+     * @param objective other object reported as the event target
      */
     public final void sendOnCollide(GameObject self, GameObject objective) {
         for (Script s : scripts) {
@@ -103,6 +111,14 @@ public class ScriptableGameObject extends PositionableGameObject {
         }
     }
 
+    /**
+     * Attaches each non-null script that is not already present. Newly attached scripts receive
+     * their {@link Script#start(GameObject)} callback immediately, and the object is marked started
+     * so its regular frame-start phase will not initialize them a second time.
+     *
+     * @param script scripts to attach in the supplied order
+     * @throws NullPointerException if the array or any script in it is null
+     */
     public void addScript(@NotNull Script... script) {
         Objects.requireNonNull(script);
         for (Script s : script) {
@@ -115,6 +131,11 @@ public class ScriptableGameObject extends PositionableGameObject {
         }
     }
 
+    /**
+     * Returns an immutable snapshot of scripts currently attached to this entity.
+     *
+     * @return scripts in attachment order
+     */
     public List<Script> getScripts() {
         return List.copyOf(scripts);
     }

@@ -34,7 +34,6 @@ public class Velocity {
      * Sets the current velocity applied to the X-axis.
      *
      * @param velocityX The new horizontal velocity.
-     * @throws IllegalAccessException if constraints or internal architecture prevent this assignment.
      */
     public void setVelocityX(double velocityX) {
         this.velocityX = velocityX;
@@ -53,7 +52,6 @@ public class Velocity {
      * Sets the current velocity applied to the Y-axis.
      *
      * @param velocityY The new vertical velocity.
-     * @throws IllegalAccessException if constraints or internal architecture prevent this assignment.
      */
     public void setVelocityY(double velocityY) {
         this.velocityY = velocityY;

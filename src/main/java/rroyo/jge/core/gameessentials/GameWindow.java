@@ -26,6 +26,7 @@ public final class GameWindow {
      */
     private final Render2D renderer;
 
+    /** Camera shared by the window's renderer and each scene attached to this window. */
     private final Camera camera;
 
     /**
@@ -71,12 +72,12 @@ public final class GameWindow {
     }
 
     /**
-     * Sets a new active scene for the game window.
-     * If a transition timer is currently running, the scene change is ignored.
-     * It links the new scene with the renderer and starts the game loop if it hasn't been started yet.
-     * If the loop is already running, it updates the loop to process frames for the new scene.
+     * Attaches a scene to this window's renderer, window reference, and camera, then stores its
+     * frame processor as the loop's update callback. The first call creates and starts the loop.
+     * A loop already running has captured its callback at startup, so changing the stored callback
+     * does not currently redirect that active run.
      *
-     * @param scene The new {@link Scene} to be set as active.
+     * @param scene scene to attach and activate
      */
     public synchronized void setScene(Scene scene) {
         scene.setRenderer(renderer);

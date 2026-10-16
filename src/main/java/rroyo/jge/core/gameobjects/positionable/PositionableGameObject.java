@@ -10,6 +10,12 @@ import rroyo.jge.core.gameutils.Velocity;
 
 import java.awt.*;
 
+/**
+ * Base game entity with a center position, dimensions, velocity, and integer AABB bounds.
+ * Instances register themselves with the {@link PhysicsEngine} for their owning scene.
+ * Movement through {@link #move()} is velocity-based and scaled by the current frame delta;
+ * direct movement through {@link #move(double, double)} applies world-space offsets immediately.
+ */
 public class PositionableGameObject extends GameObject {
 
     /**
@@ -39,6 +45,7 @@ public class PositionableGameObject extends GameObject {
      * @param y      The Y-coordinate of the object's center.
      * @param width  The total width of the object.
      * @param height The total height of the object.
+     * @param scene scene that owns and updates this entity
      */
     public PositionableGameObject(Scene scene, double x, double y, double width, double height) {
         this(scene, new Point(x, y), new Dimension(width, height));
@@ -49,6 +56,7 @@ public class PositionableGameObject extends GameObject {
      *
      * @param position     The {@link rroyo.jge.core.gameutils.Point} representing the element's center.
      * @param size The {@link rroyo.jge.core.gameutils.Dimension} representing the element's size.
+     * @param scene scene that owns and updates this entity
      */
     public PositionableGameObject(Scene scene, Point position, Dimension size) {
         super(scene);

@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public final class Keyboard {
 
+    /** Current pressed state keyed by AWT key code. */
     private static final Map<Integer, Boolean> keys = new HashMap<>();
 
     /**
@@ -94,6 +95,10 @@ public final class Keyboard {
         return key(KeyEvent.VK_RIGHT);
     }
 
+    /**
+     * Marks every key as released, typically when the game window loses focus so a missed
+     * release event cannot leave a key stuck in the pressed state.
+     */
     public static void clear() {
         keys.clear();
     }
@@ -101,7 +106,7 @@ public final class Keyboard {
     /**
      * A global static {@link KeyAdapter} meant to be attached to the main window.
      * It automatically populates the internal key state array whenever AWT registers a key event.
-     */
+     * AWT listener that updates the shared key-state table from press and release events. */
     public static final KeyAdapter listener = new KeyAdapter() {
         @Override
         public void keyPressed(KeyEvent e) {

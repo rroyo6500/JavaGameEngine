@@ -32,6 +32,7 @@ public class SpriteGameObject extends ScriptableGameObject implements Event2d {
      * @param height The total height of the element.
      * @param sprite The visual {@link Sprite} for the element.
      * @param scripts A variable number of {@link Script}s to attach for customized behavior.
+     * @param scene scene that owns and updates this entity
      */
     public SpriteGameObject(Scene scene, double x, double y, double width, double height, @NotNull Sprite sprite, Script... scripts) {
         super(scene, x, y, width, height, scripts);
@@ -46,6 +47,7 @@ public class SpriteGameObject extends ScriptableGameObject implements Event2d {
      * @param size The {@link rroyo.jge.core.gameutils.Dimension} representing the element's size.
      * @param sprite    The visual {@link Sprite} for the element.
      * @param scripts    A variable number of {@link Script}s to attach for customized behavior.
+     * @param scene scene that owns and updates this entity
      */
     public SpriteGameObject(Scene scene, Point position, Dimension size, @NotNull Sprite sprite, Script... scripts) {
         super(scene, position, size, scripts);

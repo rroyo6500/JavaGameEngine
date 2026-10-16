@@ -21,6 +21,12 @@ public class GameObject {
      */
     private boolean visible = true;
 
+    /**
+     * Creates an object associated with the supplied scene.
+     * A {@code null} scene is permitted for scene-independent objects such as UI text and groups.
+     *
+     * @param scene owning scene, or {@code null} when the object is not scene-bound
+     */
     public GameObject(Scene scene) {
         this.scene = scene;
     }
@@ -67,6 +73,11 @@ public class GameObject {
         this.visible = visible;
     }
 
+    /**
+     * Returns the scene assigned when this object was constructed.
+     *
+     * @return the owning scene, or {@code null} for scene-independent objects
+     */
     public Scene getScene() {
         return scene;
     }

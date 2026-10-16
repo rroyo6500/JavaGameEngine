@@ -140,7 +140,8 @@ public final class GameLoop implements Runnable {
     }
 
     /**
-     * Sets or updates the logic to be executed for updating the game state.
+     * Replaces the update callback stored by this loop. A running loop captures its callbacks
+     * when {@link #run()} begins, so this setter configures the callback for a subsequent run.
      *
      * @param onUpdate A {@link Runnable} containing the new update logic.
      */
@@ -149,7 +150,8 @@ public final class GameLoop implements Runnable {
     }
 
     /**
-     * Sets or updates the logic to be executed after rendering the game.
+     * Replaces the render callback stored by this loop. A running loop captures its callbacks
+     * when {@link #run()} begins, so this setter configures the callback for a subsequent run.
      *
      * @param onRender A {@link Runnable} containing the new render logic.
      */

@@ -46,7 +46,8 @@ public record Overlap(double overlapX, double overlapY) {
      * Internal optimized broad-phase check to see if another element is within a general secure distance,
      * quickly eliminating the need for complex AABB checks on distant objects.
      *
-     * @param gameObject The other {@link SpriteGameObject}.
+     * @param self object whose distance from the other entity is tested
+     * @param gameObject other positionable object used in the proximity check
      * @return {@code true} if the elements are close enough to potentially interact; {@code false} otherwise.
      */
     public static boolean ir(GameObject self, PositionableGameObject gameObject) {
@@ -69,7 +70,8 @@ public record Overlap(double overlapX, double overlapY) {
     /**
      * Calculates the Axis-Aligned Bounding Box (AABB) intersection depth between this element and another.
      *
-     * @param gameObject The other {@link SpriteGameObject} to check against.
+     * @param self object whose bounds are the first half of the comparison
+     * @param gameObject other positionable object whose bounds are compared
      * @return An {@link Overlap} object containing the X and Y intersection depths, or {@code null} if there is no collision.
      */
     public static Overlap calculateOverlap(GameObject self, PositionableGameObject gameObject) {
@@ -100,6 +102,7 @@ public record Overlap(double overlapX, double overlapY) {
      * Internal check to determine if the bounding boxes of this element and another are currently overlapping.
      *
      * @param gameObject The other {@link SpriteGameObject} to check.
+     * @param self object whose bounds are the first half of the comparison
      * @return {@code true} if they overlap; {@code false} otherwise.
      */
     public static boolean ov(GameObject self, PositionableGameObject gameObject) {

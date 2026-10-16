@@ -23,8 +23,10 @@ public abstract class Scene {
      */
     private final List<Text> texts = new ArrayList<>();
 
+    /** Background color used by the renderer when this scene is active. */
     private Color backgroundColor = Color.BLACK;
 
+    /** Whether this scene's renderer should display diagnostic geometry. */
     private boolean debugMode = false;
 
     /**
@@ -37,6 +39,7 @@ public abstract class Scene {
      */
     protected GameWindow window;
 
+    /** Camera attached by the containing window; subclasses may use it to control the view. */
     protected Camera camera;
 
     /**
@@ -64,6 +67,11 @@ public abstract class Scene {
         this.window = window;
     }
 
+    /**
+     * Stores the camera supplied by the containing game window for use by scene logic.
+     *
+     * @param camera camera associated with this scene
+     */
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
@@ -117,6 +125,11 @@ public abstract class Scene {
         }
     }
 
+    /**
+     * Returns the color currently configured for this scene's background.
+     *
+     * @return scene background color
+     */
     public Color getBackgroundColor() {
         return backgroundColor;
     }
@@ -131,10 +144,20 @@ public abstract class Scene {
         if (renderer != null) renderer.setBackgroundColor(backgroundColor);
     }
 
+    /**
+     * Reports whether debug rendering is enabled for this scene.
+     *
+     * @return {@code true} when diagnostic rendering is enabled
+     */
     public boolean isDebugMode() {
         return debugMode;
     }
 
+    /**
+     * Changes debug rendering and immediately forwards the setting when a renderer is attached.
+     *
+     * @param debugMode {@code true} to show diagnostic geometry; {@code false} to show normal scene visuals
+     */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
         if (renderer != null) renderer.setDebugMode(debugMode);

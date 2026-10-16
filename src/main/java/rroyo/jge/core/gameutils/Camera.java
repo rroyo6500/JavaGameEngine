@@ -18,6 +18,7 @@ public final class Camera {
     private double zoom = 1;
 
 
+    /** Creates a camera at the world origin with the default zoom level of {@code 1.0}. */
     public Camera() {}
 
     /**

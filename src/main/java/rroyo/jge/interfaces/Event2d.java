@@ -6,6 +6,11 @@ import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 import rroyo.jge.core.gameobjects.positionable.ScriptableGameObject;
 import rroyo.jge.core.gameutils.Overlap;
 
+/**
+ * Defines the standard two-dimensional proximity, overlap, and collision operations for entities.
+ * Implementations are expected to be positionable objects; each default method performs the
+ * relevant geometry check and dispatches script callbacks when supported by the participants.
+ */
 public interface Event2d {
 
     /**

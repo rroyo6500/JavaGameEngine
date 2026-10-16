@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The {@code AssetGroup} class is a container for managing a collection of {@link Asset} objects,
- * identified by unique string keys. It provides methods to add, retrieve, remove, and perform
- * bulk operations on its contained assets, such as updating the direction of all sprites within the group.
+ * Named collection of {@link Asset} instances for convenient lookup and bulk asset operations.
+ * Keys are unique within this group; adding an existing key replaces its previous value. The group
+ * does not automatically close assets when they are removed or when the group becomes unreachable.
  */
 public class AssetGroup {
 
@@ -25,8 +25,7 @@ public class AssetGroup {
     public AssetGroup() {}
 
     /**
-     * Sets the horizontal direction for all {@link Sprite} assets contained within this group.
-     * Assets that are not of type {@code Sprite} are ignored.
+     * Sets the facing direction of every {@link Sprite} in this group. Other asset types are ignored.
      *
      * @param direction The new {@link SpriteHorizontalDirection} to apply to all sprites in the group.
      */
@@ -38,7 +37,7 @@ public class AssetGroup {
     }
 
     /**
-     * Adds a new asset to the group with the specified identifier.
+     * Adds or replaces an asset under the specified identifier.
      *
      * @param id     The unique string identifier for the asset.
      * @param asset The {@link Asset} (e.g., a Sprite or Audio) to add.
@@ -63,8 +62,8 @@ public class AssetGroup {
     }
 
     /**
-     * Retrieves a list of all assets currently contained in this group.
-     * The returned list is a copy, so modifying it will not affect the group's internal map.
+     * Retrieves an immutable snapshot of all assets currently contained in this group.
+     * The order follows the backing map's iteration order and is not guaranteed to be stable.
      *
      * @return An unmodifiable {@link List} of all {@link Asset}s in the group.
      */

@@ -15,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The {@code Render2D} class extends {@link JPanel} and handles the rendering of 2D game elements.
- * It is responsible for drawing game objects (sprites or colored rectangles) and text onto the screen,
- * taking into account camera position and zoom levels to create a view of the game world.
+ * Swing panel that renders a snapshot of a 2D scene using a camera transform.
+ * It draws sprite images or solid-color rectangles, overlays screen-space text, culls entities
+ * outside the visible world bounds, and can switch to diagnostic geometry through debug mode.
+ * Frame data is published as immutable-by-convention list snapshots before Swing repaints the panel.
  */
 public final class Render2D extends JPanel {
 
@@ -26,6 +27,7 @@ public final class Render2D extends JPanel {
      */
     private final Dimension windowDimension;
 
+    /** Camera transform used to map world coordinates into the panel's screen coordinates. */
     private final Camera camera;
 
     /**
@@ -33,6 +35,7 @@ public final class Render2D extends JPanel {
      */
     private Color backgroundColor = Color.BLACK;
 
+    /** Selects diagnostic geometry rendering instead of normal sprites and text. */
     private boolean debugMode = false;
 
     /**
@@ -49,7 +52,8 @@ public final class Render2D extends JPanel {
      * Constructs a new {@code Render2D} component with the specified window dimensions.
      * It configures the preferred size of the panel and enables double buffering for smoother rendering.
      *
-     * @param windowDimension The dimension (width and height) of the render view.
+     * @param camera camera that supplies position and zoom for drawing
+     * @param windowDimension logical dimensions of the render view in pixels
      */
     public Render2D(Camera camera, Dimension windowDimension) {
         this.camera = camera;
@@ -72,6 +76,11 @@ public final class Render2D extends JPanel {
         this.backgroundColor = backgroundColor;
     }
 
+    /**
+     * Enables or disables diagnostic rendering for subsequent paint operations.
+     *
+     * @param debugMode {@code true} to draw debug bounds and proximity links; {@code false} for normal rendering
+     */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
     }
@@ -80,7 +89,8 @@ public final class Render2D extends JPanel {
      * Prepares the lists of elements and text to be drawn in the next rendering pass.
      * This method is typically called by a {@link Scene} before asking the renderer to repaint.
      *
-     * @param texts        The list of {@link Text} elements to render.
+     * @param gameObjects positionable entity snapshot for the next paint operation
+     * @param texts text snapshot for the next paint operation
      */
     public void prepareFrame(List<PositionableGameObject> gameObjects, List<Text> texts) {
         this.gameObjectsToDraw = new ArrayList<>(gameObjects);
