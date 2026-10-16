@@ -74,8 +74,6 @@ public final class GameWindow {
     /**
      * Attaches a scene to this window's renderer, window reference, and camera, then stores its
      * frame processor as the loop's update callback. The first call creates and starts the loop.
-     * A loop already running has captured its callback at startup, so changing the stored callback
-     * does not currently redirect that active run.
      *
      * @param scene scene to attach and activate
      */
