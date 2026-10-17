@@ -108,11 +108,13 @@ public final class Keyboard {
      * It automatically populates the internal key state array whenever AWT registers a key event.
      * AWT listener that updates the shared key-state table from press and release events. */
     public static final KeyAdapter listener = new KeyAdapter() {
+        /** Records a key press in the shared keyboard state. */
         @Override
         public void keyPressed(KeyEvent e) {
             press(e.getKeyCode());
         }
 
+        /** Records a key release in the shared keyboard state. */
         @Override
         public void keyReleased(KeyEvent e) {
             release(e.getKeyCode());

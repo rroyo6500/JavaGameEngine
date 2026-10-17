@@ -71,6 +71,7 @@ public final class DebugRender {
         }
     }
 
+    /** Checks whether an object's rotated enclosing bounds intersect the visible world area. */
     private static boolean isInViewport(PositionableGameObject object, ViewportParams vp) {
         Rectangle bounds = object.getBounds();
         return bounds.getMaxX() >= vp.viewWorldX()
@@ -79,10 +80,12 @@ public final class DebugRender {
                 && bounds.getMinY() <= vp.viewWorldY() + vp.viewWorldHeight();
     }
 
+    /** Converts the object's world-space center to a screen-space X coordinate. */
     private static int screenX(PositionableGameObject object, ViewportParams vp) {
         return (int) ((object.getPosition().getX() + vp.camX() - vp.centerX()) * vp.zoom() + vp.centerX());
     }
 
+    /** Converts the object's world-space center to a screen-space Y coordinate. */
     private static int screenY(PositionableGameObject object, ViewportParams vp) {
         return (int) ((object.getPosition().getY() + vp.camY() - vp.centerY()) * vp.zoom() + vp.centerY());
     }

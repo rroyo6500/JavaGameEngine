@@ -129,6 +129,7 @@ public record Overlap(double overlapX, double overlapY, double normalX, double n
         return null;
     }
 
+    /** Projects the half-extents of an oriented rectangle onto a unit axis. */
     private static double projectedRadius(PositionableGameObject object, double axisX, double axisY) {
         double angle = object.getRotation();
         double localXx = Math.cos(angle);

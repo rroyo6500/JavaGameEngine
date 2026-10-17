@@ -9,25 +9,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/** Verifies timer validation, callback execution, cancellation, and looping. */
 class TimerTest {
+    /** Resets shared timer and time state before each test. */
     @BeforeEach
     void setUp() {
         TestState.resetTimers();
         TestState.resetTime();
     }
 
+    /** Resets shared timer and time state after each test. */
     @AfterEach
     void tearDown() {
         TestState.resetTimers();
         TestState.resetTime();
     }
 
+    /** Confirms zero and negative durations are rejected. */
     @Test
     void rejectsZeroAndNegativeDurations() {
         assertThrows(IllegalArgumentException.class, () -> Timer.schedule(0, () -> { }));
         assertThrows(IllegalArgumentException.class, () -> Timer.schedule(-1, () -> { }));
     }
 
+    /** Confirms an expired one-shot timer runs once and reports completion. */
     @Test
     void oneShotTimerIsFinishedAfterItsCallbackRuns() {
         AtomicInteger calls = new AtomicInteger();
@@ -39,6 +44,7 @@ class TimerTest {
         assertTrue(timer.isFinished(), "An expired non-looping timer should report finished");
     }
 
+    /** Confirms a one-shot callback is not repeated by later updates. */
     @Test
     void oneShotCallbackDoesNotRunAgainOnLaterUpdates() {
         AtomicInteger calls = new AtomicInteger();
@@ -50,6 +56,7 @@ class TimerTest {
         assertEquals(1, calls.get(), "A one-shot callback must run only once after expiration");
     }
 
+    /** Confirms cancellation completes a timer without invoking its callback. */
     @Test
     void cancelledTimerIsImmediatelyFinishedAndNeverCallsBack() {
         AtomicInteger calls = new AtomicInteger();
@@ -62,6 +69,7 @@ class TimerTest {
         assertEquals(0, calls.get());
     }
 
+    /** Confirms a looping timer remains active after invoking its callback. */
     @Test
     void loopingTimerIsNotFinishedAfterItFires() {
         AtomicInteger calls = new AtomicInteger();

@@ -9,13 +9,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/** Verifies game-loop argument validation and orderly shutdown behavior. */
 class GameLoopTest {
+    /** Ensures the loop rejects frame rates that cannot produce a valid frame interval. */
     @Test
     void rejectsNonPositiveTargetFps() {
         assertThrows(IllegalArgumentException.class, () -> new GameLoop(0, null, null));
         assertThrows(IllegalArgumentException.class, () -> new GameLoop(-1, null, null));
     }
 
+    /** Ensures stop waits for an active callback and joins the update thread. */
     @Test
     @Timeout(value = 4, unit = TimeUnit.SECONDS)
     void stopWaitsForAnInProgressCallbackAndThenReturns() throws InterruptedException {

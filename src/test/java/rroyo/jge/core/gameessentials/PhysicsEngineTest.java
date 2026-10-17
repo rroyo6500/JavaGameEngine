@@ -10,19 +10,24 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/** Verifies per-scene entity registration and snapshot behavior. */
 class PhysicsEngineTest {
+    /** Scene fixture shared by each test in this class. */
     private TestScene scene;
 
+    /** Creates a fresh scene registry fixture for a test. */
     @BeforeEach
     void setUp() {
         scene = new TestScene();
     }
 
+    /** Removes the test scene's entities after each test. */
     @AfterEach
     void tearDown() {
         PhysicsEngine.remove(scene);
     }
 
+    /** Confirms construction automatically registers an entity with its owner scene. */
     @Test
     void constructionRegistersObjectInItsScene() {
         PositionableGameObject object = new PositionableGameObject(scene, 0, 0, 10, 10);
@@ -31,6 +36,7 @@ class PhysicsEngineTest {
         assertEquals(List.of(object), PhysicsEngine.getGameObjects(scene));
     }
 
+    /** Confirms duplicate registration preserves the rest of the scene's entities. */
     @Test
     void registeringAnExistingObjectDoesNotDiscardOtherSceneObjects() {
         PositionableGameObject first = new PositionableGameObject(scene, 0, 0, 10, 10);
@@ -44,6 +50,7 @@ class PhysicsEngineTest {
         assertTrue(PhysicsEngine.getGameObjects(scene).contains(second));
     }
 
+    /** Confirms callers cannot mutate the engine's internal entity list through a snapshot. */
     @Test
     void returnedEntityListCannotModifyInternalRegistry() {
         PositionableGameObject object = new PositionableGameObject(scene, 0, 0, 10, 10);
@@ -53,6 +60,7 @@ class PhysicsEngineTest {
         assertTrue(PhysicsEngine.contains(object));
     }
 
+    /** Confirms entities registered to different scenes remain isolated. */
     @Test
     void scenesHaveIndependentRegistries() {
         TestScene otherScene = new TestScene();
@@ -67,6 +75,7 @@ class PhysicsEngineTest {
         }
     }
 
+    /** Confirms removing an object after clearing its scene is harmless. */
     @Test
     void removingAnObjectAfterItsSceneWasRemovedDoesNotThrow() {
         PositionableGameObject object = new PositionableGameObject(scene, 0, 0, 10, 10);

@@ -9,6 +9,7 @@ import rroyo.jge.core.gameessentials.Scene;
  */
 public class GameObject {
 
+    /** Scene that owns this object, or {@code null} for scene-independent objects. */
     private final Scene scene;
 
     /**

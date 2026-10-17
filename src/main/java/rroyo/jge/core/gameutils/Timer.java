@@ -25,6 +25,7 @@ public final class Timer {
      */
     private float remaining;
 
+    /** Whether this timer has completed and can be removed from the active registry. */
     private boolean finished = false;
 
     /**
