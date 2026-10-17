@@ -55,12 +55,22 @@ public record ViewportParams(
         return new ViewportParams(centerX, centerY, zoom, camX, camY, viewWorldX, viewWorldY, viewWorldWidth, viewWorldHeight);
     }
 
-    /** Converts a world-space X coordinate to a screen-space coordinate. */
+    /**
+     * Converts a world-space X coordinate to a screen-space coordinate.
+     *
+     * @param worldX the X coordinate in world units
+     * @return the corresponding X coordinate in screen pixels
+     */
     public double worldToScreenX(double worldX) {
         return ((worldX + camX) - centerX) * zoom + centerX;
     }
 
-    /** Converts a world-space Y coordinate to a screen-space coordinate. */
+    /**
+     * Converts a world-space Y coordinate to a screen-space coordinate.
+     *
+     * @param worldY the Y coordinate in world units
+     * @return the corresponding Y coordinate in screen pixels
+     */
     public double worldToScreenY(double worldY) {
         return ((worldY + camY) - centerY) * zoom + centerY;
     }

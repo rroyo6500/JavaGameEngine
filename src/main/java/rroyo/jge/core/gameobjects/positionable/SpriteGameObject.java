@@ -23,8 +23,14 @@ public class SpriteGameObject extends ScriptableGameObject implements Event2d {
      */
     private Sprite sprite;
 
-    /** Requested image dimensions in world units. Rendering clamps them to the object's current size. */
+    /**
+     * The width of the sprite in world units, clamped to the total width of the game object.
+     */
     private double spriteWidth;
+
+    /**
+     * The effective height of the sprite in world units, clamped to the object's current height.
+     */
     private double spriteHeight;
 
     /**
@@ -106,27 +112,53 @@ public class SpriteGameObject extends ScriptableGameObject implements Event2d {
         spriteHeight = clampToObject(height, getSize().getHeight());
     }
 
-    /** Sets the image dimensions from another {@link Dimension}. */
+    /**
+     * Sets the image dimensions in world units using a {@link Dimension} object.
+     * Each dimension is clamped to the corresponding object dimension, and
+     * the image is rendered centered on the object.
+     *
+     * @param size The {@link Dimension} representing the requested sprite width and height.
+     */
     public final void setSpriteSize(@NotNull Dimension size) {
         Objects.requireNonNull(size);
         setSpriteSize(size.getWidth(), size.getHeight());
     }
 
-    /** Returns the effective sprite width, clamped to this object's current width. */
+    /**
+     * Returns the effective sprite width, clamped to this object's current width.
+     *
+     * @return The effective width of the sprite.
+     */
     public final double getSpriteWidth() {
         return Math.min(spriteWidth, getSize().getWidth());
     }
 
-    /** Returns the effective sprite height, clamped to this object's current height. */
+    /**
+     * Returns the effective sprite height, clamped to this object's current height.
+     *
+     * @return The effective height of the sprite.
+     */
     public final double getSpriteHeight() {
         return Math.min(spriteHeight, getSize().getHeight());
     }
 
+    /**
+     * Initializes the sprite dimensions based on the current size of the game object.
+     * Sets both the sprite width and height to match the object's total width and height.
+     */
     private void initializeSpriteSize() {
         spriteWidth = getSize().getWidth();
         spriteHeight = getSize().getHeight();
     }
 
+    /**
+     * Clamps the requested size to be between zero and the specified object size.
+     * Returns 0 if the requested size is NaN.
+     *
+     * @param requestedSize the size to be clamped
+     * @param objectSize the maximum allowable size
+     * @return the clamped size, or 0 if the requested size was NaN
+     */
     private static double clampToObject(double requestedSize, double objectSize) {
         if (Double.isNaN(requestedSize)) return 0;
         return Math.min(Math.max(0, requestedSize), objectSize);
