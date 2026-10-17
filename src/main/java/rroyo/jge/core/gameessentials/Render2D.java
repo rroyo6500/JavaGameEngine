@@ -136,28 +136,21 @@ public final class Render2D extends JPanel {
                 Graphics2D objectGraphics = (Graphics2D) g2.create();
                 try {
                     objectGraphics.rotate(pgo.getRotation(),
-                            (pgo.getPosition().getX() + vp.camX() - vp.centerX()) * vp.zoom() + vp.centerX(),
-                            (pgo.getPosition().getY() + vp.camY() - vp.centerY()) * vp.zoom() + vp.centerY());
+                            vp.worldToScreenX(pgo.getPosition().getX()),
+                            vp.worldToScreenY(pgo.getPosition().getY()));
 
                     if (pgo instanceof SpriteGameObject spriteGameObject) {
                         if (spriteGameObject.getSprite().hasSpriteImage()) {
                             Sprite sprite = spriteGameObject.getSprite();
                             BufferedImage img = sprite.getSpriteImages();
-
-                            double worldX = spriteGameObject.getPosition().getX() - spriteGameObject.getSize().getHalfWidth();
-                            double worldY = spriteGameObject.getPosition().getY() - spriteGameObject.getSize().getHalfHeight();
-                            double width = spriteGameObject.getSize().getWidth();
-                            double height = spriteGameObject.getSize().getHeight();
-
-                            int drawX = (int) (((worldX + vp.camX()) - vp.centerX()) * vp.zoom() + vp.centerX());
-                            int drawY = (int) (((worldY + vp.camY()) - vp.centerY()) * vp.zoom() + vp.centerY());
-                            int drawW = (int) (width * vp.zoom());
-                            int drawH = (int) (height * vp.zoom());
+                            DrawParams dp = DrawParams.calculateDraw(spriteGameObject, spriteGameObject.getSpriteSize(), vp);
 
                             if (sprite.getHorizontalDirection() == SpriteHorizontalDirection.LEFT)
-                                objectGraphics.drawImage(img, drawX + drawW, drawY, drawX, drawY + drawH, null);
+                                objectGraphics.drawImage(img,
+                                        dp.drawX(), dp.drawY(), dp.drawX() + dp.drawW(), dp.drawY() + dp.drawH(),
+                                        img.getWidth(), 0, 0, img.getHeight(), null);
                             else
-                                objectGraphics.drawImage(img, drawX, drawY, drawX + drawW, drawY + drawH, null);
+                                objectGraphics.drawImage(img, dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH(), null);
                         }
                         else {
                             DrawParams dp = DrawParams.calculateDraw(spriteGameObject, vp);
