@@ -179,17 +179,18 @@ El jugador se mueve antes de ejecutar `update()`, así que la velocidad elegida 
 Crea fotogramas con `BufferedImage` (o cárgalos mediante `ImageIO`) e indica la duración de cada fotograma en segundos:
 
 ```java
+import rroyo.jge.core.gameutils.Dimension;
+
 BufferedImage idle = ImageIO.read(new File("assets/idle.png"));
 BufferedImage walk1 = ImageIO.read(new File("assets/walk-1.png"));
 BufferedImage walk2 = ImageIO.read(new File("assets/walk-2.png"));
 
-Sprite walkCycle = new Sprite(0.12f, idle, walk1, walk2);
+Sprite walkCycle = new Sprite(0.12f, new Dimension(32, 32), idle, walk1, walk2);
 SpriteGameObject character = new SpriteGameObject(
         scene, 100, 100, 48, 48, walkCycle);
-character.setSpriteSize(32, 32); // Dibuja el sprite centrado dentro del objeto de 48 × 48.
 ```
 
-El sprite avanza por sus fotogramas mientras la escena procesa los frames. Puedes voltearlo horizontalmente asignándole un `SpriteHorizontalDirection`. El tamaño del sprite se puede cambiar con `setSpriteSize(width, height)`; cada eje queda limitado al tamaño del objeto y la imagen se centra cuando es menor.
+El sprite avanza por sus fotogramas mientras la escena procesa los frames. Puedes voltearlo horizontalmente asignándole un `SpriteHorizontalDirection`. El tamaño definido en `Sprite` es opcional: si se omite, se usa el tamaño de `GameObject`; si se define, el sprite se dibuja con esas dimensiones, centrado en el objeto y sin limitarse a su tamaño. `SpriteGameObject.setSpriteSize(width, height)` sigue permitiendo ajustar el tamaño visual por objeto cuando `Sprite` no define dimensiones.
 
 #### Colecciones de recursos y audio
 
@@ -486,17 +487,18 @@ The player is moved before `update()` is called, so the velocity selected from k
 Create frames with `BufferedImage` (or load them with `ImageIO`) and provide a frame duration in seconds:
 
 ```java
+import rroyo.jge.core.gameutils.Dimension;
+
 BufferedImage idle = ImageIO.read(new File("assets/idle.png"));
 BufferedImage walk1 = ImageIO.read(new File("assets/walk-1.png"));
 BufferedImage walk2 = ImageIO.read(new File("assets/walk-2.png"));
 
-Sprite walkCycle = new Sprite(0.12f, idle, walk1, walk2);
+Sprite walkCycle = new Sprite(0.12f, new Dimension(32, 32), idle, walk1, walk2);
 SpriteGameObject character = new SpriteGameObject(
         scene, 100, 100, 48, 48, walkCycle);
-character.setSpriteSize(32, 32); // Draws the sprite centered inside the 48 × 48 object.
 ```
 
-The sprite advances through its frames as the scene processes each frame. A sprite can be flipped horizontally by setting its `SpriteHorizontalDirection`. Set its dimensions with `setSpriteSize(width, height)`; each axis is limited to the object's size, and smaller images are centered.
+The sprite advances through its frames as the scene processes each frame. A sprite can be flipped horizontally by setting its `SpriteHorizontalDirection`. `Sprite` dimensions are optional: if omitted, the `GameObject` size is used; if set, the sprite is drawn centered on the object at those dimensions without being limited by the object size. `SpriteGameObject.setSpriteSize(width, height)` remains available for per-object visual sizing when `Sprite` has no dimensions.
 
 ### Asset collections and audio
 

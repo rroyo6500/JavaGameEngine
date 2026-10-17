@@ -26,7 +26,12 @@ public record Overlap(double overlapX, double overlapY, double normalX, double n
     public Overlap {
     }
 
-    /** Keeps source compatibility for callers that construct legacy axis-aligned overlaps. */
+    /**
+     * Constructs a new {@code Overlap} data object with specified intersection depths.
+     *
+     * @param overlapX The X-axis intersection depth.
+     * @param overlapY The Y-axis intersection depth.
+     */
     public Overlap(double overlapX, double overlapY) {
         this(overlapX, overlapY, 0, 0, Math.min(overlapX, overlapY));
     }
@@ -129,7 +134,16 @@ public record Overlap(double overlapX, double overlapY, double normalX, double n
         return null;
     }
 
-    /** Projects the half-extents of an oriented rectangle onto a unit axis. */
+    /**
+     * Calculates the projected radius of a positionable game object onto a given axis.
+     * This is used as part of the Separating Axis Theorem (SAT) to determine the
+     * extent of the object's projection along a specific direction.
+     *
+     * @param object The game object to project.
+     * @param axisX The X-component of the projection axis.
+     * @param axisY The Y-component of the projection axis.
+     * @return The half-width of the object's projection onto the specified axis.
+     */
     private static double projectedRadius(PositionableGameObject object, double axisX, double axisY) {
         double angle = object.getRotation();
         double localXx = Math.cos(angle);

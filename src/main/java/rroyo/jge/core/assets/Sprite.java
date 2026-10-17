@@ -1,5 +1,6 @@
 package rroyo.jge.core.assets;
 
+import rroyo.jge.core.gameutils.Dimension;
 import rroyo.jge.core.gameutils.Time;
 import rroyo.jge.enums.SpriteHorizontalDirection;
 
@@ -25,6 +26,11 @@ public class Sprite extends Asset {
      * A list of images that make up the animation sequence for this sprite.
      */
     private final List<BufferedImage> spriteImages = new ArrayList<>();
+
+    /**
+     * The dimensions representing the width and height of the sprite.
+     */
+    private Dimension spriteSize;
 
     /**
      * The solid color to use if this sprite is not image-based.
@@ -58,12 +64,14 @@ public class Sprite extends Asset {
     }
 
     /**
-     * Constructs a new color-based {@code Sprite} with a solid color.
+     * Constructs a new image-based {@code Sprite} with a specified size and one or more images.
      *
-     * @param spriteColor The {@link Color} to be drawn for this sprite.
+     * @param spriteSize  The {@link Dimension} representing the width and height of the sprite.
+     * @param spriteImage A variable number of {@link BufferedImage}s representing the sprite's frames.
      */
-    public Sprite(Color spriteColor) {
-        this.spriteColor = spriteColor;
+    public Sprite(Dimension spriteSize, BufferedImage... spriteImage) {
+        this.spriteSize = spriteSize;
+        spriteImages.addAll(Arrays.asList(spriteImage));
     }
 
     /**
@@ -75,6 +83,38 @@ public class Sprite extends Asset {
     public Sprite(float frameDuration, BufferedImage... spriteImage) {
         this(spriteImage);
         this.frameDuration = frameDuration;
+    }
+
+    /**
+     * Constructs a new animated image-based {@code Sprite} with a specified size and one or more images.
+     *
+     * @param frameDuration The amount of time (in seconds) to show each frame.
+     * @param spriteSize The {@link Dimension} representing the width and height of the sprite.
+     * @param spriteImage A variable number of {@link BufferedImage}s representing the animation frames.
+     */
+    public Sprite(float frameDuration, Dimension spriteSize, BufferedImage... spriteImage) {
+        this(spriteSize, spriteImage);
+        this.frameDuration = frameDuration;
+    }
+
+    /**
+     * Constructs a new color-based {@code Sprite} with a solid color.
+     *
+     * @param spriteColor The {@link Color} to be drawn for this sprite.
+     */
+    public Sprite(Color spriteColor) {
+        this.spriteColor = spriteColor;
+    }
+
+    /**
+     * Constructs a new color-based {@code Sprite} with a specified size and solid color.
+     *
+     * @param spriteSize  The {@link Dimension} representing the width and height of the sprite.
+     * @param spriteColor The {@link Color} to be drawn for this sprite.
+     */
+    public Sprite(Dimension spriteSize, Color spriteColor) {
+        this.spriteSize = spriteSize;
+        this.spriteColor = spriteColor;
     }
 
     /**
@@ -136,6 +176,24 @@ public class Sprite extends Asset {
     public void setHorizontalDirection(SpriteHorizontalDirection horizontalDirection) {
         if (isClosed()) return;
         this.horizontalDirection = horizontalDirection;
+    }
+
+    /**
+     * Retrieves the dimensions of the sprite.
+     *
+     * @return The {@link Dimension} representing the width and height of the sprite.
+     */
+    public Dimension getSpriteSize() {
+        return spriteSize;
+    }
+
+    /**
+     * Sets the dimensions of the sprite.
+     *
+     * @param spriteSize The {@link Dimension} representing the width and height of the sprite.
+     */
+    public void setSpriteSize(Dimension spriteSize) {
+        this.spriteSize = spriteSize;
     }
 
     /**
