@@ -82,12 +82,12 @@ public final class DebugRender {
 
     /** Converts the object's world-space center to a screen-space X coordinate. */
     private static int screenX(PositionableGameObject object, ViewportParams vp) {
-        return (int) ((object.getPosition().getX() + vp.camX() - vp.centerX()) * vp.zoom() + vp.centerX());
+        return (int) Math.round(vp.worldToScreenX(object.getPosition().getX()));
     }
 
     /** Converts the object's world-space center to a screen-space Y coordinate. */
     private static int screenY(PositionableGameObject object, ViewportParams vp) {
-        return (int) ((object.getPosition().getY() + vp.camY() - vp.centerY()) * vp.zoom() + vp.centerY());
+        return (int) Math.round(vp.worldToScreenY(object.getPosition().getY()));
     }
 
 }
