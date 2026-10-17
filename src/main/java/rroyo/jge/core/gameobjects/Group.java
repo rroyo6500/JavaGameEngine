@@ -35,6 +35,29 @@ public class Group extends GameObject {
     }
 
     /**
+     * Adds the specified game objects to the group.
+     * Duplicate members are not added.
+     *
+     * @param member The game objects to be added to the group.
+     */
+    public synchronized void add(PositionableGameObject... member) {
+        for (PositionableGameObject m : member) {
+            if (!members.contains(m)) {
+                members.add(m);
+            }
+        }
+    }
+
+    /**
+     * Removes the specified game object from the group.
+     *
+     * @param member The game object to be removed from the group.
+     */
+    public synchronized void remove(PositionableGameObject member) {
+        members.remove(member);
+    }
+
+    /**
      * Performs a physical collision check between a given game element and all members of this group.
      *
      * @param gameObject The {@link SpriteGameObject} to check against the group.
@@ -136,7 +159,7 @@ public class Group extends GameObject {
      *
      * @return A {@link List} containing the {@link SpriteGameObject} members.
      */
-    public final List<PositionableGameObject> getMembers() {
+    public synchronized final List<PositionableGameObject> getMembers() {
         return List.copyOf(members);
     }
 
