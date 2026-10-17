@@ -6,14 +6,14 @@ import rroyo.jge.core.gameutils.Dimension;
 /**
  * Immutable camera transform and world-space bounds for one render viewport.
  * Screen coordinates are centered around {@code centerX}/{@code centerY}; camera
- * coordinates and view bounds are expressed in world units. The camera position is
- * the world-space point displayed at the center of the viewport.
+ * coordinates and view bounds are expressed in world units. The camera position
+ * contributes a world-space translation to the viewport transform.
  *
  * @param centerX horizontal center of the viewport in screen pixels
  * @param centerY vertical center of the viewport in screen pixels
  * @param zoom positive world-to-screen scale factor
- * @param camX world-space X coordinate displayed at the viewport center
- * @param camY world-space Y coordinate displayed at the viewport center
+ * @param camX horizontal world-space translation
+ * @param camY vertical world-space translation
  * @param viewWorldX left edge of the visible world rectangle
  * @param viewWorldY top edge of the visible world rectangle
  * @param viewWorldWidth visible world width
@@ -47,8 +47,8 @@ public record ViewportParams(
         double camX = camera.getCameraPosition().getX();
         double camY = camera.getCameraPosition().getY();
 
-        double viewWorldX = camX - centerX / zoom;
-        double viewWorldY = camY - centerY / zoom;
+        double viewWorldX = centerX - centerX / zoom - camX;
+        double viewWorldY = centerY - centerY / zoom - camY;
         double viewWorldWidth = windowDimension.getWidth() / zoom;
         double viewWorldHeight = windowDimension.getHeight() / zoom;
 
@@ -57,12 +57,12 @@ public record ViewportParams(
 
     /** Converts a world-space X coordinate to a screen-space coordinate. */
     public double worldToScreenX(double worldX) {
-        return (worldX - camX) * zoom + centerX;
+        return ((worldX + camX) - centerX) * zoom + centerX;
     }
 
     /** Converts a world-space Y coordinate to a screen-space coordinate. */
     public double worldToScreenY(double worldY) {
-        return (worldY - camY) * zoom + centerY;
+        return ((worldY + camY) - centerY) * zoom + centerY;
     }
 
 }
