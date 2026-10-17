@@ -91,8 +91,8 @@ public interface Event2d {
 
     /**
      * Evaluates a physical collision between this element and another. If they intersect,
-     * this element is physically displaced along the axis of minimum penetration to separate them,
-     * its velocity on that axis is halted, and the {@code onCollide} script events are triggered.
+     * this element is displaced along the minimum-penetration normal to separate them,
+     * its velocity component along that normal is halted, and the {@code onCollide} script events are triggered.
      *
      * @param gameObject The other {@link SpriteGameObject} to collide with.
      * @return {@code true} if a collision occurred and was resolved; {@code false} otherwise.
@@ -103,19 +103,13 @@ public interface Event2d {
             if (Overlap.ov(pgo, gameObject)) {
                 Overlap overlap = Overlap.calculateOverlap(pgo, gameObject);
                 if (overlap == null) return false;
-                if (overlap.overlapX() < overlap.overlapY()) {
-                    if (pgo.getPosition().getX() < gameObject.getPosition().getX())
-                        pgo.move(-overlap.overlapX(), 0);
-                    else
-                        pgo.move(overlap.overlapX(), 0);
-                    pgo.setVelocityX(0);
-                } else {
-                    if (pgo.getPosition().getY() < gameObject.getPosition().getY())
-                        pgo.move(0, -overlap.overlapY());
-                    else
-                        pgo.move(0, overlap.overlapY());
-                    pgo.setVelocityY(0);
-                }
+                pgo.move(overlap.normalX() * overlap.penetration(),
+                        overlap.normalY() * overlap.penetration());
+                // Remove the component of velocity directed along the collision normal.
+                double normalVelocity = pgo.getVelocityX() * overlap.normalX()
+                        + pgo.getVelocityY() * overlap.normalY();
+                pgo.setVelocity(pgo.getVelocityX() - normalVelocity * overlap.normalX(),
+                        pgo.getVelocityY() - normalVelocity * overlap.normalY());
 
                 if (pgo instanceof ScriptableGameObject sgo) {
                     sgo.sendOnCollide(sgo, gameObject);

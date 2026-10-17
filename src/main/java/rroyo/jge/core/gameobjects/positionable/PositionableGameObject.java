@@ -33,6 +33,9 @@ public class PositionableGameObject extends GameObject {
      */
     private final Dimension size;
 
+    /** Rotation in radians, applied around the object's center. */
+    private double rotation;
+
     /**
      * A reusable {@link Rectangle} object representing the physical boundaries of the element.
      */
@@ -181,15 +184,45 @@ public class PositionableGameObject extends GameObject {
     }
 
     /**
-     * Calculates and returns the geometric boundaries of the element based on its current position and dimensions.
+     * Returns this object's rotation around its center, in radians.
+     *
+     * @return rotation in radians
+     */
+    public final double getRotation() {
+        return rotation;
+    }
+
+    /**
+     * Sets this object's rotation around its center, in radians. Positive values rotate
+     * clockwise on screen, matching Java2D's coordinate system.
+     *
+     * @param rotation rotation in radians
+     */
+    public final void setRotation(double rotation) {
+        if (Double.isFinite(rotation)) this.rotation = rotation;
+    }
+
+    /** Adds an angle to this object's rotation. The angle is in radians. */
+    public final void rotate(double amount) {
+        if (Double.isFinite(amount)) setRotation(rotation + amount);
+    }
+
+    /**
+     * Calculates the axis-aligned bounding box enclosing the element's current rotated shape.
      *
      * @return A {@link Rectangle} containing the absolute boundaries of the element.
      */
     public Rectangle getBounds() {
+        double cos = Math.abs(Math.cos(rotation));
+        double sin = Math.abs(Math.sin(rotation));
+        double halfWidth = cos * size.getHalfWidth() + sin * size.getHalfHeight();
+        double halfHeight = sin * size.getHalfWidth() + cos * size.getHalfHeight();
+        int minX = (int) Math.floor(position.getX() - halfWidth);
+        int minY = (int) Math.floor(position.getY() - halfHeight);
+        int maxX = (int) Math.ceil(position.getX() + halfWidth);
+        int maxY = (int) Math.ceil(position.getY() + halfHeight);
         bounds.setBounds(
-                (int) (position.getX() - this.getSize().getHalfWidth()),
-                (int) (position.getY() - this.getSize().getHalfHeight()),
-                (int) this.getSize().getWidth(), (int) this.getSize().getHeight()
+                minX, minY, maxX - minX, maxY - minY
         );
         return bounds;
     }
