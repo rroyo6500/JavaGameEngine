@@ -55,6 +55,7 @@ public final class GameWindow {
 
             frame.addKeyListener(Keyboard.listener);
             frame.addWindowFocusListener(new WindowAdapter() {
+                /** Clears held-key state so focus changes cannot leave keys stuck. */
                 @Override
                 public void windowLostFocus(WindowEvent e) {
                     Keyboard.clear();

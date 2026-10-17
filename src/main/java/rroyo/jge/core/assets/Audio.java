@@ -91,6 +91,7 @@ public class Audio extends Asset {
         return clip.isRunning();
     }
 
+    /** Stops playback and releases the underlying audio line when this asset is closed. */
     @Override
     protected void dispose() {
         if (clip != null) {

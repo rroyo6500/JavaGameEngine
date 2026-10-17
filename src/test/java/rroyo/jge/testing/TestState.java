@@ -11,12 +11,18 @@ import java.util.Collection;
 public final class TestState {
     private TestState() {}
 
+    /**
+     * Removes all registered entities for the supplied scene when it is non-null.
+     *
+     * @param scene scene whose registrations should be removed
+     */
     public static void removeScene(Scene scene) {
         if (scene != null) {
             PhysicsEngine.remove(scene);
         }
     }
 
+    /** Restores global time scale and frame delta to their default test values. */
     public static void resetTime() {
         Time.setTimeScale(1.0);
         Time.setDeltaTime(0f);
@@ -31,6 +37,11 @@ public final class TestState {
         clearStaticCollection("pendingAdd");
     }
 
+    /**
+     * Clears a named static collection in {@code Timer} for test isolation.
+     *
+     * @param fieldName name of the timer registry field to clear
+     */
     private static void clearStaticCollection(String fieldName) {
         try {
             Field field = Class.forName("rroyo.jge.core.gameutils.Timer").getDeclaredField(fieldName);

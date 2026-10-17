@@ -11,7 +11,8 @@ import rroyo.jge.core.gameutils.Velocity;
 import java.awt.*;
 
 /**
- * Base game entity with a center position, dimensions, velocity, and integer AABB bounds.
+ * Base game entity with a center position, dimensions, linear and angular velocity, rotation,
+ * and integer AABB bounds.
  * Instances register themselves with the {@link PhysicsEngine} for their owning scene.
  * Movement through {@link #move()} is velocity-based and scaled by the current frame delta;
  * direct movement through {@link #move(double, double)} applies world-space offsets immediately.
@@ -32,6 +33,12 @@ public class PositionableGameObject extends GameObject {
      * The physical dimensions (width and height) of the element.
      */
     private final Dimension size;
+
+    /** Rotation in radians, applied around the object's center. */
+    private double rotation;
+
+    /** Angular velocity in radians per second. */
+    private double angularVelocity;
 
     /**
      * A reusable {@link Rectangle} object representing the physical boundaries of the element.
@@ -77,6 +84,17 @@ public class PositionableGameObject extends GameObject {
     }
 
     /**
+     * A hook to transform angular velocity before it is applied. By default, rotation follows
+     * scaled frame time in the same way as linear movement.
+     *
+     * @param angularVelocity angular velocity in radians per second
+     * @return angular displacement for this frame in radians
+     */
+    protected double transformAngularVelocity(double angularVelocity) {
+        return angularVelocity * Time.deltaTime();
+    }
+
+    /**
      * Translates the element's position based on its current X and Y velocities.
      * Calls {@link #transformVelocity(double)} to process the values before moving.
      * If the element is marked for deletion, it does not move.
@@ -87,6 +105,7 @@ public class PositionableGameObject extends GameObject {
                 transformVelocity(velocity.getVelocityX()),
                 transformVelocity(velocity.getVelocityY())
         );
+        setRotation(rotation + transformAngularVelocity(angularVelocity));
     }
 
     /**
@@ -181,15 +200,88 @@ public class PositionableGameObject extends GameObject {
     }
 
     /**
-     * Calculates and returns the geometric boundaries of the element based on its current position and dimensions.
+     * Returns this object's rotation around its center, in radians.
+     *
+     * @return rotation in radians
+     */
+    public final double getRotation() {
+        return rotation;
+    }
+
+    /**
+     * Returns this object's angular velocity.
+     *
+     * @return angular velocity in radians per second
+     */
+    public final double getAngularVelocity() {
+        return angularVelocity;
+    }
+
+    /**
+     * Sets this object's angular velocity. The value is scaled by {@link Time#deltaTime()} each
+     * frame and therefore pauses or speeds up with the global time scale.
+     *
+     * @param angularVelocity angular velocity in radians per second
+     */
+    public final void setAngularVelocity(double angularVelocity) {
+        if (isDeleted() || !Double.isFinite(angularVelocity)) return;
+        this.angularVelocity = angularVelocity;
+    }
+
+    /**
+     * Sets this object's rotation around its center, in radians. Positive values rotate
+     * clockwise on screen, matching Java2D's coordinate system.
+     *
+     * @param rotation rotation in radians
+     */
+    public final void setRotation(double rotation) {
+        if (Double.isFinite(rotation)) this.rotation = Math.IEEEremainder(rotation, Math.PI * 2);
+    }
+
+    /**
+     * Adds an angle to this object's rotation.
+     *
+     * @param amount angle to add, in radians
+     */
+    public final void rotate(double amount) {
+        if (Double.isFinite(amount)) setRotation(rotation + amount);
+    }
+
+    /**
+     * Returns the current rotation in degrees.
+     *
+     * @return rotation in degrees, in the normalized range -180 through 180
+     */
+    public final double getRotationDegrees() {
+        return Math.toDegrees(rotation);
+    }
+
+    /** Sets the current rotation in degrees. */
+    public final void setRotationDegrees(double degrees) {
+        if (Double.isFinite(degrees)) setRotation(Math.toRadians(degrees));
+    }
+
+    /** Adds an angle in degrees to the current rotation. */
+    public final void rotateDegrees(double degrees) {
+        if (Double.isFinite(degrees)) rotate(Math.toRadians(degrees));
+    }
+
+    /**
+     * Calculates the axis-aligned bounding box enclosing the element's current rotated shape.
      *
      * @return A {@link Rectangle} containing the absolute boundaries of the element.
      */
     public Rectangle getBounds() {
+        double cos = Math.abs(Math.cos(rotation));
+        double sin = Math.abs(Math.sin(rotation));
+        double halfWidth = cos * size.getHalfWidth() + sin * size.getHalfHeight();
+        double halfHeight = sin * size.getHalfWidth() + cos * size.getHalfHeight();
+        int minX = (int) Math.floor(position.getX() - halfWidth);
+        int minY = (int) Math.floor(position.getY() - halfHeight);
+        int maxX = (int) Math.ceil(position.getX() + halfWidth);
+        int maxY = (int) Math.ceil(position.getY() + halfHeight);
         bounds.setBounds(
-                (int) (position.getX() - this.getSize().getHalfWidth()),
-                (int) (position.getY() - this.getSize().getHalfHeight()),
-                (int) this.getSize().getWidth(), (int) this.getSize().getHeight()
+                minX, minY, maxX - minX, maxY - minY
         );
         return bounds;
     }

@@ -8,14 +8,18 @@ import rroyo.jge.testing.TestScene;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/** Verifies group membership, immutability, and interaction with scene registration. */
 class GroupTest {
+    /** Scene fixture used to create the member entities. */
     private final TestScene scene = new TestScene();
 
+    /** Removes the fixture's registered entities after each test. */
     @AfterEach
     void tearDown() {
         PhysicsEngine.remove(scene);
     }
 
+    /** Confirms adding the same entity more than once produces one member. */
     @Test
     void groupDeduplicatesRepeatedMembers() {
         PositionableGameObject object = new PositionableGameObject(scene, 0, 0, 10, 10);
@@ -25,6 +29,7 @@ class GroupTest {
         assertEquals(1, group.getMembers().size());
     }
 
+    /** Confirms creating a group does not register or unregister its members. */
     @Test
     void creatingGroupDoesNotChangeSceneRegistry() {
         PositionableGameObject first = new PositionableGameObject(scene, 0, 0, 10, 10);
@@ -36,6 +41,7 @@ class GroupTest {
         assertEquals(registeredBefore, PhysicsEngine.getGameObjects(scene).size());
     }
 
+    /** Confirms the members accessor returns a snapshot that cannot be modified. */
     @Test
     void memberListIsAnImmutableSnapshot() {
         PositionableGameObject object = new PositionableGameObject(scene, 0, 0, 10, 10);
@@ -45,6 +51,7 @@ class GroupTest {
         assertEquals(1, group.getMembers().size());
     }
 
+    /** Confirms deleting a group clears membership without deleting its entities. */
     @Test
     void deletingGroupClearsOnlyItsMembership() {
         PositionableGameObject object = new PositionableGameObject(scene, 0, 0, 10, 10);

@@ -128,41 +128,46 @@ public final class Render2D extends JPanel {
             for (PositionableGameObject pgo : objects) {
                 if (pgo.isDeleted() || !pgo.isVisible()) continue;
 
-                double objX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
-                double objY = pgo.getPosition().getY() - pgo.getSize().getHalfHeight();
-                double objW = pgo.getSize().getWidth();
-                double objH = pgo.getSize().getHeight();
-
-                if (objX + objW < vp.viewWorldX() || objX > vp.viewWorldX() + vp.viewWorldWidth() ||
-                        objY + objH < vp.viewWorldY() || objY > vp.viewWorldY() + vp.viewWorldHeight()
+                Rectangle bounds = pgo.getBounds();
+                if (bounds.getMaxX() < vp.viewWorldX() || bounds.getMinX() > vp.viewWorldX() + vp.viewWorldWidth() ||
+                        bounds.getMaxY() < vp.viewWorldY() || bounds.getMinY() > vp.viewWorldY() + vp.viewWorldHeight()
                 ) continue;
 
-                if (pgo instanceof SpriteGameObject spriteGameObject) {
-                    if (spriteGameObject.getSprite().hasSpriteImage()) {
-                        Sprite sprite = spriteGameObject.getSprite();
-                        BufferedImage img = sprite.getSpriteImages();
+                Graphics2D objectGraphics = (Graphics2D) g2.create();
+                try {
+                    objectGraphics.rotate(pgo.getRotation(),
+                            (pgo.getPosition().getX() + vp.camX() - vp.centerX()) * vp.zoom() + vp.centerX(),
+                            (pgo.getPosition().getY() + vp.camY() - vp.centerY()) * vp.zoom() + vp.centerY());
 
-                        double worldX = spriteGameObject.getPosition().getX() - spriteGameObject.getSize().getHalfWidth();
-                        double worldY = spriteGameObject.getPosition().getY() - spriteGameObject.getSize().getHalfHeight();
-                        double width = spriteGameObject.getSize().getWidth();
-                        double height = spriteGameObject.getSize().getHeight();
+                    if (pgo instanceof SpriteGameObject spriteGameObject) {
+                        if (spriteGameObject.getSprite().hasSpriteImage()) {
+                            Sprite sprite = spriteGameObject.getSprite();
+                            BufferedImage img = sprite.getSpriteImages();
 
-                        int drawX = (int) (((worldX + vp.camX()) - vp.centerX()) * vp.zoom() + vp.centerX());
-                        int drawY = (int) (((worldY + vp.camY()) - vp.centerY()) * vp.zoom() + vp.centerY());
-                        int drawW = (int) (width * vp.zoom());
-                        int drawH = (int) (height * vp.zoom());
+                            double worldX = spriteGameObject.getPosition().getX() - spriteGameObject.getSize().getHalfWidth();
+                            double worldY = spriteGameObject.getPosition().getY() - spriteGameObject.getSize().getHalfHeight();
+                            double width = spriteGameObject.getSize().getWidth();
+                            double height = spriteGameObject.getSize().getHeight();
 
-                        if (sprite.getHorizontalDirection() == SpriteHorizontalDirection.LEFT)
-                            g2.drawImage(img, drawX + drawW, drawY, drawX, drawY + drawH, null);
-                        else
-                            g2.drawImage(img, drawX, drawY, drawX + drawW, drawY + drawH, null);
+                            int drawX = (int) (((worldX + vp.camX()) - vp.centerX()) * vp.zoom() + vp.centerX());
+                            int drawY = (int) (((worldY + vp.camY()) - vp.centerY()) * vp.zoom() + vp.centerY());
+                            int drawW = (int) (width * vp.zoom());
+                            int drawH = (int) (height * vp.zoom());
+
+                            if (sprite.getHorizontalDirection() == SpriteHorizontalDirection.LEFT)
+                                objectGraphics.drawImage(img, drawX + drawW, drawY, drawX, drawY + drawH, null);
+                            else
+                                objectGraphics.drawImage(img, drawX, drawY, drawX + drawW, drawY + drawH, null);
+                        }
+                        else {
+                            DrawParams dp = DrawParams.calculateDraw(spriteGameObject, vp);
+
+                            objectGraphics.setColor(spriteGameObject.getSprite().getSpriteColor());
+                            objectGraphics.fillRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
+                        }
                     }
-                    else {
-                        DrawParams dp = DrawParams.calculateDraw(spriteGameObject, vp);
-
-                        g2.setColor(spriteGameObject.getSprite().getSpriteColor());
-                        g2.fillRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
-                    }
+                } finally {
+                    objectGraphics.dispose();
                 }
             }
             for (Text text : texts) {
