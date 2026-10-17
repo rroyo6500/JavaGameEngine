@@ -146,9 +146,11 @@ public final class Render2D extends JPanel {
                             DrawParams dp = DrawParams.calculateDraw(spriteGameObject, spriteGameObject.getSpriteSize(), vp);
 
                             if (sprite.getHorizontalDirection() == SpriteHorizontalDirection.LEFT)
-                                objectGraphics.drawImage(img, dp.drawX() + dp.drawW(), dp.drawY(), dp.drawX(), dp.drawY() + dp.drawH(), null);
+                                objectGraphics.drawImage(img,
+                                        dp.drawX(), dp.drawY(), dp.drawX() + dp.drawW(), dp.drawY() + dp.drawH(),
+                                        img.getWidth(), 0, 0, img.getHeight(), null);
                             else
-                                objectGraphics.drawImage(img, dp.drawX(), dp.drawY(), dp.drawX() + dp.drawW(), dp.drawY() + dp.drawH(), null);
+                                objectGraphics.drawImage(img, dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH(), null);
                         }
                         else {
                             DrawParams dp = DrawParams.calculateDraw(spriteGameObject, vp);
