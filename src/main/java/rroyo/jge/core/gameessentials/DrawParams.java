@@ -1,6 +1,7 @@
 package rroyo.jge.core.gameessentials;
 
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
+import rroyo.jge.core.gameutils.Dimension;
 
 /**
  * Immutable screen-space rectangle produced for a world-space entity.
@@ -30,15 +31,22 @@ public record DrawParams (
      * @return the top-left screen coordinate and scaled dimensions
      */
     public static DrawParams calculateDraw(PositionableGameObject pgo, ViewportParams vp) {
-        double worldX = pgo.getPosition().getX() - pgo.getSize().getHalfWidth();
-        double worldY = pgo.getPosition().getY() - pgo.getSize().getHalfHeight();
-        double width = pgo.getSize().getWidth();
-        double height = pgo.getSize().getHeight();
+        return calculateDraw(pgo, pgo.getSize(), vp);
+    }
 
-        int drawX = (int) (((worldX + vp.camX()) - vp.centerX()) * vp.zoom() + vp.centerX());
-        int drawY = (int) (((worldY + vp.camY()) - vp.centerY()) * vp.zoom() + vp.centerY());
-        int drawW = (int) (width * vp.zoom());
-        int drawH = (int) (height * vp.zoom());
+    /**
+     * Converts a centered world-space rectangle with an explicit size into screen pixels.
+     *
+     * @param pgo entity whose center is used for placement
+     * @param size world-space dimensions to draw
+     * @param vp viewport transform to apply
+     * @return the top-left screen coordinate and scaled dimensions
+     */
+    public static DrawParams calculateDraw(PositionableGameObject pgo, Dimension size, ViewportParams vp) {
+        int drawW = (int) Math.round(size.getWidth() * vp.zoom());
+        int drawH = (int) Math.round(size.getHeight() * vp.zoom());
+        int drawX = (int) Math.round(vp.worldToScreenX(pgo.getPosition().getX()) - drawW / 2.0);
+        int drawY = (int) Math.round(vp.worldToScreenY(pgo.getPosition().getY()) - drawH / 2.0);
 
         return new DrawParams(drawX, drawY, drawW, drawH);
     }

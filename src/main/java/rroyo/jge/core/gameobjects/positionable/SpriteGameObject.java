@@ -23,6 +23,10 @@ public class SpriteGameObject extends ScriptableGameObject implements Event2d {
      */
     private Sprite sprite;
 
+    /** Requested image dimensions in world units. Rendering clamps them to the object's current size. */
+    private double spriteWidth;
+    private double spriteHeight;
+
     /**
      * Constructs a new {@code GameElement} using primitive coordinates and dimensions.
      *
@@ -38,6 +42,7 @@ public class SpriteGameObject extends ScriptableGameObject implements Event2d {
         super(scene, x, y, width, height, scripts);
         Objects.requireNonNull(sprite);
         this.sprite = sprite;
+        initializeSpriteSize();
     }
 
     /**
@@ -53,6 +58,7 @@ public class SpriteGameObject extends ScriptableGameObject implements Event2d {
         super(scene, position, size, scripts);
         Objects.requireNonNull(sprite);
         this.sprite = sprite;
+        initializeSpriteSize();
     }
 
     /**
@@ -75,6 +81,55 @@ public class SpriteGameObject extends ScriptableGameObject implements Event2d {
         if (sprite.isClosed()) return;
         if (isDeleted()) return ;
         this.sprite = sprite;
+    }
+
+    /**
+     * Returns the image dimensions in world units. The returned value is a copy, and each
+     * dimension is limited to the current size of this object.
+     *
+     * @return the effective sprite size
+     */
+    public final Dimension getSpriteSize() {
+        return new Dimension(getSpriteWidth(), getSpriteHeight());
+    }
+
+    /**
+     * Sets the image dimensions in world units. Each dimension is clamped to the corresponding
+     * object dimension; the image is rendered centered on the object.
+     *
+     * @param width requested sprite width
+     * @param height requested sprite height
+     */
+    public final void setSpriteSize(double width, double height) {
+        if (isDeleted()) return;
+        spriteWidth = clampToObject(width, getSize().getWidth());
+        spriteHeight = clampToObject(height, getSize().getHeight());
+    }
+
+    /** Sets the image dimensions from another {@link Dimension}. */
+    public final void setSpriteSize(@NotNull Dimension size) {
+        Objects.requireNonNull(size);
+        setSpriteSize(size.getWidth(), size.getHeight());
+    }
+
+    /** Returns the effective sprite width, clamped to this object's current width. */
+    public final double getSpriteWidth() {
+        return Math.min(spriteWidth, getSize().getWidth());
+    }
+
+    /** Returns the effective sprite height, clamped to this object's current height. */
+    public final double getSpriteHeight() {
+        return Math.min(spriteHeight, getSize().getHeight());
+    }
+
+    private void initializeSpriteSize() {
+        spriteWidth = getSize().getWidth();
+        spriteHeight = getSize().getHeight();
+    }
+
+    private static double clampToObject(double requestedSize, double objectSize) {
+        if (Double.isNaN(requestedSize)) return 0;
+        return Math.min(Math.max(0, requestedSize), objectSize);
     }
 
 }

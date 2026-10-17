@@ -186,9 +186,10 @@ BufferedImage walk2 = ImageIO.read(new File("assets/walk-2.png"));
 Sprite walkCycle = new Sprite(0.12f, idle, walk1, walk2);
 SpriteGameObject character = new SpriteGameObject(
         scene, 100, 100, 48, 48, walkCycle);
+character.setSpriteSize(32, 32); // Dibuja el sprite centrado dentro del objeto de 48 × 48.
 ```
 
-El sprite avanza por sus fotogramas mientras la escena procesa los frames. Puedes voltearlo horizontalmente asignándole un `SpriteHorizontalDirection`.
+El sprite avanza por sus fotogramas mientras la escena procesa los frames. Puedes voltearlo horizontalmente asignándole un `SpriteHorizontalDirection`. El tamaño del sprite se puede cambiar con `setSpriteSize(width, height)`; cada eje queda limitado al tamaño del objeto y la imagen se centra cuando es menor.
 
 #### Colecciones de recursos y audio
 
@@ -492,9 +493,10 @@ BufferedImage walk2 = ImageIO.read(new File("assets/walk-2.png"));
 Sprite walkCycle = new Sprite(0.12f, idle, walk1, walk2);
 SpriteGameObject character = new SpriteGameObject(
         scene, 100, 100, 48, 48, walkCycle);
+character.setSpriteSize(32, 32); // Draws the sprite centered inside the 48 × 48 object.
 ```
 
-The sprite advances through its frames as the scene processes each frame. A sprite can be flipped horizontally by setting its `SpriteHorizontalDirection`.
+The sprite advances through its frames as the scene processes each frame. A sprite can be flipped horizontally by setting its `SpriteHorizontalDirection`. Set its dimensions with `setSpriteSize(width, height)`; each axis is limited to the object's size, and smaller images are centered.
 
 ### Asset collections and audio
 
