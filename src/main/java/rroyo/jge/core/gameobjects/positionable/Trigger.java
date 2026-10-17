@@ -53,7 +53,7 @@ public abstract class Trigger extends ScriptableGameObject {
      * Deleted entities and deleted triggers are ignored.
      *
      * @param triggeredObject entity to test against this trigger
-     * @return {@code true} when their bounds overlap; otherwise {@code false}
+     * @return {@code true} when their oriented rectangles overlap; otherwise {@code false}
      */
     public final boolean trigger(PositionableGameObject triggeredObject) {
         if (isDeleted() || triggeredObject.isDeleted()) return false;

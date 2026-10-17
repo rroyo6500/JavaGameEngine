@@ -12,14 +12,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/** Verifies scene frame processing, entity cleanup, and clearing behavior. */
 class SceneTest {
+    /** Scene fixture used by the frame-processing tests. */
     private final TestScene scene = new TestScene();
 
+    /** Removes registered entities after each test. */
     @AfterEach
     void tearDown() {
         PhysicsEngine.remove(scene);
     }
 
+    /** Confirms scripts start once while updates run on every processed frame. */
     @Test
     void processFrameStartsScriptOnceAndUpdatesEveryFrame() {
         AtomicInteger starts = new AtomicInteger();
@@ -38,6 +42,7 @@ class SceneTest {
         assertEquals(2, scene.getUpdateCalls());
     }
 
+    /** Confirms deleted entities are removed after the scene processes a frame. */
     @Test
     void deletedEntityIsRemovedAfterFrameProcessing() {
         PositionableGameObject object = new PositionableGameObject(scene, 0, 0, 10, 10);
@@ -48,6 +53,7 @@ class SceneTest {
         assertFalse(PhysicsEngine.getGameObjects(scene).contains(object));
     }
 
+    /** Confirms clearing a scene does not remove entities owned by another scene. */
     @Test
     void clearRemovesEntitiesFromThisScene() {
         TestScene otherScene = new TestScene();

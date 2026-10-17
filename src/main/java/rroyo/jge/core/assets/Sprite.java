@@ -157,6 +157,7 @@ public class Sprite extends Asset {
         }
     }
 
+    /** Clears image and color data when this asset is closed. */
     @Override
     protected void dispose() {
         spriteImages.clear();

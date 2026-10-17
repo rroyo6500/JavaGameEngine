@@ -5,13 +5,17 @@ import rroyo.jge.core.gameobjects.positionable.SpriteGameObject;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 
 /**
- * The {@code Overlap} class is a data container used to store the amount of intersection depth
- * (penetration) between two colliding objects along the horizontal and vertical axes.
+ * The {@code Overlap} record stores the enclosing AABB overlap and the minimum-translation
+ * normal and depth for two intersecting oriented rectangles.
  *
- * @param overlapX The depth of the overlap along the X-axis.
- * @param overlapY The depth of the overlap along the Y-axis.
+ * @param overlapX The enclosing AABB overlap depth along the X-axis.
+ * @param overlapY The enclosing AABB overlap depth along the Y-axis.
+ * @param normalX  X component of the minimum-penetration normal, pointing away from the other object.
+ * @param normalY  Y component of the minimum-penetration normal, pointing away from the other object.
+ * @param penetration minimum penetration depth along that normal
  */
-public record Overlap(double overlapX, double overlapY) {
+public record Overlap(double overlapX, double overlapY, double normalX, double normalY,
+                      double penetration) {
 
     /**
      * Constructs a new {@code Overlap} data object with specified values.
@@ -20,6 +24,11 @@ public record Overlap(double overlapX, double overlapY) {
      * @param overlapY The Y-axis intersection depth.
      */
     public Overlap {
+    }
+
+    /** Keeps source compatibility for callers that construct legacy axis-aligned overlaps. */
+    public Overlap(double overlapX, double overlapY) {
+        this(overlapX, overlapY, 0, 0, Math.min(overlapX, overlapY));
     }
 
     /**
@@ -68,38 +77,71 @@ public record Overlap(double overlapX, double overlapY) {
     }
 
     /**
-     * Calculates the Axis-Aligned Bounding Box (AABB) intersection depth between this element and another.
+     * Calculates the intersection between two center-pivoted oriented rectangles using SAT.
      *
      * @param self object whose bounds are the first half of the comparison
      * @param gameObject other positionable object whose bounds are compared
-     * @return An {@link Overlap} object containing the X and Y intersection depths, or {@code null} if there is no collision.
+     * @return the AABB overlap and SAT separation data, or {@code null} when the rectangles do not intersect
      */
     public static Overlap calculateOverlap(GameObject self, PositionableGameObject gameObject) {
         if (self instanceof PositionableGameObject pgo) {
             if (pgo.isDeleted() || gameObject.isDeleted()) return null;
-            if (!ir(self, gameObject)) {
-                return null;
+            double dx = pgo.getPosition().getX() - gameObject.getPosition().getX();
+            double dy = pgo.getPosition().getY() - gameObject.getPosition().getY();
+            double minPenetration = Double.POSITIVE_INFINITY;
+            double normalX = 0;
+            double normalY = 0;
+
+            // The two local axes from each rectangle are the four separating axes.
+            double[] angles = {pgo.getRotation(), pgo.getRotation() + Math.PI / 2,
+                    gameObject.getRotation(), gameObject.getRotation() + Math.PI / 2};
+            for (double angle : angles) {
+                double axisX = Math.cos(angle);
+                double axisY = Math.sin(angle);
+                double distance = Math.abs(dx * axisX + dy * axisY);
+                double radiusA = projectedRadius(pgo, axisX, axisY);
+                double radiusB = projectedRadius(gameObject, axisX, axisY);
+                double penetration = radiusA + radiusB - distance;
+                if (penetration <= 1e-10) return null;
+                if (penetration < minPenetration) {
+                    minPenetration = penetration;
+                    double direction = dx * axisX + dy * axisY;
+                    if (direction < 0) {
+                        normalX = -axisX;
+                        normalY = -axisY;
+                    } else {
+                        normalX = axisX;
+                        normalY = axisY;
+                    }
+                }
             }
 
-            // X
-            double deltaX = Math.abs(pgo.getPosition().getX() - gameObject.getPosition().getX());
-            double limitX = pgo.getSize().getHalfWidth() + gameObject.getSize().getHalfWidth();
-            double overlapX = limitX - deltaX;
-
-            // Y
-            double deltaY = Math.abs(pgo.getPosition().getY() - gameObject.getPosition().getY());
-            double limitY = pgo.getSize().getHalfHeight() + gameObject.getSize().getHalfHeight();
-            double overlapY = limitY - deltaY;
-
-            if (overlapX <= 0 || overlapY <= 0) return null;
-
-            return new Overlap(overlapX, overlapY);
+            // Preserve the legacy X/Y AABB penetration values. The SAT normal and depth
+            // carry the exact information needed to resolve an oriented-rectangle collision.
+            double extentAX = projectedRadius(pgo, 1, 0);
+            double extentAY = projectedRadius(pgo, 0, 1);
+            double extentBX = projectedRadius(gameObject, 1, 0);
+            double extentBY = projectedRadius(gameObject, 0, 1);
+            double overlapX = extentAX + extentBX - Math.abs(dx);
+            double overlapY = extentAY + extentBY - Math.abs(dy);
+            return new Overlap(overlapX, overlapY, normalX, normalY, minPenetration);
         }
         return null;
     }
 
+    /** Projects the half-extents of an oriented rectangle onto a unit axis. */
+    private static double projectedRadius(PositionableGameObject object, double axisX, double axisY) {
+        double angle = object.getRotation();
+        double localXx = Math.cos(angle);
+        double localXy = Math.sin(angle);
+        double localYx = -localXy;
+        double localYy = localXx;
+        return object.getSize().getHalfWidth() * Math.abs(axisX * localXx + axisY * localXy)
+                + object.getSize().getHalfHeight() * Math.abs(axisX * localYx + axisY * localYy);
+    }
+
     /**
-     * Internal check to determine if the bounding boxes of this element and another are currently overlapping.
+     * Checks whether this element and another oriented rectangle currently intersect.
      *
      * @param gameObject The other {@link SpriteGameObject} to check.
      * @param self object whose bounds are the first half of the comparison

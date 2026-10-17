@@ -6,7 +6,9 @@ import rroyo.jge.core.gameutils.Dimension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/** Verifies viewport calculations use the supplied camera and view dimensions. */
 class ViewportParamsTest {
+    /** Confirms camera position and zoom determine the viewport's world-space bounds. */
     @Test
     void viewportUsesTheCameraInstancePassedByTheWindow() {
         Camera camera = new Camera();

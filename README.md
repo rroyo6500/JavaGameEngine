@@ -10,10 +10,10 @@ La ventana y el renderizador están construidos con Java Swing y AWT. El proyect
 
 - Bucle de juego con FPS objetivo, delta de tiempo limitado y utilidades globales de tiempo.
 - Escenas que actualizan entidades, ejecutan la lógica propia, eliminan entidades marcadas y entregan instantáneas al renderizador.
-- Objetos posicionables con coordenadas basadas en el centro, dimensiones, velocidad y límites.
+- Objetos posicionables con coordenadas basadas en el centro, dimensiones, rotación, velocidades lineal y angular, y límites.
 - Sprites basados en un color sólido o una secuencia de fotogramas `BufferedImage`.
 - Scripts con callbacks de inicio, actualización, solapamiento, colisión y proximidad.
-- Comprobaciones AABB, resolución básica de colisiones por penetración mínima, proximidad y grupos.
+- Colisiones entre rectángulos rotados mediante SAT, resolución por penetración mínima, proximidad y grupos.
 - Comprobaciones explícitas de triggers para una entidad o un grupo.
 - Lectura del teclado, movimiento y zoom de cámara, texto en pantalla y modo de depuración.
 - Clips de audio y una colección sencilla de recursos indexados por clave.
@@ -40,7 +40,7 @@ El `Dimension` de este constructor es `rroyo.jge.core.gameutils.Dimension` de JG
 
 Una escena representa un estado del juego, como un nivel, menú o pantalla de fin de partida. Crea una subclase de `Scene` e implementa `update()`. Las entidades posicionables se registran en su escena al construirse. Un frame sigue este orden:
 
-1. Cada entidad registrada y no eliminada se mueve según su velocidad y el delta de tiempo.
+1. Cada entidad registrada y no eliminada se mueve y rota según sus velocidades y el delta de tiempo.
 2. Se inician los scripts que lo necesiten y se actualizan; los sprites animados avanzan de fotograma.
 3. Se ejecuta el método `update()` de la escena.
 4. Se eliminan las entidades y textos marcados; el renderizador recibe instantáneas para dibujar.
@@ -51,7 +51,21 @@ Por ello, los cambios de velocidad o entrada realizados dentro de `Scene.update(
 
 La posición de una entidad corresponde al centro de sus límites y usa coordenadas del mundo. El ancho y el alto se expresan en unidades del mundo. La velocidad se interpreta en unidades del mundo por segundo y se multiplica por `Time.deltaTime()` al ejecutar `move()`. En cambio, `move(dx, dy)` aplica inmediatamente un desplazamiento en coordenadas del mundo.
 
-`Time.deltaTime()` depende de la escala global de tiempo; `Time.unscaledDeltaTime()` no. El bucle limita el delta sin escalar a 0,1 segundos para reducir saltos grandes tras una pausa o bloqueo. `Time.setTimeScale(0)` pausa el movimiento escalado y los temporizadores; valores por encima o debajo de 1 aceleran o ralentizan el tiempo escalado.
+`Time.deltaTime()` depende de la escala global de tiempo; `Time.unscaledDeltaTime()` no. El bucle limita el delta sin escalar a 0,1 segundos para reducir saltos grandes tras una pausa o bloqueo. `Time.setTimeScale(0)` pausa el movimiento y la rotación automáticos, además de los temporizadores; valores por encima o debajo de 1 aceleran o ralentizan el tiempo escalado.
+
+#### Rotación y colisiones
+
+Todos los `PositionableGameObject` rotan alrededor de su centro; los ángulos positivos avanzan en sentido horario en pantalla. `getRotation()`, `setRotation(radians)` y `rotate(radians)` usan radianes; también están disponibles `getRotationDegrees()`, `setRotationDegrees(degrees)` y `rotateDegrees(degrees)`. Los valores se normalizan a un giro equivalente entre -π y π. Para girar continuamente, configura `setAngularVelocity(radiansPerSecond)`; el motor integra esa velocidad con el delta escalado en cada frame. Una velocidad angular cero deja la orientación fija.
+
+```java
+object.setRotationDegrees(30); // Orientación inicial
+object.setAngularVelocity(Math.toRadians(90)); // 90 grados por segundo
+object.rotateDegrees(15); // Giro inmediato adicional
+```
+
+El renderizador aplica la rotación tanto a sprites de imagen como a sprites de color sólido. `getBounds()` devuelve la caja alineada con los ejes que encierra el rectángulo rotado, útil para culling. Para las comprobaciones precisas, `overlap(...)`, `collide(...)` y `Trigger` usan SAT sobre los cuatro ejes locales de los dos rectángulos. `collide(...)` separa el objeto que recibe la llamada según la normal de penetración mínima y quita de su velocidad la componente que apunta en esa normal. Las formas físicas siguen siendo rectángulos definidos por el ancho y alto del objeto; no se extraen contornos de los píxeles del sprite.
+
+`inRange(...)` y los enlaces cian del modo debug muestran una proximidad aproximada entre centros para encontrar candidatos; no representan una colisión confirmada. En debug se dibuja cada conexión una sola vez y el contorno de cada rectángulo respeta su rotación.
 
 #### Entidades, scripts e interacciones
 
@@ -60,8 +74,8 @@ Usa `PositionableGameObject` para una entidad física sin sprite, `ScriptableGam
 `Event2d` ofrece:
 
 - `inRange(...)` para una comprobación amplia de proximidad. Cuando están suficientemente cerca, notifica `onInRange` a los participantes con scripts.
-- `overlap(...)` para comprobar la intersección AABB sin mover los objetos. Si los límites se intersectan, notifica `onOverlap`.
-- `collide(...)` para comprobar el solapamiento y separar los objetos por el eje de menor penetración. Detiene la velocidad del objeto que se mueve en ese eje y notifica `onCollide`.
+- `overlap(...)` para comprobar la intersección de rectángulos rotados sin mover los objetos. Si se intersectan, notifica `onOverlap`.
+- `collide(...)` para comprobar el solapamiento y separar el objeto que recibe la llamada por la normal de menor penetración. Elimina de su velocidad la componente en esa dirección y notifica `onCollide`.
 
 Estas comprobaciones pueden aplicarse a una entidad posicionable o a un `Group`. Las operaciones de grupo recorren sus miembros, pero no registran ni son propietarias de esas entidades.
 
@@ -69,7 +83,7 @@ Estas comprobaciones pueden aplicarse a una entidad posicionable o a un `Group`.
 
 #### Renderizado, cámara y texto
 
-El renderizador dibuja sprites de color o de imagen, omite las entidades ocultas o eliminadas y descarta las que quedan fuera de los límites visibles de la cámara. El zoom de cámara se limita a un valor mínimo positivo. La posición del texto usa coordenadas de pantalla y no se transforma con la cámara. Activa la depuración con `scene.setDebugMode(true)` para mostrar los límites de las entidades y las conexiones de proximidad.
+El renderizador dibuja sprites de color o de imagen con su rotación, omite las entidades ocultas o eliminadas y descarta las que quedan fuera de los límites visibles de la cámara. El zoom de cámara se limita a un valor mínimo positivo. La posición del texto usa coordenadas de pantalla y no se transforma con la cámara. Activa la depuración con `scene.setDebugMode(true)` para mostrar los rectángulos rotados y las conexiones cian de proximidad.
 
 #### Entrada, temporizadores y recursos
 
@@ -278,7 +292,8 @@ Este comando compila el proyecto y ejecuta las pruebas JUnit. El proyecto está 
 ### Limitaciones actuales
 
 - Las comprobaciones de colisión son manuales; no hay una pasada automática de colisiones ni un índice espacial de fase amplia.
-- La respuesta de colisión es una separación AABB sencilla, no sustituye a un motor de física completo.
+- La respuesta de colisión separa rectángulos y elimina velocidad en la normal de contacto, pero no simula masa, impulso, fricción, torque ni rotación causada por una colisión.
+- La geometría física se limita a rectángulos; no admite polígonos, círculos ni colisión basada en la transparencia del sprite.
 - El tiempo, los temporizadores, el teclado y el registro de entidades usan utilidades estáticas globales; varias instancias de juego en un mismo proceso no están aisladas.
 - `GameWindow.setScene(...)` actualiza el callback guardado.
 - El renderizado usa Swing/AWT y está orientado a aplicaciones de escritorio.
@@ -305,10 +320,10 @@ The renderer and window are built on Java Swing and AWT. The project targets Jav
 
 - A target-FPS game loop with a capped frame delta and global time utilities.
 - Scenes that update entities, run scene-specific logic, remove deleted entities, and submit render snapshots.
-- Positionable objects with center-based coordinates, dimensions, velocity, and bounds.
+- Positionable objects with center-based coordinates, dimensions, rotation, linear and angular velocity, and bounds.
 - Sprite objects backed by a solid color or a sequence of `BufferedImage` frames.
 - Scripts with start, update, overlap, collision, and proximity callbacks.
-- AABB overlap checks, basic minimum-penetration collision resolution, proximity checks, and groups.
+- SAT collision checks for rotated rectangles, minimum-penetration resolution, proximity checks, and groups.
 - Explicit trigger checks for one entity or a group.
 - Keyboard polling, camera translation and zoom, on-screen text, and a debug-rendering mode.
 - Audio clips and a simple keyed asset collection.
@@ -335,7 +350,7 @@ The `Dimension` in this constructor is JGE's `rroyo.jge.core.gameutils.Dimension
 
 A scene is a game state such as a level, menu, or game-over screen. Subclass `Scene` and implement `update()`. Positionable entities register themselves with their scene when they are constructed. A typical frame proceeds in this order:
 
-1. Each registered, non-deleted entity moves using its velocity and the frame delta.
+1. Each registered, non-deleted entity moves and rotates using its velocities and the frame delta.
 2. Attached scripts are started if necessary and updated; animated sprites advance.
 3. The scene's `update()` method runs.
 4. Deleted entities and text are removed, then the renderer receives snapshots for painting.
@@ -346,7 +361,21 @@ As a result, velocity or input changes made inside `Scene.update()` normally aff
 
 Entity positions are the center of their bounding boxes and use world coordinates. Width and height are world units. Velocity is interpreted as world units per second and multiplied by `Time.deltaTime()` when `move()` runs. `move(dx, dy)` applies an immediate world-space displacement instead.
 
-`Time.deltaTime()` is affected by the global time scale; `Time.unscaledDeltaTime()` is not. The loop caps the unscaled frame delta at 0.1 seconds to reduce large jumps after a pause or stall. `Time.setTimeScale(0)` pauses scaled movement and timers; values above or below 1 speed up or slow down scaled time.
+`Time.deltaTime()` is affected by the global time scale; `Time.unscaledDeltaTime()` is not. The loop caps the unscaled frame delta at 0.1 seconds to reduce large jumps after a pause or stall. `Time.setTimeScale(0)` pauses automatic movement, rotation, and timers; values above or below 1 speed up or slow down scaled time.
+
+### Rotation and collisions
+
+Every `PositionableGameObject` rotates around its center; positive angles turn clockwise on screen. `getRotation()`, `setRotation(radians)`, and `rotate(radians)` use radians; `getRotationDegrees()`, `setRotationDegrees(degrees)`, and `rotateDegrees(degrees)` are also available. Angles are normalized to an equivalent value between -π and π. Set `setAngularVelocity(radiansPerSecond)` for continuous rotation; the engine integrates it using scaled frame delta. An angular velocity of zero keeps the orientation fixed.
+
+```java
+object.setRotationDegrees(30); // Initial orientation
+object.setAngularVelocity(Math.toRadians(90)); // 90 degrees per second
+object.rotateDegrees(15); // Immediate additional turn
+```
+
+The renderer rotates image sprites and solid-color sprites. `getBounds()` returns the axis-aligned box enclosing the rotated rectangle for viewport culling. Exact `overlap(...)`, `collide(...)`, and `Trigger` checks use SAT across the local axes of both rectangles. `collide(...)` separates the receiver along the minimum-penetration normal and removes the component of its velocity that points along that normal. Physical shapes remain rectangles defined by object width and height; the engine does not derive collision geometry from sprite pixels.
+
+`inRange(...)` and the cyan debug links show approximate center proximity for finding candidates; they do not confirm a collision. Debug mode draws each proximity link once and rotates each rectangle outline to match its object.
 
 ### Entities, scripts, and interactions
 
@@ -355,8 +384,8 @@ Use `PositionableGameObject` for a physical entity without a sprite, `Scriptable
 `Event2d` offers:
 
 - `inRange(...)` for a broad proximity check. It dispatches `onInRange` to scriptable participants when they are close enough.
-- `overlap(...)` for an AABB intersection check without moving either object. It dispatches `onOverlap` when the bounds intersect.
-- `collide(...)` for an overlap check followed by a basic separation along the axis of least penetration. It clears the moving object's velocity on that axis and dispatches `onCollide`.
+- `overlap(...)` for an oriented-rectangle intersection check without moving either object. It dispatches `onOverlap` when they intersect.
+- `collide(...)` for an overlap check followed by a separation along the minimum-penetration normal. It removes the moving object's velocity component in that direction and dispatches `onCollide`.
 
 These checks can target an individual positionable entity or a `Group`. Group operations visit their members; they do not automatically register or own those entities.
 
@@ -364,7 +393,7 @@ These checks can target an individual positionable entity or a `Group`. Group op
 
 ### Rendering, camera, and text
 
-The renderer draws color-based or image-based sprites, skips hidden and deleted entities, and culls entities outside the camera's visible world bounds. A camera's zoom is clamped to a positive minimum. Text positions are screen-space coordinates and are not transformed by the camera. Enable debug rendering with `scene.setDebugMode(true)` to draw entity bounds and proximity links.
+The renderer draws rotated color-based or image-based sprites, skips hidden and deleted entities, and culls entities outside the camera's visible world bounds. A camera's zoom is clamped to a positive minimum. Text positions are screen-space coordinates and are not transformed by the camera. Enable debug rendering with `scene.setDebugMode(true)` to draw rotated rectangles and cyan proximity links.
 
 ### Input, timers, and assets
 
@@ -569,7 +598,8 @@ This compiles the project and runs the JUnit tests. The project currently target
 ## Current limitations
 
 - Entity collision checks are manual; there is no automatic collision pass or broad-phase spatial index.
-- The collision response is a simple AABB separation and is not a replacement for a complete physics engine.
+- Collision response separates rectangles and removes velocity along the contact normal, but does not simulate mass, impulse, friction, torque, or collision-induced rotation.
+- Physical geometry is limited to rectangles; polygons, circles, and sprite transparency-based collision are not supported.
 - The engine keeps time, timers, keyboard state, and the entity registry in static global utilities, so independent game instances in one process are not isolated.
 - `GameWindow.setScene(...)` updates the stored game-loop callback.
 - Rendering is based on Swing/AWT and is intended for desktop applications.

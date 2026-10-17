@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/** Verifies camera positioning, viewport centering, and zoom constraints. */
 class CameraTest {
 
+    /** Confirms relative movement and absolute position setters update the expected axes. */
     @Test
     void movementAndPositionUpdatesAreAdditiveAndAbsoluteAsNamed() {
         Camera camera = new Camera();
@@ -18,6 +20,7 @@ class CameraTest {
         assertEquals(9, camera.getCameraPosition().getY());
     }
 
+    /** Confirms window dimensions center the camera on their half-width and half-height. */
     @Test
     void settingWindowDimensionsCentersCameraOnHalfDimensions() {
         Camera camera = new Camera();
@@ -27,6 +30,7 @@ class CameraTest {
         assertEquals(300, camera.getCameraPosition().getY());
     }
 
+    /** Confirms invalid zoom values are clamped to the supported positive minimum. */
     @Test
     void zoomIsClampedToAPositiveMinimum() {
         Camera camera = new Camera();
