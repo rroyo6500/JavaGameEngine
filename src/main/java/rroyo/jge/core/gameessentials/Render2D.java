@@ -128,7 +128,10 @@ public final class Render2D extends JPanel {
             for (PositionableGameObject pgo : objects) {
                 if (pgo.isDeleted() || !pgo.isVisible()) continue;
 
-                Rectangle bounds = pgo.getBounds();
+                Dimension drawSize = pgo instanceof SpriteGameObject spriteGameObject
+                        ? getSpriteDrawSize(spriteGameObject)
+                        : pgo.getSize();
+                Rectangle bounds = getDrawBounds(pgo, drawSize);
                 if (bounds.getMaxX() < vp.viewWorldX() || bounds.getMinX() > vp.viewWorldX() + vp.viewWorldWidth() ||
                         bounds.getMaxY() < vp.viewWorldY() || bounds.getMinY() > vp.viewWorldY() + vp.viewWorldHeight()
                 ) continue;
@@ -143,7 +146,7 @@ public final class Render2D extends JPanel {
                         if (spriteGameObject.getSprite().hasSpriteImage()) {
                             Sprite sprite = spriteGameObject.getSprite();
                             BufferedImage img = sprite.getSpriteImages();
-                            DrawParams dp = DrawParams.calculateDraw(spriteGameObject, spriteGameObject.getSpriteSize(), vp);
+                            DrawParams dp = DrawParams.calculateDraw(spriteGameObject, drawSize, vp);
 
                             if (sprite.getHorizontalDirection() == SpriteHorizontalDirection.LEFT)
                                 objectGraphics.drawImage(img,
@@ -153,7 +156,7 @@ public final class Render2D extends JPanel {
                                 objectGraphics.drawImage(img, dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH(), null);
                         }
                         else {
-                            DrawParams dp = DrawParams.calculateDraw(spriteGameObject, vp);
+                            DrawParams dp = DrawParams.calculateDraw(spriteGameObject, drawSize, vp);
 
                             objectGraphics.setColor(spriteGameObject.getSprite().getSpriteColor());
                             objectGraphics.fillRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
@@ -172,5 +175,24 @@ public final class Render2D extends JPanel {
         } finally {
             g2.dispose();
         }
+    }
+
+    /** Uses explicitly configured sprite dimensions, falling back to the object's visual dimensions. */
+    private static Dimension getSpriteDrawSize(SpriteGameObject spriteGameObject) {
+        Dimension spriteSize = spriteGameObject.getSprite().getSpriteSize();
+        return spriteSize == null ? spriteGameObject.getSpriteSize() : spriteSize;
+    }
+
+    /** Calculates the rotated world-space bounds of the dimensions that will actually be drawn. */
+    private static Rectangle getDrawBounds(PositionableGameObject gameObject, Dimension drawSize) {
+        double cos = Math.abs(Math.cos(gameObject.getRotation()));
+        double sin = Math.abs(Math.sin(gameObject.getRotation()));
+        double halfWidth = cos * drawSize.getHalfWidth() + sin * drawSize.getHalfHeight();
+        double halfHeight = sin * drawSize.getHalfWidth() + cos * drawSize.getHalfHeight();
+        int minX = (int) Math.floor(gameObject.getPosition().getX() - halfWidth);
+        int minY = (int) Math.floor(gameObject.getPosition().getY() - halfHeight);
+        int maxX = (int) Math.ceil(gameObject.getPosition().getX() + halfWidth);
+        int maxY = (int) Math.ceil(gameObject.getPosition().getY() + halfHeight);
+        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
 }

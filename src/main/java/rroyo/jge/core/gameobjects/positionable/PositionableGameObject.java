@@ -256,12 +256,22 @@ public class PositionableGameObject extends GameObject {
         return Math.toDegrees(rotation);
     }
 
-    /** Sets the current rotation in degrees. */
+    /**
+     * Sets the rotation of this object around its center in degrees.
+     * The value is converted to radians before being applied.
+     *
+     * @param degrees the rotation angle in degrees
+     */
     public final void setRotationDegrees(double degrees) {
         if (Double.isFinite(degrees)) setRotation(Math.toRadians(degrees));
     }
 
-    /** Adds an angle in degrees to the current rotation. */
+    /**
+     * Adds an angle to this object's rotation, specified in degrees.
+     * The value is converted to radians before being applied.
+     *
+     * @param degrees the angle to add in degrees
+     */
     public final void rotateDegrees(double degrees) {
         if (Double.isFinite(degrees)) rotate(Math.toRadians(degrees));
     }
@@ -285,7 +295,5 @@ public class PositionableGameObject extends GameObject {
         );
         return bounds;
     }
-
-
 
 }
