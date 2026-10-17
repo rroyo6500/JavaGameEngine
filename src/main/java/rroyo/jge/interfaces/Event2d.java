@@ -51,8 +51,9 @@ public interface Event2d {
     }
 
     /**
-     * Checks if this element overlaps with another element and triggers the {@code onOverlap} script events if they do.
-     * Unlike a collision, an overlap check does not physically displace the elements.
+     * Checks if this element's oriented rectangle intersects another's and triggers the
+     * {@code onOverlap} script events if they do. Unlike a collision, an overlap check does
+     * not physically displace the elements.
      *
      * @param gameObject The other {@link SpriteGameObject} to check for overlap.
      * @return {@code true} if overlapping; {@code false} otherwise.

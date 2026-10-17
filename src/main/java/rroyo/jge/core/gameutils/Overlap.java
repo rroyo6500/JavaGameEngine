@@ -5,8 +5,8 @@ import rroyo.jge.core.gameobjects.positionable.SpriteGameObject;
 import rroyo.jge.core.gameobjects.positionable.PositionableGameObject;
 
 /**
- * The {@code Overlap} class is a data container used to store the amount of intersection depth
- * (penetration) between two colliding objects along the horizontal and vertical axes.
+ * The {@code Overlap} record stores the enclosing AABB overlap and the minimum-translation
+ * normal and depth for two intersecting oriented rectangles.
  *
  * @param overlapX The enclosing AABB overlap depth along the X-axis.
  * @param overlapY The enclosing AABB overlap depth along the Y-axis.
@@ -81,7 +81,7 @@ public record Overlap(double overlapX, double overlapY, double normalX, double n
      *
      * @param self object whose bounds are the first half of the comparison
      * @param gameObject other positionable object whose bounds are compared
-     * @return An {@link Overlap} object containing the X and Y intersection depths, or {@code null} if there is no collision.
+     * @return the AABB overlap and SAT separation data, or {@code null} when the rectangles do not intersect
      */
     public static Overlap calculateOverlap(GameObject self, PositionableGameObject gameObject) {
         if (self instanceof PositionableGameObject pgo) {
@@ -140,7 +140,7 @@ public record Overlap(double overlapX, double overlapY, double normalX, double n
     }
 
     /**
-     * Internal check to determine if the bounding boxes of this element and another are currently overlapping.
+     * Checks whether this element and another oriented rectangle currently intersect.
      *
      * @param gameObject The other {@link SpriteGameObject} to check.
      * @param self object whose bounds are the first half of the comparison

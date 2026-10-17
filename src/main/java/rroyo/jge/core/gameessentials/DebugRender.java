@@ -35,20 +35,32 @@ public final class DebugRender {
         g.setColor(Color.black);
         g.fillRect(0, 0, (int) windowDimension.getWidth(), (int) windowDimension.getHeight());
 
+        // Draw each proximity link once and in its own visible color. Object outlines use
+        // child graphics contexts, so their colors must not be relied on for these links.
+        g.setColor(Color.WHITE);
+        for (int i = 0; i < gameObjectsToDraw.size(); i++) {
+            PositionableGameObject first = gameObjectsToDraw.get(i);
+            if (first.isDeleted() || !first.isVisible()) continue;
+            for (int j = i + 1; j < gameObjectsToDraw.size(); j++) {
+                PositionableGameObject second = gameObjectsToDraw.get(j);
+                if (second.isDeleted() || !second.isVisible()) continue;
+                if (!isInViewport(first, vp) && !isInViewport(second, vp)) continue;
+                if (!Overlap.ir(first, second)) continue;
+
+                g.drawLine(screenX(first, vp), screenY(first, vp),
+                        screenX(second, vp), screenY(second, vp));
+            }
+        }
+
         for (PositionableGameObject pgo : gameObjectsToDraw) {
             if (pgo.isDeleted() || !pgo.isVisible()) continue;
-
-            Rectangle bounds = pgo.getBounds();
-            if (bounds.getMaxX() < vp.viewWorldX() || bounds.getMinX() > vp.viewWorldX() + vp.viewWorldWidth() ||
-                    bounds.getMaxY() < vp.viewWorldY() || bounds.getMinY() > vp.viewWorldY() + vp.viewWorldHeight()
-            ) continue;
+            if (!isInViewport(pgo, vp)) continue;
 
             DrawParams dp = DrawParams.calculateDraw(pgo, vp);
 
             Graphics2D objectGraphics = (Graphics2D) g.create();
             try {
-                objectGraphics.rotate(pgo.getRotation(), dp.drawX() + dp.drawW() / 2.0,
-                        dp.drawY() + dp.drawH() / 2.0);
+                objectGraphics.rotate(pgo.getRotation(), screenX(pgo, vp), screenY(pgo, vp));
                 objectGraphics.setColor(new Color(Math.abs(pgo.hashCode()) % 0xFFFFFF));
                 objectGraphics.drawRect(dp.drawX(), dp.drawY(), dp.drawW(), dp.drawH());
                 objectGraphics.drawLine(dp.drawX(), dp.drawY(), dp.drawX()+dp.drawW(), dp.drawY()+dp.drawH());
@@ -56,19 +68,23 @@ public final class DebugRender {
             } finally {
                 objectGraphics.dispose();
             }
-
-            for (PositionableGameObject tmp : gameObjectsToDraw) {
-                if (Overlap.ir(pgo, tmp)) {
-                    DrawParams tmpdp = DrawParams.calculateDraw(tmp, vp);
-
-                    g.drawLine(
-                            (dp.drawX() + (dp.drawW()/2)), (dp.drawY() + (dp.drawH()/2)),
-                            (tmpdp.drawX() + (tmpdp.drawW()/2)), tmpdp.drawY() + (tmpdp.drawH()/2)
-                    );
-                }
-            }
-
         }
+    }
+
+    private static boolean isInViewport(PositionableGameObject object, ViewportParams vp) {
+        Rectangle bounds = object.getBounds();
+        return bounds.getMaxX() >= vp.viewWorldX()
+                && bounds.getMinX() <= vp.viewWorldX() + vp.viewWorldWidth()
+                && bounds.getMaxY() >= vp.viewWorldY()
+                && bounds.getMinY() <= vp.viewWorldY() + vp.viewWorldHeight();
+    }
+
+    private static int screenX(PositionableGameObject object, ViewportParams vp) {
+        return (int) ((object.getPosition().getX() + vp.camX() - vp.centerX()) * vp.zoom() + vp.centerX());
+    }
+
+    private static int screenY(PositionableGameObject object, ViewportParams vp) {
+        return (int) ((object.getPosition().getY() + vp.camY() - vp.centerY()) * vp.zoom() + vp.centerY());
     }
 
 }
